@@ -1,0 +1,31 @@
+{
+  "name": "puf_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "npm": "install",
+    "express": "express-session",
+    "cors": "dotenv",
+    "swagger-ui-express": "swagger-jsdoc",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "Branko Majsen (glavni), Tilen Gašparič, David Pilih, Domen Laznik, Florijan Siter, Matic Šiško Musil, Tilen Muhić, Jan Kladušek, Marko Zupančič",
+  "license": "ISC",
+  "description": "Aplikacija za beleženje dolgov",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
