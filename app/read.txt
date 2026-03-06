@@ -1,0 +1,5 @@
+Delitev bo verjetno po mapah frontend backend...
+Dogovorite se za način dela znotraj ekipe in se tega potem držite da nebo vsak po svoje delal. Naj bo vse nekako strukturirano.
+Koda naj se commita na svoj branch....ko končas z nekim delom naredi PR in pocakaj da nekdo malce pregleda in odobri PR.
+SVOJEGA PR/MERGA NE POTRDI SAM!!!
+ČE PRIDE DO GIT KONFLIKTOV NE FORCAJ!!!

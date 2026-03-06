@@ -1,0 +1,1 @@
+Zraven baze naj bo tudi skripta ki postavi celotno bazo od nule in doda nekaj dummy podatkov.
