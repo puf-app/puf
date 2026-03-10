@@ -1,0 +1,3 @@
+testiranje CICD, bo vodja kasneje pobrisal
+
+test2 - run: hostname
