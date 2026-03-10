@@ -20,6 +20,7 @@ jobs:
       - run: npm install
       - run: npm test # add other tests in package.json
       - run: hostname # delete later
+      - run: echo "Tests passed!" # delete later
 
 # uncomment once the docker-compose.yml file is ready
 #  deploy:

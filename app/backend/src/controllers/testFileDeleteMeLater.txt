@@ -1,3 +1,4 @@
 testiranje CICD, bo vodja kasneje pobrisal
 
 test2 - run: hostname
+test3 - run: echo test
