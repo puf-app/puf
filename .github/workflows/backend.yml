@@ -31,6 +31,9 @@ jobs:
         run: |
           echo "PORT=${{ secrets.PORT }}" >> app/backend/.env
           echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> app/backend/.env
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> app/backend/.env
 
       - name: Deploy backend
-        run: docker-compose up -d --build backend
+        run: |
+          docker-compose down --volumes --remove-orphans
+          docker-compose up -d --build backend
