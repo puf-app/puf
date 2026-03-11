@@ -1,0 +1,31 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [backend]
+    paths:
+      - 'app/backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test # add other tests in package.json
+
+# uncomment once the docker-compose.yml file is ready
+#  deploy:
+#    needs: test
+#    runs-on: self-hosted
+#    steps:
+#      - uses: actions/checkout@v4
+# 
+#      - name: Deploy backend
+#        run: docker compose up -d --build backend
