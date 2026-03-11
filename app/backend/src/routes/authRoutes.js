@@ -15,7 +15,6 @@ const {requireNotAuth, requireAuth} = require('../middleware/authMiddleware');
  * /api/auth/registerUser:
  *   post:
  *     summary: Register a new user
- *     description: Creates a new user account in the system.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -23,35 +22,19 @@ const {requireNotAuth, requireAuth} = require('../middleware/authMiddleware');
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
+ *             required: [firstName, lastName, username, email, password]
  *             properties:
- *               email:
- *                 type: string
- *                 example: newuser@example.com
- *               password:
- *                 type: string
- *                 example: securePassword123
+ *               firstName: { type: string, example: "Florijan" }
+ *               lastName: { type: string, example: "Siter" }
+ *               username: { type: string, example: "florijan123" }
+ *               email: { type: string, example: "florijan@example.com" }
+ *               password: { type: string, example: "securePassword123" }
+ *               phone: { type: string, example: "+38640123456" }
  *     responses:
  *       201:
  *         description: User created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     message:
- *                       type: string
- *                     user:
- *                       type: object
- *                 error:
- *                   type: string
  *       400:
- *         description: Bad Request - Missing fields or user already logged in
+ *         description: Bad Request - Missing fields or user already exists
  *       500:
  *         description: Server error
  */
@@ -61,7 +44,6 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  * /api/auth/loginUser:
  *   post:
  *     summary: User login
- *     description: Authenticates a user and starts a session.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -69,16 +51,10 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
+ *             required: [username, password]
  *             properties:
- *               email:
- *                 type: string
- *                 example: user@example.com
- *               password:
- *                 type: string
- *                 example: password123
+ *               username: { type: string, example: "florijan123" }
+ *               password: { type: string, example: "password123" }
  *     responses:
  *       200:
  *         description: Login successful
@@ -90,20 +66,17 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  *                 data:
  *                   type: object
  *                   properties:
- *                     message:
- *                       type: string
+ *                     message: { type: string }
  *                     user:
  *                       type: object
- *                 error:
- *                   type: string
- *                   example: ""
- *       400:
- *         description: Bad Request - User already authenticated
+ *                       properties:
+ *                         username: { type: string }
+ *                         admin: { type: boolean }
+ *                 error: { type: string, example: "" }
  *       401:
  *         description: Unauthorized - Invalid credentials
- *       500:
- *         description: Server error
  */
+
 router.post('/loginUser', requireNotAuth, authController.loginUser);
 /**
  * @swagger
@@ -134,5 +107,29 @@ router.post('/loginUser', requireNotAuth, authController.loginUser);
  *         description: Server error while destroying session
  */
 router.post('/logoutUser', requireAuth, authController.logoutUser);
+/**
+ * @swagger
+ * /api/auth/changePassword:
+ *   post:
+ *     summary: Change user password
+ *     description: Updates the password after verifying the old one.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [oldPassword, newPassword]
+ *             properties:
+ *               oldPassword: { type: string }
+ *               newPassword: { type: string }
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       401:
+ *         description: Invalid old password
+ */
+router.post('/changePassword', requireAuth, authController.changePassword);
 
 module.exports = router;
