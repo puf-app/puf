@@ -21,11 +21,11 @@ jobs:
       - run: npm test # add other tests in package.json
 
 # uncomment once the docker-compose.yml file is ready
-#  deploy:
-#    needs: test
-#    runs-on: self-hosted
-#    steps:
-#      - uses: actions/checkout@v4
-# 
-#      - name: Deploy backend
-#        run: docker compose up -d --build backend
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - name: Deploy backend
+        run: docker compose up -d --build backend
