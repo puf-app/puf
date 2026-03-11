@@ -1,4 +1,5 @@
 require('dotenv').config();
+const MongoStore = require('connect-mongo').default;
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
@@ -15,14 +16,12 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-/*
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("Successfully connected to MongoDB."))
     .catch((err) => {
         console.error("MongoDB connection error:", err);
         process.exit(1);
     });
-*/
 
 app.use(helmet());
 app.use(hpp());
@@ -57,6 +56,11 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+        ttl: 14 * 24 * 60 * 60
+    }),
     cookie: {
         secure: false,
         httpOnly: true,

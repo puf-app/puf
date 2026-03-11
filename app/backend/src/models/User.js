@@ -25,18 +25,17 @@ const userSchema = new Schema({
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function() {
     const user = this;
 
-    if (!user.isModified('password')) return next();
+    if (!user.isModified('password')) return;
 
-    bcrypt.hash(user.password, 10, function(err, hash) {
-        if (err) {
-            return next(err);
-        }
-        user.password = hash;
-        next();
-    });
+    try {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
+    } catch (err) {
+        throw err;
+    }
 });
 
 userSchema.statics.authenticate = function(username, password, callback) {
