@@ -9,6 +9,7 @@
 
 # Naming conventions
 - Vsi endpointi so v camelCase
+- Vse public funkcije so v camelCase
 - Vsi responsi na API klice so v stilu: 
     { 
         "data":{}, 

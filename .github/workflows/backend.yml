@@ -21,11 +21,16 @@ jobs:
       - run: npm test # add other tests in package.json
 
 # uncomment once the docker-compose.yml file is ready
-#  deploy:
-#    needs: test
-#    runs-on: self-hosted
-#    steps:
-#      - uses: actions/checkout@v4
-# 
-#      - name: Deploy backend
-#        run: docker compose up -d --build backend
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - name: Create env file
+        run: |
+          echo "PORT=${{ secrets.PORT }}" >> app/backend/.env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> app/backend/.env
+
+      - name: Deploy backend
+        run: docker-compose up -d --build backend
