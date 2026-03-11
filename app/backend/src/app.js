@@ -10,6 +10,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
+const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
 const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -69,6 +70,7 @@ app.use(session({
     }
 }));
 
+app.use(updateLastSeen);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/test", testRoutes);
 

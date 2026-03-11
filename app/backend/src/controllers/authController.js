@@ -5,7 +5,7 @@ const registerUser = async (req, res) => {
     try {
         const {firstName, lastName, username, email, password, phone} = req.body;
 
-        if (!username || !email || !password) {
+        if (!firstName || !lastName || !username || !email || !password) {
             return res.status(400).json({data: {}, error: "Username, email and password are required"});
         }
 
@@ -22,7 +22,8 @@ const registerUser = async (req, res) => {
             email,
             phone,
             password,
-            status: 'ACTIVE',
+            profileImageUrl: null,
+            lastSeenAt: new Date()
         });
 
         await newUser.save();
