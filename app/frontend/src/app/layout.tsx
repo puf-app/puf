@@ -5,6 +5,9 @@ import './globals.css';
 // providers
 import Providers from '@/providers/Providers';
 
+// components
+import Footer from '@/components/layout/Footer';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -31,7 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className='flex flex-col min-h-screen justify-between font-sans'>
+            {children}
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );
