@@ -28,7 +28,55 @@ const WEIGHTS = {
 
 
 const evaluateRiskWithAI = async (scoreData, repaymentData, financialData) => {
-   
+    try {
+        const prompt = `You are an AI credit risk analyst. Evaluate this profile and return exclusively a JSON object.
+Required format:
+{"aiAdjustmentPoints": <int between -20 and 20>, "aiRecommendedAction": "<APPROVE or DENY or MANUAL_REVIEW>", "aiInsights": ["<string reason>"]}
+
+Profile Data:
+Algorithmic Score: ${scoreData.score}
+Repayment Profile: ${JSON.stringify(repaymentData)}
+Financial Profile: ${JSON.stringify(financialData)}`;
+
+        // Klic AI
+        const response = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'llama3', 
+                prompt: prompt,
+                stream: false,
+                format: 'json' 
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`napaka ai ${response.status}`);
+        }
+
+        const data = await response.json();
+        const aiResult = JSON.parse(data.response);
+
+        const adjustment = Math.max(-20, Math.min(20, (aiResult.aiAdjustmentPoints || 0)));
+
+        return {
+            algorithmicScore: scoreData.score,
+            aiAdjustmentPoints: adjustment,
+            aiFinalScore: scoreData.score + adjustment,
+            aiRecommendedAction: aiResult.aiRecommendedAction || (scoreData.score >= 60 ? 'APPROVE' : 'DENY'),
+            aiInsights: aiResult.aiInsights || ['Local Llama profile scan completed.']
+        }; 
+    } catch (error) {
+        return {
+            algorithmicScore: scoreData.score,
+            aiAdjustmentPoints: 0,
+            aiFinalScore: scoreData.score,
+            aiRecommendedAction: scoreData.score >= 60 ? 'APPROVE' : 'DENY',
+            aiInsights: ['only math']
+        };
+    }
 };
 
 const calculateCreditScore = async (userId, repaymentData, financialData, socialData, profileData) => {
@@ -94,7 +142,6 @@ const calculateCreditScore = async (userId, repaymentData, financialData, social
         };
 
     } catch (error) {
-        console.error('napaka:', error);
         throw new Error('napaka');
     }
 };
