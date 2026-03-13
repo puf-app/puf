@@ -71,6 +71,7 @@ app.use(session({
 }));
 
 app.use(updateLastSeen);
+app.get("/docs/swagger.json", (req, res) => res.json(swaggerSpec));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/test", testRoutes);
 
