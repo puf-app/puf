@@ -14,6 +14,9 @@ const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
 const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
+const debtRoutes = require("./routes/debtRoutes");
+const debtHistoryRoutes = require("./routes/debt_status_historyRoutes");
+const debtEvidenceRoutes = require("./routes/debt_evidenceRoutes");
 
 const app = express();
 
