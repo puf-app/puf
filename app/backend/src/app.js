@@ -24,7 +24,10 @@ mongoose.connect(process.env.MONGODB_URI)
         process.exit(1);
     });
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
+app.set("trust proxy", false);  // ← add this
 app.use(hpp());
 app.disable('x-powered-by');
 
