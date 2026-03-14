@@ -14,6 +14,7 @@ const userVerificationSchema = new Schema({
     expiresAt: { type: Date },
     reviewNote: { type: String, maxLength: 500 }
 }, {
+    collection: 'user_verifications',
     timestamps: { createdAt: 'requestedAt', updatedAt: false }
 });
 

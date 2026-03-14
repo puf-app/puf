@@ -14,6 +14,8 @@ const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
 const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require ("./routes/userRoutes");
+const friendshipRoutes = require ("./routes/friendshipRoutes");
 
 const app = express();
 
@@ -79,5 +81,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/test", testRoutes);
 
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/friendships', friendshipRoutes);
 
 module.exports = app;
