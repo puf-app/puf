@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { Inter, Inter_Tight } from 'next/font/google';
 import './globals.css';
 
 // providers
@@ -7,17 +7,15 @@ import Providers from '@/providers/Providers';
 
 // components
 import Footer from '@/components/layout/Footer';
-import { cn } from "@/lib/utils";
+import Header from '@/components/layout/Header';
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const interSans = Inter({
+  variable: '--font-inter-sans',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const interTight = Inter_Tight({
+  variable: '--font-inter-tight',
   subsets: ['latin'],
 });
 
@@ -33,12 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={cn("font-sans", inter.variable)}>
+    <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${interSans.variable} ${interTight.variable} antialiased`}
       >
         <Providers>
           <div className='flex flex-col min-h-screen justify-between font-sans'>
+            <Header />
             {children}
             <Footer />
           </div>
