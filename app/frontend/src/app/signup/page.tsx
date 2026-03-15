@@ -35,17 +35,80 @@ export default function SignupPage() {
         </Link>
       </header>
 
-      {/* Centered card */}
+      {/* Forms */}
       <section className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 py-8 md:py-12 gap-4">
-        <Card className="w-full max-w-md md:max-w-xl border border-gray-300 shadow-md">
-          <CardHeader className="pb-4 md:pb-6">
-            <CardTitle className="text-2xl md:text-3xl font-semibold text-[#10294b] text-center">
+        {/* Mobile layout: no card, only fields */}
+        <div className="w-full max-w-md md:hidden">
+          <h1 className="text-2xl font-semibold text-[#10294b] text-center mb-6">
+            Sign up
+          </h1>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-1">
+              <Label className="text-sm text-gray-700" htmlFor="username-mobile">
+                Username
+              </Label>
+              <Input
+                id="username-mobile"
+                type="text"
+                placeholder="Enter your username"
+                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label className="text-sm text-gray-700" htmlFor="email-mobile">
+                Email address
+              </Label>
+              <Input
+                id="email-mobile"
+                type="email"
+                placeholder="Enter your email address"
+                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label className="text-sm text-gray-700" htmlFor="password-mobile">
+                Password
+              </Label>
+              <Input
+                id="password-mobile"
+                type="password"
+                placeholder="Enter your password"
+                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
+                minLength={6}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="mt-4 h-10 w-full bg-[#1a448d] text-white text-sm font-medium shadow-sm hover:bg-[#153770] transition-colors"
+            >
+              Sign up
+            </Button>
+          </form>
+
+          <p className="mt-4 text-sm text-center w-full">
+            Already have an account?{' '}
+            <Link href="/login" className="underline text-[#1a448d]">
+              Sign in
+            </Link>
+          </p>
+        </div>
+
+        {/* Desktop/tablet layout: card with all fields */}
+        <Card className="hidden md:block w-full max-w-xl border border-gray-300 shadow-md">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-3xl font-semibold text-[#10294b] text-center">
               Sign up
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
-              <div className="hidden md:flex flex-col gap-1">
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-1">
                 <Label className="text-sm text-gray-700" htmlFor="fullName">
                   Full name
                 </Label>
@@ -71,7 +134,7 @@ export default function SignupPage() {
                 />
               </div>
 
-              <div className="hidden md:flex flex-col gap-1">
+              <div className="flex flex-col gap-1">
                 <Label className="text-sm text-gray-700" htmlFor="email">
                   Email address
                 </Label>
@@ -119,14 +182,6 @@ export default function SignupPage() {
             </form>
           </CardContent>
         </Card>
-
-        {/* Mobile-only sign-in hint below card */}
-        <p className="block md:hidden text-sm text-center w-full">
-          Already have an account?{' '}
-          <Link href="/login" className="underline text-[#1a448d]">
-            Sign in
-          </Link>
-        </p>
       </section>
     </main>
   );
