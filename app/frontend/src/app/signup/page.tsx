@@ -1,7 +1,10 @@
 'use client';
 
-import React, { FormEvent } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // shadcn/ui components
 import { Button } from '@/components/ui/button';
@@ -14,20 +17,45 @@ import {
   CardContent,
 } from '@/components/ui/card';
 
+const signupSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  fullName: z.string().min(1, 'Full name is required'),
+  phone: z.string().optional(),
+});
+
+type SignupFormValues = z.infer<typeof signupSchema>;
+
 export default function SignupPage() {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      fullName: '',
+      phone: '',
+    },
+  });
+
+  const onSubmit = (data: SignupFormValues) => {
     // TODO: hook up to real API + Redux when backend is ready
+    console.log('signup data', data);
   };
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
       {/* Top bar */}
-      <header className="h-16 md:h-20 bg-[#212f47] flex items-center justify-between px-4 md:px-12">
-        <div className="text-2xl font-semibold text-white">Puf</div>
+      <header className="h-16 md:h-20 bg-primary flex items-center justify-between px-4 md:px-12 text-primary-foreground">
+        <div className="text-2xl font-semibold">Puf</div>
         <Link href="/">
           <Button
-            className="px-6 py-2 h-auto rounded-md bg-[#2289f0] text-white text-sm font-medium shadow-sm hover:bg-[#1b6ec0] transition-colors"
+            className="px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm"
             variant="default"
           >
             Home
@@ -42,7 +70,7 @@ export default function SignupPage() {
           <h1 className="text-2xl font-semibold text-[#10294b] text-center mb-6">
             Sign up
           </h1>
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-1">
               <Label className="text-sm text-gray-700" htmlFor="username-mobile">
                 Username
@@ -51,9 +79,14 @@ export default function SignupPage() {
                 id="username-mobile"
                 type="text"
                 placeholder="Enter your username"
-                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                required
+                className="h-10 border-input text-sm"
+                {...register('username')}
               />
+              {errors.username && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.username.message}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -64,9 +97,14 @@ export default function SignupPage() {
                 id="email-mobile"
                 type="email"
                 placeholder="Enter your email address"
-                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                required
+                className="h-10 border-input text-sm"
+                {...register('email')}
               />
+              {errors.email && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -77,15 +115,19 @@ export default function SignupPage() {
                 id="password-mobile"
                 type="password"
                 placeholder="Enter your password"
-                className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                minLength={6}
-                required
+                className="h-10 border-input text-sm"
+                {...register('password')}
               />
+              {errors.password && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
-              className="mt-4 h-10 w-full bg-[#1a448d] text-white text-sm font-medium shadow-sm hover:bg-[#153770] transition-colors"
+              className="mt-4 h-10 w-full text-sm font-medium shadow-sm"
             >
               Sign up
             </Button>
@@ -100,14 +142,14 @@ export default function SignupPage() {
         </div>
 
         {/* Desktop/tablet layout: card with all fields */}
-        <Card className="hidden md:block w-full max-w-xl border border-gray-300 shadow-md">
+        <Card className="hidden md:block w-full max-w-xl shadow-md">
           <CardHeader className="pb-6">
             <CardTitle className="text-3xl font-semibold text-[#10294b] text-center">
               Sign up
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <form className="space-y-5" onSubmit={handleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-1">
                 <Label className="text-sm text-gray-700" htmlFor="fullName">
                   Full name
@@ -116,9 +158,14 @@ export default function SignupPage() {
                   id="fullName"
                   type="text"
                   placeholder="Enter your full name"
-                  className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                  required
+                  className="h-10 border-input text-sm"
+                  {...register('fullName')}
                 />
+                {errors.fullName && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.fullName.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-1">
@@ -129,9 +176,14 @@ export default function SignupPage() {
                   id="username"
                   type="text"
                   placeholder="Enter your username"
-                  className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                  required
+                  className="h-10 border-input text-sm"
+                  {...register('username')}
                 />
+                {errors.username && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.username.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-1">
@@ -142,9 +194,14 @@ export default function SignupPage() {
                   id="email"
                   type="email"
                   placeholder="Enter your email address"
-                  className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                  required
+                  className="h-10 border-input text-sm"
+                  {...register('email')}
                 />
+                {errors.email && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-1">
@@ -155,7 +212,8 @@ export default function SignupPage() {
                   id="phone"
                   type="tel"
                   placeholder="Enter your telephone number"
-                  className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
+                  className="h-10 border-input text-sm"
+                  {...register('phone')}
                 />
               </div>
 
@@ -167,15 +225,19 @@ export default function SignupPage() {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="h-10 border-gray-300 text-sm focus-visible:ring-[#2289f0]"
-                  minLength={6}
-                  required
+                  className="h-10 border-input text-sm"
+                  {...register('password')}
                 />
+                {errors.password && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <Button
                 type="submit"
-                className="mt-4 h-10 w-full bg-[#1a448d] text-white text-sm font-medium shadow-sm hover:bg-[#153770] transition-colors"
+                className="mt-4 h-10 w-full text-sm font-medium shadow-sm"
               >
                 Sign up
               </Button>
