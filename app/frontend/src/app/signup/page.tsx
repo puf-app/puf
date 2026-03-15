@@ -10,12 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { AuthHeader } from '@/components/layout/AuthHeader';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -50,18 +46,7 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      {/* Top bar */}
-      <header className="h-16 md:h-20 bg-primary flex items-center justify-between px-4 md:px-12 text-primary-foreground">
-        <div className="text-2xl font-semibold">Puf</div>
-        <Link href="/">
-          <Button
-            className="px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm"
-            variant="default"
-          >
-            Home
-          </Button>
-        </Link>
-      </header>
+      <AuthHeader />
 
       {/* Forms */}
       <section className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 py-8 md:py-12 gap-4">
