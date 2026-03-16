@@ -10,6 +10,7 @@ const verificationDocumentSchema = new Schema({
     fileUrl: { type: String, maxLength: 500 },
     fileStorageId: { type: String, maxLength: 255 }
 }, {
+    collection: 'verification_documents',
     timestamps: { createdAt: 'uploadedAt', updatedAt: false }
 });
 
