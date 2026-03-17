@@ -19,6 +19,8 @@ const friendshipRoutes = require ("./routes/friendshipRoutes");
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("Successfully connected to MongoDB."))
     .catch((err) => {
@@ -26,10 +28,17 @@ mongoose.connect(process.env.MONGODB_URI)
         process.exit(1);
     });
 
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
-app.set("trust proxy", false);  // ← add this
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                "script-src": ["'self'", "https://unpkg.com", "'unsafe-inline'"],
+                "script-src-attr": ["'unsafe-inline'"],
+            },
+        },
+    })
+);
 app.use(hpp());
 app.disable('x-powered-by');
 
@@ -51,7 +60,7 @@ const authLimiter = rateLimit({
 app.use(express.json({ limit: '10kb' }));
 
 app.use(cors({
-    origin: "http://localhost:3001",
+    origin: process.env.FRONTEND_ORIGIN || "http://localhost:3001",
     credentials: true
 }));
 
@@ -68,7 +77,7 @@ app.use(session({
         ttl: 14 * 24 * 60 * 60
     }),
     cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24
@@ -76,6 +85,8 @@ app.use(session({
 }));
 
 app.use(updateLastSeen);
+app.use(express.static('public'));
+
 app.get("/docs/swagger.json", (req, res) => res.json(swaggerSpec));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/test", testRoutes);

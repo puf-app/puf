@@ -18,6 +18,14 @@ const userSchema = new Schema({
         default: 'NONE'
     },
 
+    authenticators: [{
+        credentialID: { type: String, required: true },
+        publicKey: { type: String, required: true },
+        counter: { type: Number, default: 0 },
+        transports: [String]
+    }],
+    currentChallenge: { type: String },
+
     lastLoginAt: {type: Date},
     lastSeenAt: {type: Date},
     status: {
