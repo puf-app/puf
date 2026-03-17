@@ -35,6 +35,8 @@ app.use(
                 ...helmet.contentSecurityPolicy.getDefaultDirectives(),
                 "script-src": ["'self'", "https://unpkg.com", "'unsafe-inline'"],
                 "script-src-attr": ["'unsafe-inline'"],
+                "img-src": ["'self'", "data:", "https://validator.swagger.io"], // za swagger
+                "style-src": ["'self'", "'unsafe-inline'"], // za swagger
             },
         },
     })
@@ -88,7 +90,14 @@ app.use(updateLastSeen);
 app.use(express.static('public'));
 
 app.get("/docs/swagger.json", (req, res) => res.json(swaggerSpec));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/docs", swaggerUi.serve, (req, res, next) => {
+    req.headers["x-forwarded-proto"] = "http";
+    return swaggerUi.setup(swaggerSpec, {
+        swaggerOptions: {
+            url: `http://${req.hostname}:3000/docs/swagger.json`
+        }
+    })(req, res, next);
+});
 app.use("/test", testRoutes);
 
 app.use('/api/auth', authLimiter, authRoutes);
