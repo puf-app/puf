@@ -10,6 +10,7 @@ const debtStatusHistorySchema = new Schema({
     newStatus: { type: String, maxLength: 30 },
     note: { type: String, maxLength: 500 }
 }, {
+    collection: 'debt_status_history',
     timestamps: { createdAt: 'changedAt', updatedAt: false }
 });
 

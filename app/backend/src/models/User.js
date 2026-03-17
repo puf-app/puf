@@ -36,6 +36,7 @@ const userSchema = new Schema({
     admin: {type: Boolean, default: false},
     company: {type: Boolean, default: false}
 }, {
+    collection: 'users',
     timestamps: {createdAt: 'createdAt', updatedAt: 'updatedAt'}
 });
 

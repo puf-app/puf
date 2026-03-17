@@ -22,6 +22,7 @@ const debtSchema = new Schema({
     verificationRequired: { type: Boolean },
     verificationThresholdSnapshot: { type: Schema.Types.Decimal128 }
 }, {
+    collection: 'debts',
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
