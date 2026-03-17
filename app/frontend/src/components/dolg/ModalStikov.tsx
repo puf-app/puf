@@ -5,7 +5,6 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
 import { IDolznik } from '@/stores/slices/dolgSlice';
 
-// Začasni podatki — zamenjaj z API klicem ko bo backend pripravljen
 const MOCK_STIKI = [
   { id: '1', username: 'janez_novak', prikaznoIme: 'Janez Novak', email: 'janez@example.com' },
   { id: '2', username: 'maja_kovac', prikaznoIme: 'Maja Kovač', email: 'maja@example.com' },
