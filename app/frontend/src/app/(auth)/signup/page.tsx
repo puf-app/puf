@@ -41,16 +41,16 @@ export default function SignupPage() {
 
   const onSubmit = (data: SignupFormValues) => {
     // TODO: hook up to real API + Redux when backend is ready
-    console.log('signup data', data);
+    void data;
   };
 
   return (
-    <main className='bg-white flex flex-col'>
+    <main className='min-h-screen bg-background flex flex-col'>
       {/* Forms */}
       <section className='flex-1 flex flex-col items-center justify-start md:justify-center px-4 py-8 md:py-12 gap-4'>
         {/* Mobile layout: no card, only fields */}
         <div className='w-full max-w-md md:hidden'>
-          <h1 className='text-2xl font-semibold text-[#10294b] text-center mb-6'>
+          <h1 className='text-2xl font-semibold text-foreground text-center mb-6'>
             Sign up
           </h1>
           <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
@@ -124,7 +124,7 @@ export default function SignupPage() {
 
           <p className='mt-4 text-sm text-center w-full'>
             Already have an account?{' '}
-            <Link href='/login' className='underline text-[#1a448d]'>
+            <Link href='/signin' className='underline text-primary'>
               Sign in
             </Link>
           </p>
@@ -133,7 +133,7 @@ export default function SignupPage() {
         {/* Desktop/tablet layout: card with all fields */}
         <Card className='hidden md:block w-full max-w-xl shadow-md py-8 px-10'>
           <CardHeader className='pb-6'>
-            <CardTitle className='text-3xl font-semibold text-[#10294b] text-center'>
+            <CardTitle className='text-3xl font-semibold text-foreground text-center'>
               Sign up
             </CardTitle>
           </CardHeader>

@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation';
 export default function Header() {
   const pathname = usePathname();
 
+  const isAuth = pathname === '/signin' || pathname === '/signup';
+
   return (
     <header className='h-16 md:h-24 bg-header flex items-center justify-between px-4 md:px-12 text-primary-foreground border-b border-primary/20'>
       <div className='text-4xl font-semibold'>Puf</div>
@@ -28,14 +30,13 @@ export default function Header() {
           </>
         )}
 
-        {pathname === '/signin' ||
-          (pathname === '/signup' && (
-            <Link href='/'>
-              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Home
-              </Button>
-            </Link>
-          ))}
+        {isAuth && (
+          <Link href='/'>
+            <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+              Home
+            </Button>
+          </Link>
+        )}
 
         {pathname !== '/signin' &&
           pathname !== '/signup' &&
