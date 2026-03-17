@@ -91,11 +91,13 @@ app.use(express.static('public'));
 
 app.get("/docs/swagger.json", (req, res) => res.json(swaggerSpec));
 app.use("/docs", swaggerUi.serve, (req, res, next) => {
-    req.headers["x-forwarded-proto"] = "http";
-    return swaggerUi.setup(swaggerSpec, {
+    const host = req.hostname;
+    const port = process.env.PORT || 3000;
+    swaggerUi.setup(swaggerSpec, {
         swaggerOptions: {
-            url: `http://${req.hostname}:3000/docs/swagger.json`
-        }
+            url: `http://${host}:${port}/docs/swagger.json`
+        },
+        customHeadContent: `<base href="http://${host}:${port}/docs/">`
     })(req, res, next);
 });
 app.use("/test", testRoutes);
