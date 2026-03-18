@@ -80,6 +80,7 @@ const loginUser = async (req, res) => {
             error: ""
         })
     } catch (error) {
+        console.error("LOGIN CRASH ERROR:", error);
         return res.status(500).json({
             data: {},
             error: "Server error while logging in"

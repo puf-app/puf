@@ -16,6 +16,7 @@ const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require ("./routes/userRoutes");
 const friendshipRoutes = require ("./routes/friendshipRoutes");
+const verificationRoutes = require ("./routes/verificationRoutes");
 
 const app = express();
 
@@ -105,5 +106,6 @@ app.use("/test", testRoutes);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friendships', friendshipRoutes);
+app.use('/api/verification', verificationRoutes);
 
 module.exports = app;

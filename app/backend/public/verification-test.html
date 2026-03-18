@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PufApp | Full KYC Lifecycle Test</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 50px auto; background: #f0f2f5; color: #333; }
+        section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #007bff; }
+        h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        button { cursor: pointer; padding: 10px 15px; border: none; border-radius: 4px; font-weight: bold; color: white; margin-top: 5px; }
+
+        .btn-primary { background: #007bff; }
+        .btn-update { background: #6f42c1; }
+        .btn-success { background: #28a745; }
+        .btn-submit { background: #ff8800; width: 100%; font-size: 16px; margin-top: 20px; }
+        .btn-danger { background: #dc3545; }
+        .btn-info { background: #17a2b8; }
+
+        .status-box { padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; display: none; margin-bottom: 15px; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .id-badge { font-family: monospace; background: #333; color: #fff; padding: 3px 8px; border-radius: 4px; }
+
+        .disabled { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<h2>Identity Verification Dashboard</h2>
+<div id="globalStatus" class="status-box"></div>
+
+<section id="sect-auth">
+    <h3>Step 0: Authentication</h3>
+    <div class="grid">
+        <input type="text" id="loginUsername" placeholder="Username">
+        <input type="password" id="loginPassword" placeholder="Password">
+    </div>
+    <button onclick="login()" class="btn-primary">Login</button>
+    <button onclick="logout()" class="btn-danger">Logout</button>
+</section>
+
+<section id="sect-request">
+    <h3>Step 1: Identity Info (Draft)</h3>
+    <p>Verification ID: <span id="verifIdDisplay" class="id-badge">None</span></p>
+    <div class="grid">
+        <select id="verificationType">
+            <option value="ID_CARD">ID Card</option>
+            <option value="PASSPORT">Passport</option>
+            <option value="DRIVERS_LICENSE">Driver's License</option>
+        </select>
+        <input type="text" id="countryCode" placeholder="Country (e.g. SI)" maxlength="2">
+    </div>
+    <input type="text" id="documentNumber" placeholder="Document Number" style="margin-bottom: 10px;">
+
+    <button onclick="createRequest()" id="btnCreate" class="btn-primary">Initialize New Draft</button>
+    <button onclick="updateRequest()" id="btnUpdate" class="btn-update disabled">Update Current Draft</button>
+</section>
+
+<section id="sect-upload" class="disabled">
+    <h3>Step 2: Upload Required Photos</h3>
+    <p style="font-size: 13px; color: #666;">Note: FRONT, BACK, and SELFIE are all required to submit.</p>
+    <div class="grid">
+        <select id="documentSide">
+            <option value="FRONT">Front Side</option>
+            <option value="BACK">Back Side</option>
+            <option value="SELFIE">Selfie with ID</option>
+        </select>
+        <input type="file" id="documentFile" accept="image/*">
+    </div>
+    <button onclick="uploadFile()" class="btn-success">Upload Photo</button>
+</section>
+
+<section id="sect-submit" class="disabled">
+    <h3>Step 3: Final Review</h3>
+    <button onclick="submitVerification()" class="btn-submit">Final Submit to Admin</button>
+</section>
+
+<section id="sect-status">
+    <h3>Step 4: Status & Management</h3>
+    <button onclick="checkMyStatus()" class="btn-info">Refresh Status</button>
+    <button onclick="resubmitVerification()" class="btn-primary">Resubmit (If Rejected)</button>
+    <button onclick="cancelVerification()" class="btn-danger">Cancel & Wipe All</button>
+    <pre id="statusResult" style="background: #f8f9fa; padding: 10px; margin-top: 10px; font-size: 12px; overflow: auto; max-height: 200px;"></pre>
+</section>
+
+<script>
+    let currentId = null;
+
+    function logStatus(msg, isError = false) {
+        const box = document.getElementById('globalStatus');
+        box.innerText = msg;
+        box.className = `status-box ${isError ? 'error' : 'success'}`;
+        box.style.display = 'block';
+    }
+
+    function toggleSections(id) {
+        currentId = id;
+        document.getElementById('verifIdDisplay').innerText = id || "None";
+        const hasId = !!id;
+
+        document.getElementById('sect-upload').className = hasId ? '' : 'disabled';
+        document.getElementById('sect-submit').className = hasId ? '' : 'disabled';
+        document.getElementById('btnUpdate').className = `btn-update ${hasId ? '' : 'disabled'}`;
+        document.getElementById('btnCreate').className = `btn-primary ${hasId ? 'disabled' : ''}`;
+    }
+
+    async function login() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const res = await fetch('/api/auth/loginUser', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else {
+            logStatus("Login Success!");
+            checkMyStatus(); // Auto-load existing request if any
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logoutUser', {method: 'POST'});
+        logStatus("Logged out.");
+        toggleSections(null);
+        document.getElementById('statusResult').innerText = "";
+    }
+
+    async function createRequest() {
+        const payload = {
+            verificationType: document.getElementById('verificationType').value,
+            documentNumber: document.getElementById('documentNumber').value,
+            countryCode: document.getElementById('countryCode').value
+        };
+        const res = await fetch('/api/verification/request', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else {
+            toggleSections(out.data.verificationId);
+            logStatus("Draft Created.");
+        }
+    }
+
+    async function updateRequest() {
+        const payload = {
+            verificationType: document.getElementById('verificationType').value,
+            documentNumber: document.getElementById('documentNumber').value,
+            countryCode: document.getElementById('countryCode').value
+        };
+        const res = await fetch(`/api/verification/request/${currentId}`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else logStatus("Draft Updated Successfully.");
+    }
+
+    async function uploadFile() {
+        const fileInput = document.getElementById('documentFile');
+        const side = document.getElementById('documentSide').value;
+        if (!fileInput.files[0]) return alert("Select a file");
+
+        const fd = new FormData();
+        fd.append('verificationId', currentId);
+        fd.append('documentSide', side);
+        fd.append('document', fileInput.files[0]);
+
+        const res = await fetch('/api/verification/upload', { method: 'POST', body: fd });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else logStatus(`${side} side uploaded!`);
+    }
+
+    async function submitVerification() {
+        const res = await fetch(`/api/verification/submit/${currentId}`, { method: 'POST' });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else logStatus("Submitted for Admin review!", false);
+    }
+
+    async function checkMyStatus() {
+        const res = await fetch('/api/verification/my-status');
+        const out = await res.json();
+        document.getElementById('statusResult').innerText = JSON.stringify(out, null, 2);
+        if (out.data && out.data.id) {
+            toggleSections(out.data.id);
+            // Fill inputs with current data
+            document.getElementById('verificationType').value = out.data.type;
+            document.getElementById('countryCode').value = out.data.country;
+        }
+    }
+
+    async function cancelVerification() {
+        if (!confirm("Wipe all data and files?")) return;
+        const res = await fetch(`/api/verification/request/${currentId}`, { method: 'DELETE' });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else {
+            logStatus("Request Deleted.");
+            toggleSections(null);
+        }
+    }
+
+    async function resubmitVerification() {
+        const res = await fetch(`/api/verification/resubmit/${currentId}`, { method: 'POST' });
+        const out = await res.json();
+        if (out.error) logStatus(out.error, true);
+        else logStatus("Request reset to DRAFT. You can now edit and re-submit.");
+    }
+</script>
+</body>
+</html>
