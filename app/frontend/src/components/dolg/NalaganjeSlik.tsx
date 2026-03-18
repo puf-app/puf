@@ -57,7 +57,7 @@ export default function NalaganjeSlik({ slike, onSprememba }: NalaganjeSlikProps
           />
         </div>
         <p className="text-sm text-gray-500 text-center px-4">
-          Naloži dokazilo o dolgu
+          Upload proof of debt
         </p>
         <input
           ref={vnosRef}
