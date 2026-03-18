@@ -14,8 +14,8 @@ const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
 const authRoutes = require("./routes/authRoutes");
 const debtRoutes = require("./routes/debtRoutes");
-const debtHistoryRoutes = require("./routes/debt_status_historyRoutes");
-const debtEvidenceRoutes = require("./routes/debt_evidenceRoutes");
+const debtHistoryRoutes = require("./routes/debtStatusHistoryRoutes");
+const debtEvidenceRoutes = require("./routes/debtEvidenceRoutes");
 const userRoutes = require ("./routes/userRoutes");
 const friendshipRoutes = require ("./routes/friendshipRoutes");
 const verificationRoutes = require ("./routes/verificationRoutes");
