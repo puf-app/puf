@@ -149,7 +149,7 @@ router.patch('/updateUserProfile/:userId', requireAuth, userController.updateUse
  * /api/users/deleteUser/{userId}:
  *   delete:
  *     summary: Delete user
- *     description: TODO endpoint placeholder.
+ *     description: Logged in users can delete only their own account. Admins can delete any user account.
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -159,8 +159,14 @@ router.patch('/updateUserProfile/:userId', requireAuth, userController.updateUse
  *           type: string
  *         description: MongoDB user id
  *     responses:
- *       501:
- *         description: Not implemented yet
+ *       200:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized - User not logged in or cannot delete selected user
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 router.delete('/deleteUser/:userId', requireAuth, userController.deleteUser);
 
