@@ -44,7 +44,7 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  * @swagger
  * /api/auth/loginUser:
  *   post:
- *     summary: User login
+ *     summary: User login (password + optional email 2FA)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -58,7 +58,7 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  *               password: { type: string, example: "password123" }
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Password accepted (either login complete or 2FA required)
  *         content:
  *           application/json:
  *             schema:
@@ -68,6 +68,7 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  *                   type: object
  *                   properties:
  *                     message: { type: string }
+ *                     requires2FA: { type: boolean, example: true }
  *                     user:
  *                       type: object
  *                       properties:
@@ -76,9 +77,36 @@ router.post('/registerUser', requireNotAuth, authController.registerUser);
  *                 error: { type: string, example: "" }
  *       401:
  *         description: Unauthorized - Invalid credentials
+ *       500:
+ *         description: 2FA email is required but SMTP is not configured
  */
 
 router.post('/loginUser', requireNotAuth, authController.loginUser);
+ 
+/**
+ * @swagger
+ * /api/auth/verifyLogin2FA:
+ *   post:
+ *     summary: Verify login with email 2FA code
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [code]
+ *             properties:
+ *               code: { type: string, example: "123456" }
+ *     responses:
+ *       200:
+ *         description: 2FA verified, login completed
+ *       400:
+ *         description: Missing 2FA code or 2FA feature disabled
+ *       401:
+ *         description: Invalid/expired code or no pending 2FA session
+ */
+router.post('/verifyLogin2FA', requireNotAuth, authController.verifyLogin2FA);
 /**
  * @swagger
  * /api/auth/logoutUser:
