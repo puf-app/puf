@@ -64,7 +64,7 @@ const registerUser = async (req, res) => {
         const {firstName, lastName, username, email, password, phone} = req.body;
 
         if (!firstName || !lastName || !username || !email || !password) {
-            return res.status(400).json({data: {}, error: "Username, email and password are required"});
+            return res.status(400).json({data: {}, error: "Firstname, lastname, username, email and password are required"});
         }
 
         const existingUser = await User.findOne({$or: [{email}, {username}]});
@@ -180,6 +180,7 @@ const loginUser = async (req, res) => {
             error: ""
         })
     } catch (error) {
+        console.error("LOGIN CRASH ERROR:", error);
         return res.status(500).json({
             data: {},
             error: "Server error while logging in"

@@ -1,4 +1,11 @@
 const User = require('../models/User');
+const Debt = require('../models/Debt');
+const DebtEvidence = require('../models/DebtEvidence');
+const DebtStatusHistory = require('../models/DebtStatusHistory');
+const FriendRequest = require('../models/FriendRequest');
+const Friendship = require('../models/Friendship');
+const UserVerification = require('../models/UserVerification');
+const VerificationDocument = require('../models/VerificationDocument');
 
 const userSelectFields = '-password';
 const selfUpdateFields = ['firstName', 'lastName', 'username', 'email', 'phone', 'profileImageUrl'];
@@ -176,10 +183,104 @@ const updateUserProfile = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    return res.status(501).json({
-        data: {},
-        error: 'Not implemented yet'
-    });
+    try {
+        const requestedUserId = req.params.userId || String(req.user._id);
+        const isSelfDelete = String(req.user._id) === requestedUserId;
+
+        if (!isSelfDelete && !req.user.admin) {
+            return res.status(401).json({
+                data: {},
+                error: 'Unauthorized - You can only delete your own account'
+            });
+        }
+
+        const user = await User.findById(requestedUserId).select('_id');
+
+        if (!user) {
+            return res.status(404).json({
+                data: {},
+                error: 'User not found'
+            });
+        }
+
+        const [relatedDebts, userVerifications] = await Promise.all([
+            Debt.find({
+                $or: [
+                    { creditorUserId: requestedUserId },
+                    { debtorUserId: requestedUserId }
+                ]
+            }).select('_id').lean(),
+            UserVerification.find({ userId: requestedUserId }).select('_id').lean()
+        ]);
+
+        const debtIds = relatedDebts.map((debt) => debt._id);
+        const userVerificationIds = userVerifications.map((verification) => verification._id);
+
+        if (debtIds.length > 0) {
+            await Promise.all([
+                DebtEvidence.deleteMany({ debtId: { $in: debtIds } }),
+                DebtStatusHistory.deleteMany({ debtId: { $in: debtIds } })
+            ]);
+        }
+
+        if (userVerificationIds.length > 0) {
+            await VerificationDocument.deleteMany({ verificationId: { $in: userVerificationIds } });
+        }
+
+        await Promise.all([
+            FriendRequest.deleteMany({
+                $or: [
+                    { senderUserId: requestedUserId },
+                    { receiverUserId: requestedUserId }
+                ]
+            }),
+            Friendship.deleteMany({
+                $or: [
+                    { user1Id: requestedUserId },
+                    { user2Id: requestedUserId }
+                ]
+            }),
+            DebtEvidence.deleteMany({ uploadedByUserId: requestedUserId }),
+            DebtStatusHistory.deleteMany({ changedByUserId: requestedUserId }),
+            UserVerification.deleteMany({ userId: requestedUserId }),
+            Debt.deleteMany({
+                $or: [
+                    { creditorUserId: requestedUserId },
+                    { debtorUserId: requestedUserId }
+                ]
+            })
+        ]);
+
+        await User.findByIdAndDelete(requestedUserId);
+
+        if (isSelfDelete && req.session) {
+            return req.session.destroy((sessionError) => {
+                if (sessionError) {
+                    return res.status(500).json({
+                        data: {},
+                        error: 'User deleted, but session logout failed'
+                    });
+                }
+
+                res.clearCookie('puf_session');
+
+                return res.status(200).json({
+                    data: { message: 'User deleted successfully' },
+                    error: ''
+                });
+            });
+        }
+
+        return res.status(200).json({
+            data: { message: 'User deleted successfully' },
+            error: ''
+        });
+    } catch (error) {
+        return res.status(500).json({
+            data: {},
+            error: 'Internal server error while deleting user'
+        });
+    }
 };
 
 module.exports = {

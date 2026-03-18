@@ -12,24 +12,40 @@ const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
-const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require ("./routes/userRoutes");
 const friendshipRoutes = require ("./routes/friendshipRoutes");
+const verificationRoutes = require ("./routes/verificationRoutes");
 
 const app = express();
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("Successfully connected to MongoDB."))
-    .catch((err) => {
-        console.error("MongoDB connection error:", err);
-        process.exit(1);
-    });
 
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => console.log("Successfully connected to MongoDB."))
+.catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+});
+
+// temp to get swagger docs to work, will fix later -tilcica
 app.use(helmet({
   contentSecurityPolicy: false
 }));
-app.set("trust proxy", false);  // ← add this
+app.set("trust proxy", false);
+/*
+app.set('trust proxy', 1);
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                "script-src": ["'self'", "https://unpkg.com", "'unsafe-inline'"],
+                "script-src-attr": ["'unsafe-inline'"],
+            },
+        },
+    })
+);
+*/
 app.use(hpp());
 app.disable('x-powered-by');
 
@@ -51,7 +67,7 @@ const authLimiter = rateLimit({
 app.use(express.json({ limit: '10kb' }));
 
 app.use(cors({
-    origin: "http://localhost:3001",
+    origin: process.env.FRONTEND_ORIGIN || "http://localhost:3001",
     credentials: true
 }));
 
@@ -68,7 +84,7 @@ app.use(session({
         ttl: 14 * 24 * 60 * 60
     }),
     cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24
@@ -76,12 +92,23 @@ app.use(session({
 }));
 
 app.use(updateLastSeen);
+app.use(express.static('public'));
+
 app.get("/docs/swagger.json", (req, res) => res.json(swaggerSpec));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/test", testRoutes);
+app.use("/docs", swaggerUi.serve, (req, res, next) => {
+    const host = req.hostname;
+    const port = process.env.PORT || 3000;
+    swaggerUi.setup(swaggerSpec, {
+        swaggerOptions: {
+            url: `http://${host}:${port}/docs/swagger.json`
+        },
+        customHeadContent: `<base href="http://${host}:${port}/docs/">`
+    })(req, res, next);
+});
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friendships', friendshipRoutes);
+app.use('/api/verification', verificationRoutes);
 
 module.exports = app;

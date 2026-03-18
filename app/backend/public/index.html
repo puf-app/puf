@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PufApp Biometric Test</title>
+    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 50px auto; line-height: 1.6; background: #f4f4f9; }
+        section { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: white; }
+        button { cursor: pointer; padding: 10px; border: none; border-radius: 4px; margin-right: 5px; color: white; font-weight: bold; }
+        input { display: block; width: 100%; margin: 10px 0; padding: 8px; box-sizing: border-box; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        #status { padding: 15px; text-align: center; }
+        ul { padding: 0; list-style: none; }
+        li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+<h2>PufApp Auth Testing</h2>
+
+<div id="secure-warning" class="error" style="display:none; padding:10px; border:1px solid red; margin-bottom:10px;">
+    ⚠️ Browser is not in a Secure Context. Use http://localhost:3000
+</div>
+
+<section>
+    <h3>1. Password Auth</h3>
+    <input type="text" id="firstname" placeholder="Firstname">
+    <input type="text" id="lastname" placeholder="Lastname">
+    <input type="text" id="email" placeholder="Email">
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()" style="background: #007bff;">Register User</button>
+    <button onclick="login()" style="background: #007bff;">Login (Password)</button>
+    <button onclick="logout()" style="background: #dc3545;">Logout</button>
+</section>
+
+<section>
+    <h3>2. Setup Biometrics</h3>
+    <p>Log in with password first, then click:</p>
+    <button onclick="setupBiometrics()" style="background: #28a745;">Enable FaceID / Fingerprint</button>
+</section>
+
+<section>
+    <h3>3. Passwordless Login</h3>
+    <p>Log out or refresh, then login with just username:</p>
+    <button onclick="biometricLogin()" style="background: #6f42c1;">Login with Biometrics</button>
+</section>
+
+<div id="status"></div>
+
+<section>
+    <h3>4. Manage Devices</h3>
+    <button onclick="loadDevices()" style="background: #6c757d;">List My Devices</button>
+    <ul id="deviceList"></ul>
+</section>
+
+<script>
+    const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser;
+
+    if (!window.isSecureContext) {
+        document.getElementById('secure-warning').style.display = 'block';
+    }
+
+    function setStatus(msg, isError = false) {
+        const status = document.getElementById('status');
+        status.innerHTML = isError ? `<span class="error">${msg}</span>` : `<span class="success">${msg}</span>`;
+    }
+
+    async function register() {
+        const payload = {
+            firstName: document.getElementById('firstname').value,
+            lastName: document.getElementById('lastname').value,
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        };
+        const res = await fetch('/api/auth/registerUser', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const out = await res.json();
+        setStatus(out.data?.message || out.error, !!out.error);
+    }
+
+    async function login() {
+        const res = await fetch('/api/auth/loginUser', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        });
+        const out = await res.json();
+        setStatus(out.data?.message || out.error, !!out.error);
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logoutUser', { method: 'POST' });
+        setStatus("Logged out");
+        document.getElementById('password').value = '';
+        document.getElementById('deviceList').innerHTML = '';
+    }
+
+    async function setupBiometrics() {
+        try {
+            const resp = await fetch('/api/auth/biometric/registerOptions');
+            const json = await resp.json();
+
+            if (json.error) {
+                alert("Server Error: " + json.error);
+                return;
+            }
+
+            const regData = await startRegistration({ optionsJSON: json.data });
+
+            const verifyResp = await fetch('/api/auth/biometric/verifyRegistration', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(regData)
+            });
+
+            const final = await verifyResp.json();
+            if (final.error) {
+                alert("Server Error: " + final.error);
+                return;
+            }
+            alert("Success: Biometrics registered!");
+            await loadDevices();
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    async function biometricLogin() {
+        try {
+            const username = document.getElementById('username').value;
+            if (!username) return alert("Please enter your username first");
+
+            const resp = await fetch(`/api/auth/biometric/loginOptions?username=${username}`);
+            const json = await resp.json();
+            if (json.error) {
+                alert("Server Error: " + json.error);
+                return;
+            }
+
+            const authData = await startAuthentication({ optionsJSON: json.data });
+
+            const verifyResp = await fetch('/api/auth/biometric/verifyLogin', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username, body: authData })
+            });
+
+            const final = await verifyResp.json();
+            if (final.error) {
+                alert("Server Error: " + final.error);
+                return;
+            }
+            setStatus("Biometric login successful!");
+        } catch (err) {
+            setStatus(err.message, true);
+        }
+    }
+
+    async function loadDevices() {
+        try {
+            const resp = await fetch('/api/auth/biometric/list');
+            const result = await resp.json();
+            const list = document.getElementById('deviceList');
+            list.innerHTML = "";
+            if(result.data) {
+                result.data.forEach(dev => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>ID: ${dev.id.substring(0, 15)}...</span>
+                                   <button onclick="deleteDevice('${dev.id}')" style="background:red; padding:5px 10px;">Remove</button>`;
+                    list.appendChild(li);
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function deleteDevice(id) {
+        if (!confirm("Remove this biometric device?")) return;
+        const resp = await fetch(`/api/auth/biometric/removeDevice/${id}`, {method: 'DELETE'});
+        const result = await resp.json();
+        alert(result.data?.message || result.error);
+        loadDevices();
+    }
+</script>
+</body>
+</html>
