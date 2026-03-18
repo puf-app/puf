@@ -11,7 +11,7 @@ export default function Footer() {
     <div className='flex flex-col items-center justify-center gap-4 py-6 text-sm bg-footer h-20 w-full md:h-24'>
       {!user && (
         <p>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href='/signup' className='underline'>
             Sign up
           </Link>
