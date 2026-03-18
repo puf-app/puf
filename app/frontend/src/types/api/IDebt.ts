@@ -1,4 +1,4 @@
-export type IDebtStatus =
+export type TDebtStatus =
   | 'PENDING'
   | 'ACCEPTED'
   | 'REJECTED'
@@ -19,7 +19,7 @@ export interface IDebt {
   amount: number;
   currency: string;
   reason: string;
-  status: IDebtStatus;
+  status: TDebtStatus;
 
   dueDate: string;
   acceptedAt?: string;
