@@ -8,6 +8,7 @@ const friendshipSchema = new Schema({
 
     status: { type: String, maxLength: 30 }
 }, {
+    collection: 'friendships',
     timestamps: { createdAt: 'createdAt', updatedAt: false }
 });
 

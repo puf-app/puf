@@ -11,6 +11,7 @@ const friendRequestSchema = new Schema({
 
     respondedAt: { type: Date }
 }, {
+    collection: 'friend_requests',
     timestamps: { createdAt: 'createdAt', updatedAt: false }
 });
 

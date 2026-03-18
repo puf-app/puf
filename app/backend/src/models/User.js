@@ -1,12 +1,20 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
+const validator = require('validator');
 
 const userSchema = new Schema({
     firstName: {type: String, maxLength: 100, required: true},
     lastName: {type: String, maxLength: 100, required: true},
     username: {type: String, maxLength: 50, unique: true, required: true},
-    email: {type: String, maxLength: 255, unique: true, required: true},
+    email: {type: String, maxLength: 255, unique: true, required: true, trim: true, lowercase: true, validate: {
+            validator: function(value) {
+                const isEmail = validator.isEmail(value);
+                const isDisposable = value.endsWith('mailinator.com') || value.endsWith('tempmail.com');
+                return isEmail && !isDisposable;
+            },
+            message: "Please use a valid, permanent email address."
+        }},
     phone: {type: String, maxLength: 30, default: null},
 
     password: {type: String, required: true},
@@ -18,6 +26,14 @@ const userSchema = new Schema({
         default: 'NONE'
     },
 
+    authenticators: [{
+        credentialID: { type: String, required: true },
+        publicKey: { type: String, required: true },
+        counter: { type: Number, default: 0 },
+        transports: [String]
+    }],
+    currentChallenge: { type: String },
+
     lastLoginAt: {type: Date},
     lastSeenAt: {type: Date},
     status: {
@@ -28,6 +44,7 @@ const userSchema = new Schema({
     admin: {type: Boolean, default: false},
     company: {type: Boolean, default: false}
 }, {
+    collection: 'users',
     timestamps: {createdAt: 'createdAt', updatedAt: 'updatedAt'}
 });
 
