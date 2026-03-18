@@ -20,23 +20,28 @@ import {
   TVrstaDolga,
 } from '@/stores/slices/dolgSlice';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+
 import ZnackaOsebe from './ZnackaOsebe';
 import ModalStikov from './ModalStikov';
 import NalaganjeSlik from './NalaganjeSlik';
 import PrikazZahtevkov from './PrikazZahtevkov';
 
 const shemaDolga = z.object({
-  naslov: z.string().min(1, 'Naslov je obvezen'),
+  naslov: z.string().min(1, 'Title is required'),
   username: z.string().optional(),
   opis: z.string().optional(),
   znesek: z
     .string()
-    .min(1, 'Znesek je obvezen')
-    .refine((v) => parseFloat(v) > 0, 'Znesek mora biti večji od 0'),
+    .min(1, 'Amount is required')
+    .refine((v) => parseFloat(v) > 0, 'Amount must be greater than 0'),
   valuta: z.string().min(1),
-  vrsta: z.string().min(1, 'Vrsta dolga je obvezna'),
-  datumZacetek: z.string().min(1, 'Začetni datum je obvezen'),
-  datumKonec: z.string().min(1, 'Končni datum je obvezen'),
+  vrsta: z.string().min(1, 'Debt type is required'),
+  datumZacetek: z.string().min(1, 'Start date is required'),
+  datumKonec: z.string().min(1, 'End date is required'),
   datumZamude: z.string().optional(),
 });
 
@@ -45,12 +50,12 @@ type VnosiObrazca = z.infer<typeof shemaDolga>;
 const VALUTE = ['EUR', 'USD', 'GBP', 'CHF'];
 
 const VRSTE_DOLGA: { vrednost: TVrstaDolga; oznaka: string }[] = [
-  { vrednost: 'osebni', oznaka: 'Osebni' },
-  { vrednost: 'poslovni', oznaka: 'Poslovni' },
-  { vrednost: 'hipoteka', oznaka: 'Hipoteka' },
-  { vrednost: 'studentski', oznaka: 'Študentski' },
-  { vrednost: 'kreditna_kartica', oznaka: 'Kreditna kartica' },
-  { vrednost: 'drugo', oznaka: 'Drugo' },
+  { vrednost: 'osebni', oznaka: 'Personal' },
+  { vrednost: 'poslovni', oznaka: 'Business' },
+  { vrednost: 'hipoteka', oznaka: 'Mortgage' },
+  { vrednost: 'studentski', oznaka: 'Student loan' },
+  { vrednost: 'kreditna_kartica', oznaka: 'Credit card' },
+  { vrednost: 'drugo', oznaka: 'Other' },
 ];
 
 export default function ObrazecUstvariDolg() {
@@ -70,15 +75,15 @@ export default function ObrazecUstvariDolg() {
     defaultValues: { valuta: 'EUR' },
   });
 
-  const obdelajPotrditevDolznikov = (podatki: VnosiObrazca) => {
+  const obdelajPotrditevDolznikov = (_podatki: VnosiObrazca) => {
     if (stanje.dolzniki.length === 0) {
-      setNapakaDolzniki('Dodajte vsaj enega dolžnika.');
+      setNapakaDolzniki('At least one debtor is required.');
       return;
     }
     setNapakaDolzniki('');
     dispatch(postaviStatus('posiljanje'));
 
-    // TODO: Zamenjaj z resničnim API klicem ko bo backend pripravljen
+    // TODO: Replace with real API call when backend is ready
     setTimeout(() => {
       const mockZahtevki: IZahtevekDolga[] = stanje.dolzniki.map(
         (d: IDolznik, i: number) => ({
@@ -112,70 +117,66 @@ export default function ObrazecUstvariDolg() {
 
   return (
     <>
-      <div className="min-h-screen bg-white">
-        {/* Glava */}
-        <header className="bg-[#1a2744] px-6 py-5 flex items-center justify-between">
+      <div className="min-h-screen bg-background">
+        {/* Page header */}
+        <div className="bg-[#1a2744] px-6 py-5 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-white tracking-tight">
-            Ustvari dolg
+            Create debt
           </h1>
-          <button
+          <Button
             type="button"
             onClick={() => setJeModalOdprt(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2"
           >
             <HugeiconsIcon icon={UserAdd01Icon} size={16} color="white" />
-            Stiki
-          </button>
-        </header>
+            Contacts
+          </Button>
+        </div>
 
-        {/* Pasica uspeha */}
+        {/* Success banner */}
         {jeUspeh && (
           <div className="bg-green-50 border-b border-green-200 px-6 py-3 flex items-center gap-2 text-green-700 text-sm font-medium">
             <HugeiconsIcon icon={Tick01Icon} size={16} color="#15803d" />
-            Dolg je bil uspešno ustvarjen! Zahtevki so bili poslani dolžnikom.
+            Debt created successfully! Requests have been sent to debtors.
           </div>
         )}
 
         <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <form onSubmit={handleSubmit(obdelajPotrditevDolznikov)} noValidate>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Levi stolpec */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
-                {/* Naslov */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Naslov
-                  </label>
-                  <input
+              {/* Left column */}
+              <Card className="p-6 space-y-5">
+
+                {/* Title */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="naslov">Title</Label>
+                  <Input
+                    id="naslov"
                     {...register('naslov')}
-                    placeholder="Vnesite naslov dolga"
-                    className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                      errors.naslov ? 'border-red-400' : 'border-gray-200'
-                    }`}
+                    placeholder="Enter your debt title"
+                    className={errors.naslov ? 'border-red-400' : ''}
                   />
                   {errors.naslov && (
-                    <p className="mt-1 text-xs text-red-500">{errors.naslov.message}</p>
+                    <p className="text-xs text-red-500">{errors.naslov.message}</p>
                   )}
                 </div>
 
-                {/* Uporabniško ime */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Uporabniško ime
-                  </label>
-                  <input
+                {/* Username */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
                     {...register('username')}
-                    placeholder="Vnesite vaše uporabniško ime"
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    placeholder="Enter your username"
                   />
                 </div>
 
-                {/* Oseba / Podjetje */}
+                {/* Person / Company */}
                 <div className="flex gap-4">
                   {[
-                    { oznaka: 'Oseba', vrednost: false },
-                    { oznaka: 'Podjetje', vrednost: true },
+                    { oznaka: 'Person', vrednost: false },
+                    { oznaka: 'Company', vrednost: true },
                   ].map(({ oznaka, vrednost }) => (
                     <label
                       key={oznaka}
@@ -192,14 +193,12 @@ export default function ObrazecUstvariDolg() {
                   ))}
                 </div>
 
-                {/* Dodaj dolžnika */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Dodaj dolžnika
-                  </label>
-                  <input
-                    placeholder="Vnesite uporabniško ime dolžnika"
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                {/* Add debtor */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="dolznik">Add debtor</Label>
+                  <Input
+                    id="dolznik"
+                    placeholder="Enter deptor username"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -216,7 +215,7 @@ export default function ObrazecUstvariDolg() {
                     }}
                   />
                   {napakaDolzniki && (
-                    <p className="mt-1 text-xs text-red-500">{napakaDolzniki}</p>
+                    <p className="text-xs text-red-500">{napakaDolzniki}</p>
                   )}
                   {stanje.dolzniki.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -231,30 +230,27 @@ export default function ObrazecUstvariDolg() {
                   )}
                 </div>
 
-                {/* Opis */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Opis
-                  </label>
-                  <input
+                {/* Description */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="opis">Description</Label>
+                  <Input
+                    id="opis"
                     {...register('opis')}
-                    placeholder="Vnesite opis dolga"
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    placeholder="Enter debt description"
                   />
                 </div>
 
-                {/* Vrsta dolga */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Vrsta dolga
-                  </label>
+                {/* Type of debt */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="vrsta">Type of debt</Label>
                   <select
+                    id="vrsta"
                     {...register('vrsta')}
-                    className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition ${
-                      errors.vrsta ? 'border-red-400' : 'border-gray-200'
+                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background transition ${
+                      errors.vrsta ? 'border-red-400' : 'border-input'
                     }`}
                   >
-                    <option value="">Izberite vrsto dolga</option>
+                    <option value="">Choose the type of your debt</option>
                     {VRSTE_DOLGA.map(({ vrednost, oznaka }) => (
                       <option key={vrednost} value={vrednost}>
                         {oznaka}
@@ -262,136 +258,121 @@ export default function ObrazecUstvariDolg() {
                     ))}
                   </select>
                   {errors.vrsta && (
-                    <p className="mt-1 text-xs text-red-500">{errors.vrsta.message}</p>
+                    <p className="text-xs text-red-500">{errors.vrsta.message}</p>
                   )}
                 </div>
-              </div>
+              </Card>
 
-              {/* Desni stolpec */}
+              {/* Right column */}
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+                <Card className="p-6 space-y-5">
 
-                  {/* Začetni datum */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Začetni datum
-                    </label>
-                    <input
+                  {/* Start date */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="datumZacetek">Choose a start date</Label>
+                    <Input
+                      id="datumZacetek"
                       type="date"
                       {...register('datumZacetek')}
-                      className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                        errors.datumZacetek ? 'border-red-400' : 'border-gray-200'
-                      }`}
+                      className={errors.datumZacetek ? 'border-red-400' : ''}
                     />
                     {errors.datumZacetek && (
-                      <p className="mt-1 text-xs text-red-500">{errors.datumZacetek.message}</p>
+                      <p className="text-xs text-red-500">{errors.datumZacetek.message}</p>
                     )}
                   </div>
 
-                  {/* Končni datum */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Končni datum
-                    </label>
-                    <input
+                  {/* End date */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="datumKonec">Choose end date</Label>
+                    <Input
+                      id="datumKonec"
                       type="date"
                       {...register('datumKonec')}
-                      className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                        errors.datumKonec ? 'border-red-400' : 'border-gray-200'
-                      }`}
+                      className={errors.datumKonec ? 'border-red-400' : ''}
                     />
                     {errors.datumKonec && (
-                      <p className="mt-1 text-xs text-red-500">{errors.datumKonec.message}</p>
+                      <p className="text-xs text-red-500">{errors.datumKonec.message}</p>
                     )}
                   </div>
 
-                  {/* Datum zamude */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Datum zamude (maks.)
-                    </label>
-                    <input
+                  {/* Delay date */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="datumZamude">Date of delay (max.)</Label>
+                    <Input
+                      id="datumZamude"
                       type="date"
                       {...register('datumZamude')}
-                      className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     />
                   </div>
 
-                  {/* Valuta + Znesek */}
+                  {/* Currency + Amount */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Valuta
-                      </label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="valuta">Select currency</Label>
                       <select
+                        id="valuta"
                         {...register('valuta')}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition"
+                        className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background transition"
                       >
                         {VALUTE.map((v) => (
                           <option key={v} value={v}>{v}</option>
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Znesek dolga
-                      </label>
-                      <input
+                    <div className="space-y-1.5">
+                      <Label htmlFor="znesek">Debt amount</Label>
+                      <Input
+                        id="znesek"
                         type="number"
                         min="0"
                         step="0.01"
                         {...register('znesek')}
-                        placeholder="Vnesite znesek"
-                        className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                          errors.znesek ? 'border-red-400' : 'border-gray-200'
-                        }`}
+                        placeholder="Enter amount"
+                        className={errors.znesek ? 'border-red-400' : ''}
                       />
                       {errors.znesek && (
-                        <p className="mt-1 text-xs text-red-500">{errors.znesek.message}</p>
+                        <p className="text-xs text-red-500">{errors.znesek.message}</p>
                       )}
                     </div>
                   </div>
-                </div>
+                </Card>
 
-                {/* Nalaganje slik */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                {/* Image upload */}
+                <Card className="p-6">
                   <NalaganjeSlik slike={slike} onSprememba={setSlike} />
-                </div>
+                </Card>
               </div>
             </div>
 
-            {/* Prikaz zahtevkov */}
+            {/* Request status */}
             {stanje.zahtevki.length > 0 && (
               <div className="mt-6">
                 <PrikazZahtevkov zahtevki={stanje.zahtevki} />
               </div>
             )}
 
-            {/* Gumbi */}
+            {/* Buttons */}
             <div className="flex gap-3 mt-8 justify-center">
-              <button
+              <Button
                 type="submit"
                 disabled={jePosiljanjeAktivno}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#1a2744] hover:bg-[#243460] disabled:opacity-60 text-white text-sm font-medium rounded-xl transition-colors"
+                className="flex items-center gap-2"
               >
                 <HugeiconsIcon icon={Tick01Icon} size={16} color="white" />
-                {jePosiljanjeAktivno ? 'Pošiljanje...' : 'Ustvari dolg'}
-              </button>
-              <button
+                {jePosiljanjeAktivno ? 'Sending...' : 'Create debt'}
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={obdelajPrekinitev}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#1a2744] hover:bg-[#243460] text-white text-sm font-medium rounded-xl transition-colors"
+                className="flex items-center gap-2"
               >
-                <HugeiconsIcon icon={Cancel01Icon} size={16} color="white" />
-                Prekini
-              </button>
+                <HugeiconsIcon icon={Cancel01Icon} size={16} />
+                Abort debt
+              </Button>
             </div>
           </form>
         </main>
-
-        <footer className="mt-12 py-4 text-center text-xs text-gray-400 border-t border-gray-100">
-          @2026 Puff Inc.
-        </footer>
       </div>
 
       <ModalStikov
