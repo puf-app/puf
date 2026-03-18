@@ -18,10 +18,17 @@ export default function Header() {
     } else {
       dispatch(
         setUser({
-          id: '1',
-          name: 'Jane Doe',
+          _id: '1',
+          firstName: 'Jane',
+          lastName: 'Doe',
+          username: 'janedoe',
           email: 'jane@example.com',
-          avatarUrl: '',
+          phone: '+386 40 123 456',
+          isVerified: true,
+          status: 'ACTIVE',
+          admin: false,
+          company: false,
+          createdAt: new Date('2024-01-15').toISOString(),
         } as any)
       );
     }
@@ -59,7 +66,7 @@ export default function Header() {
           </>
         )}
 
-        {user && pathname === '/' && (
+        {user && (
           <div className='flex items-center gap-4'>
             <Link href='/contacts'>
               <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
@@ -89,7 +96,8 @@ export default function Header() {
 
         {pathname !== '/signin' &&
           pathname !== '/signup' &&
-          pathname !== '/' && (
+          pathname !== '/' &&
+          !user && (
             <Link href='/home'>
               <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
                 Home
