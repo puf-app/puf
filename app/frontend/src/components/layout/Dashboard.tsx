@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Hero from './Hero';
 
@@ -16,15 +17,29 @@ export default function Dashboard() {
             <p className='text-lg text-black'>
               Keep a clear record of everything you owe.
             </p>
-            <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-xl mt-2'>
-              Create Debt
-            </Button>
+            <div className='mt-2 flex flex-wrap gap-3'>
+              <Link href='/dolgovi'>
+                <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-xl'>
+                  Open Debts
+                </Button>
+              </Link>
+              <Link href='/ustvari-dolg'>
+                <Button
+                  variant='outline'
+                  className='px-8 py-6 h-auto text-lg rounded-xl border-[#001f3f] text-[#001f3f] hover:bg-[#001f3f]/5'
+                >
+                  Create Debt
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Right Box: Pending Debts */}
           <div className='bg-white rounded-2xl border-2 border-gray-100 p-10 shadow-sm flex flex-col items-start gap-4'>
             <h2 className='text-2xl font-bold text-black'>Pending debts</h2>
-            <p className='text-lg text-gray-500 italic'>no debts yet</p>
+            <p className='text-lg text-gray-500 italic'>
+              Live debt overview is now available on the Debts page.
+            </p>
           </div>
         </div>
       </section>
