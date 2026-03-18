@@ -20,7 +20,8 @@ const verificationRoutes = require ("./routes/verificationRoutes");
 
 const app = express();
 
-app.set('trust proxy', 1);
+app.set('trust proxy', false); // temp to get swagger docs to work, will fix later -tilcica
+//app.set('trust proxy', 1);
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("Successfully connected to MongoDB."))
@@ -31,6 +32,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 app.use(
     helmet({
+        hsts: false, // temp to get swagger docs to work, will fix later -tilcica
         contentSecurityPolicy: {
             directives: {
                 ...helmet.contentSecurityPolicy.getDefaultDirectives(),
