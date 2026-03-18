@@ -20,30 +20,33 @@ const verificationRoutes = require ("./routes/verificationRoutes");
 
 const app = express();
 
-app.set('trust proxy', false); // temp to get swagger docs to work, will fix later -tilcica
-//app.set('trust proxy', 1);
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("Successfully connected to MongoDB."))
-    .catch((err) => {
-        console.error("MongoDB connection error:", err);
-        process.exit(1);
-    });
+.then(() => console.log("Successfully connected to MongoDB."))
+.catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+});
 
+// temp to get swagger docs to work, will fix later -tilcica
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
+app.set("trust proxy", false);
+/*
+app.set('trust proxy', 1);
 app.use(
     helmet({
-        hsts: false, // temp to get swagger docs to work, will fix later -tilcica
         contentSecurityPolicy: {
             directives: {
                 ...helmet.contentSecurityPolicy.getDefaultDirectives(),
                 "script-src": ["'self'", "https://unpkg.com", "'unsafe-inline'"],
                 "script-src-attr": ["'unsafe-inline'"],
-                "img-src": ["'self'", "data:", "https://validator.swagger.io"], // za swagger
-                "style-src": ["'self'", "'unsafe-inline'"], // za swagger
             },
         },
     })
 );
+*/
 app.use(hpp());
 app.disable('x-powered-by');
 
