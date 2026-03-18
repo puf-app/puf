@@ -6,10 +6,8 @@ import { Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
 import { IDolznik } from '@/stores/slices/dolgSlice';
 
 const MOCK_STIKI = [
-  { id: '1', username: 'janez_novak', prikaznoIme: 'Janez Novak', email: 'janez@example.com' },
-  { id: '2', username: 'maja_kovac', prikaznoIme: 'Maja Kovač', email: 'maja@example.com' },
-  { id: '3', username: 'peter_horvat', prikaznoIme: 'Peter Horvat', email: 'peter@example.com' },
-  { id: '4', username: 'ana_potocnik', prikaznoIme: 'Ana Potočnik', email: 'ana@example.com' },
+  { id: '1', username: 'ivan_borovi', prikaznoIme: 'Ivan Borovi', email: 'ivan@mail.com' },
+
 ];
 
 interface ModalStikovProps {
