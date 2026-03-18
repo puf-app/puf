@@ -12,7 +12,6 @@ const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const { updateLastSeen } = require('./middleware/userActivityMiddleware');
 
-const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require ("./routes/userRoutes");
 const friendshipRoutes = require ("./routes/friendshipRoutes");
@@ -106,7 +105,6 @@ app.use("/docs", swaggerUi.serve, (req, res, next) => {
         customHeadContent: `<base href="http://${host}:${port}/docs/">`
     })(req, res, next);
 });
-app.use("/test", testRoutes);
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
