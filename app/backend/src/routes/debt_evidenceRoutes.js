@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const debtEvidenceController = require('../controllers/debt_evidenceController');
+const debtEvidenceController = require('../controllers/debtEvidenceController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
 /**
@@ -24,7 +24,7 @@ const { requireAuth } = require('../middleware/authMiddleware');
  *             type: object
  *             required: [debt_id, file_name, file_type, file_url]
  *             properties:
- *               debt_id: { type: integer, example: 1 }
+ *               debt_id: { type: string, example: "664f1b2e8a1c2d3e4f5a6b7c" }
  *               file_name: { type: string, example: "receipt.pdf" }
  *               file_type: { type: string, example: "application/pdf" }
  *               file_url: { type: string, example: "https://storage.example.com/receipt.pdf" }
@@ -47,16 +47,52 @@ router.post('/createDebtEvidence', requireAuth, debtEvidenceController.createDeb
 
 /**
  * @swagger
- * /api/debtEvidence/deleteDebtEvidence/{id}:
- *   delete:
- *     summary: Delete a debt evidence entry
+ * /api/debtEvidence/updateDebtEvidence/{id}:
+ *   patch:
+ *     summary: Update debt evidence description or type (creditor only)
  *     tags: [DebtEvidence]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *         description: Evidence ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description: { type: string, example: "Updated description" }
+ *               evidence_type: { type: string, example: "INVOICE" }
+ *     responses:
+ *       200:
+ *         description: Debt evidence updated successfully
+ *       400:
+ *         description: Bad Request - No fields provided
+ *       403:
+ *         description: Forbidden - Not the creditor
+ *       404:
+ *         description: Evidence not found
+ *       500:
+ *         description: Server error
+ */
+router.patch('/updateDebtEvidence/:id', requireAuth, debtEvidenceController.updateDebtEvidence);
+
+/**
+ * @swagger
+ * /api/debtEvidence/deleteDebtEvidence/{id}:
+ *   delete:
+ *     summary: Delete a debt evidence entry (uploader only)
+ *     tags: [DebtEvidence]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *         description: Evidence ID
  *     responses:
  *       200:

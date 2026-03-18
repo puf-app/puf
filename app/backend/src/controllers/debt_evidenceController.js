@@ -1,39 +1,78 @@
-const pool = require('../db');
+const DebtEvidence = require('../models/DebtEvidence');
+const Debt = require('../models/Debt');
 
 const createDebtEvidence = async (req, res) => {
     try {
-        const uploaded_by_user_id = req.session.userId;
+        const uploadedByUserId = req.session.userId;
         const { debt_id, file_name, file_type, file_url, file_storage_id, evidence_type, description } = req.body;
 
         if (!debt_id || !file_name || !file_type || !file_url) {
             return res.status(400).json({ data: {}, error: "debt_id, file_name, file_type and file_url are required" });
         }
 
-        const debt = await pool.query(`SELECT * FROM debts WHERE debt_id = $1`, [debt_id]);
-
-        if (debt.rows.length === 0) {
+        const debt = await Debt.findById(debt_id);
+        if (!debt) {
             return res.status(404).json({ data: {}, error: "Debt not found" });
         }
 
-        const { creditor_user_id, debtor_user_id } = debt.rows[0];
-        if (uploaded_by_user_id !== creditor_user_id && uploaded_by_user_id !== debtor_user_id) {
+        const isCreditor = debt.creditorUserId.toString() === uploadedByUserId;
+        const isDebtor = debt.debtorUserId.toString() === uploadedByUserId;
+        if (!isCreditor && !isDebtor) {
             return res.status(403).json({ data: {}, error: "You are not authorized to upload evidence for this debt" });
         }
 
-        const result = await pool.query(
-            `INSERT INTO debt_evidence
-                (debt_id, uploaded_by_user_id, file_name, file_type, file_url, file_storage_id, evidence_type, description, uploaded_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-             RETURNING *`,
-            [debt_id, uploaded_by_user_id, file_name, file_type, file_url, file_storage_id || null, evidence_type || null, description || null]
-        );
+        const evidence = new DebtEvidence({
+            debtId: debt._id,
+            uploadedByUserId,
+            fileName: file_name,
+            fileType: file_type,
+            fileUrl: file_url,
+            fileStorageId: file_storage_id || null,
+            evidenceType: evidence_type || null,
+            description: description || null
+        });
+
+        await evidence.save();
 
         return res.status(201).json({
-            data: { message: "Debt evidence uploaded successfully", evidence: result.rows[0] },
+            data: { message: "Debt evidence uploaded successfully", evidence },
             error: ""
         });
     } catch (error) {
         return res.status(500).json({ data: {}, error: "Internal server error while uploading debt evidence" });
+    }
+};
+
+const updateDebtEvidence = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.session.userId;
+        const { description, evidence_type } = req.body;
+
+        if (description === undefined && evidence_type === undefined) {
+            return res.status(400).json({ data: {}, error: "At least one of description or evidence_type is required" });
+        }
+
+        const evidence = await DebtEvidence.findById(id).populate('debtId');
+        if (!evidence) {
+            return res.status(404).json({ data: {}, error: "Debt evidence not found" });
+        }
+
+        if (evidence.debtId.creditorUserId.toString() !== userId) {
+            return res.status(403).json({ data: {}, error: "You are not authorized to update this evidence" });
+        }
+
+        if (description !== undefined) evidence.description = description;
+        if (evidence_type !== undefined) evidence.evidenceType = evidence_type;
+
+        await evidence.save();
+
+        return res.status(200).json({
+            data: { message: "Debt evidence updated successfully", evidence },
+            error: ""
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: "Internal server error while updating debt evidence" });
     }
 };
 
@@ -42,17 +81,16 @@ const deleteDebtEvidence = async (req, res) => {
         const { id } = req.params;
         const userId = req.session.userId;
 
-        const evidence = await pool.query(`SELECT * FROM debt_evidence WHERE evidence_id = $1`, [id]);
-
-        if (evidence.rows.length === 0) {
+        const evidence = await DebtEvidence.findById(id);
+        if (!evidence) {
             return res.status(404).json({ data: {}, error: "Debt evidence not found" });
         }
 
-        if (evidence.rows[0].uploaded_by_user_id !== userId) {
+        if (evidence.uploadedByUserId.toString() !== userId) {
             return res.status(403).json({ data: {}, error: "You are not authorized to delete this evidence" });
         }
 
-        await pool.query(`DELETE FROM debt_evidence WHERE evidence_id = $1`, [id]);
+        await evidence.deleteOne();
 
         return res.status(200).json({
             data: { message: "Debt evidence deleted successfully" },
@@ -63,7 +101,4 @@ const deleteDebtEvidence = async (req, res) => {
     }
 };
 
-module.exports = {
-    createDebtEvidence,
-    deleteDebtEvidence
-};
+module.exports = { createDebtEvidence, updateDebtEvidence, deleteDebtEvidence };

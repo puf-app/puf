@@ -1,39 +1,73 @@
-const pool = require('../db');
+const DebtStatusHistory = require('../models/DebtStatusHistory');
+const Debt = require('../models/Debt');
 
 const createDebtStatusHistory = async (req, res) => {
     try {
-        const changed_by_user_id = req.session.userId;
+        const changedByUserId = req.session.userId;
         const { debt_id, old_status, new_status, note } = req.body;
 
         if (!debt_id || !old_status || !new_status) {
             return res.status(400).json({ data: {}, error: "debt_id, old_status and new_status are required" });
         }
 
-        const debt = await pool.query(`SELECT * FROM debts WHERE debt_id = $1`, [debt_id]);
-
-        if (debt.rows.length === 0) {
+        const debt = await Debt.findById(debt_id);
+        if (!debt) {
             return res.status(404).json({ data: {}, error: "Debt not found" });
         }
 
-        const { creditor_user_id, debtor_user_id } = debt.rows[0];
-        if (changed_by_user_id !== creditor_user_id && changed_by_user_id !== debtor_user_id) {
+        const isCreditor = debt.creditorUserId.toString() === changedByUserId;
+        const isDebtor = debt.debtorUserId.toString() === changedByUserId;
+        if (!isCreditor && !isDebtor) {
             return res.status(403).json({ data: {}, error: "You are not authorized to add status history to this debt" });
         }
 
-        const result = await pool.query(
-            `INSERT INTO debt_status_history
-                (debt_id, changed_by_user_id, old_status, new_status, note, changed_at)
-             VALUES ($1, $2, $3, $4, $5, NOW())
-             RETURNING *`,
-            [debt_id, changed_by_user_id, old_status, new_status, note || null]
-        );
+        const history = new DebtStatusHistory({
+            debtId: debt._id,
+            changedByUserId,
+            oldStatus: old_status,
+            newStatus: new_status,
+            note: note || null
+        });
+
+        await history.save();
 
         return res.status(201).json({
-            data: { message: "Debt status history entry created successfully", history: result.rows[0] },
+            data: { message: "Debt status history entry created successfully", history },
             error: ""
         });
     } catch (error) {
         return res.status(500).json({ data: {}, error: "Internal server error while creating debt status history" });
+    }
+};
+
+const updateDebtStatusHistory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.session.userId;
+        const { note } = req.body;
+
+        if (note === undefined) {
+            return res.status(400).json({ data: {}, error: "note is required" });
+        }
+
+        const history = await DebtStatusHistory.findById(id).populate('debtId');
+        if (!history) {
+            return res.status(404).json({ data: {}, error: "Debt status history entry not found" });
+        }
+
+        if (history.debtId.creditorUserId.toString() !== userId) {
+            return res.status(403).json({ data: {}, error: "You are not authorized to update this history entry" });
+        }
+
+        history.note = note;
+        await history.save();
+
+        return res.status(200).json({
+            data: { message: "Debt status history entry updated successfully", history },
+            error: ""
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: "Internal server error while updating debt status history" });
     }
 };
 
@@ -42,23 +76,16 @@ const deleteDebtStatusHistory = async (req, res) => {
         const { id } = req.params;
         const userId = req.session.userId;
 
-        const history = await pool.query(
-            `SELECT dsh.*, d.creditor_user_id
-             FROM debt_status_history dsh
-             JOIN debts d ON d.debt_id = dsh.debt_id
-             WHERE dsh.history_id = $1`,
-            [id]
-        );
-
-        if (history.rows.length === 0) {
+        const history = await DebtStatusHistory.findById(id).populate('debtId');
+        if (!history) {
             return res.status(404).json({ data: {}, error: "Debt status history entry not found" });
         }
 
-        if (history.rows[0].creditor_user_id !== userId) {
+        if (history.debtId.creditorUserId.toString() !== userId) {
             return res.status(403).json({ data: {}, error: "You are not authorized to delete this history entry" });
         }
 
-        await pool.query(`DELETE FROM debt_status_history WHERE history_id = $1`, [id]);
+        await history.deleteOne();
 
         return res.status(200).json({
             data: { message: "Debt status history entry deleted successfully" },
@@ -69,7 +96,4 @@ const deleteDebtStatusHistory = async (req, res) => {
     }
 };
 
-module.exports = {
-    createDebtStatusHistory,
-    deleteDebtStatusHistory
-};
+module.exports = { createDebtStatusHistory, updateDebtStatusHistory, deleteDebtStatusHistory };
