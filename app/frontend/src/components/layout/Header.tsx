@@ -61,7 +61,16 @@ export default function Header() {
 
         {user && pathname === '/' && (
           <div className='flex items-center gap-4'>
-            <span className='hidden md:inline font-medium'>Hello, Jane!</span>
+            <Link href='/contacts'>
+              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                Contacts
+              </Button>
+            </Link>
+            <Link href='/debts'>
+              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                Debts
+              </Button>
+            </Link>
             <Link href='/profile'>
               <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
                 Profile
