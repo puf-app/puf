@@ -20,9 +20,52 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: 'PUF - reši se dolgov',
+  title: {
+    default: 'PUF - reši se dolgov',
+    template: '%s | PUF',
+  },
   description:
-    'Aplikacija za sledenje dolgov in obveznosti med prijatelji in znanci.',
+    'Aplikacija za sledenje dolgov in obveznosti med prijatelji in znanci. Enostavno beleženje, sledenje in poravnava dolgov.',
+  keywords: ['debt tracker', 'dolgi', 'finančno upravljanje', 'sledenje denarja', 'prijatelji', 'obveznosti'],
+  authors: [{ name: 'PUF Team' }],
+  creator: 'PUF',
+  publisher: 'PUF',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'sl_SI',
+    url: 'https://puf.app',
+    siteName: 'PUF',
+    title: 'PUF - reši se dolgov',
+    description: 'Aplikacija za sledenje dolgov in obveznosti med prijatelji in znanci.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'PUF - Debt Tracker',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PUF - reši se dolgov',
+    description: 'Aplikacija za sledenje dolgov in obveznosti med prijatelji in znanci.',
+    images: ['/og-image.png'],
+  },
+  verification: {
+    google: 'google-site-verification-code',
+  },
 };
 
 export default function RootLayout({
