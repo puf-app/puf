@@ -300,5 +300,5 @@ export default function CreateDebtForm() {
         selectedDebtorIds={state.debtors.map((d: IDebtor) => d.id)}
       />
     </>
-  );
+   );
 }
