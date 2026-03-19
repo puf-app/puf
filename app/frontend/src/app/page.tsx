@@ -1,5 +1,15 @@
+'use client';
+
+import { useAppSelector } from '@/hooks/redux';
+import Hero from '@/components/layout/Hero';
+import Dashboard from '@/components/layout/Dashboard';
+
 export default function Home() {
+  const user = useAppSelector((state) => state.user.user);
+
   return (
-    <main className='flex w-full max-w-3xl flex-col items-center justify-between py-32 px-16 sm:items-start'></main>
+    <main className='flex-grow flex flex-col'>
+      {user ? <Dashboard /> : <Hero />}
+    </main>
   );
 }
