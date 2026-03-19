@@ -39,7 +39,9 @@ export default function Header() {
   return (
     <header className='h-16 md:h-24 bg-header flex items-center justify-between px-4 md:px-12 text-primary-foreground border-b border-primary/20'>
       <div className='flex items-center gap-8'>
-        <div className='text-4xl font-semibold'>{headerText}</div>
+        <Link href='/' className='text-4xl font-semibold'>
+          <h1>{headerText}</h1>
+        </Link>
         {/* TODO: REMOVE MOCK LOGIN BUTTON */}
         <Button
           onClick={toggleMockLogin}
