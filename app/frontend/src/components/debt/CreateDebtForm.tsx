@@ -12,12 +12,9 @@ import {
   setIsCompany,
   addDebtor,
   removeDebtor,
-  setRequests,
   setStatus,
   resetForm,
   IDebtor,
-  IDebtRequest,
-  TDebtType,
 } from '@/stores/slices/debtSlice';
 
 import { Button } from '@/components/ui/button';
@@ -28,35 +25,22 @@ import { Card } from '@/components/ui/card';
 import DebtorTag from './DebtorTag';
 import ContactsModal from './ContactsModal';
 import ImageUpload from './ImageUpload';
-import RequestStatus from './RequestStatus';
 
 const debtSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  username: z.string().optional(),
   description: z.string().optional(),
   amount: z
     .string()
     .min(1, 'Amount is required')
     .refine((v) => parseFloat(v) > 0, 'Amount must be greater than 0'),
   currency: z.string().min(1),
-  type: z.string().min(1, 'Debt type is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().min(1, 'End date is required'),
-  delayDate: z.string().optional(),
+  reason: z.string().optional(),
+  dueDate: z.string().min(1, 'Due date is required'),
 });
 
 type FormValues = z.infer<typeof debtSchema>;
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF'];
-
-const DEBT_TYPES: { value: TDebtType; label: string }[] = [
-  { value: 'personal', label: 'Personal' },
-  { value: 'business', label: 'Business' },
-  { value: 'mortgage', label: 'Mortgage' },
-  { value: 'student', label: 'Student loan' },
-  { value: 'credit_card', label: 'Credit card' },
-  { value: 'other', label: 'Other' },
-];
 
 export default function CreateDebtForm() {
   const dispatch = useAppDispatch();
@@ -84,18 +68,8 @@ export default function CreateDebtForm() {
     dispatch(setStatus('submitting'));
 
     // TODO: Replace with real API call when backend is ready
+    // POST /api/debts with _data and state.debtors
     setTimeout(() => {
-      const mockRequests: IDebtRequest[] = state.debtors.map(
-        (d: IDebtor, i: number) => ({
-          id: `request-${i}`,
-          debtId: 'debt-mock',
-          debtorId: d.id,
-          debtorUsername: d.username,
-          status: 'pending' as const,
-          sentAt: new Date().toISOString(),
-        })
-      );
-      dispatch(setRequests(mockRequests));
       dispatch(setStatus('success'));
     }, 800);
   };
@@ -162,14 +136,24 @@ export default function CreateDebtForm() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="description">Description</Label>
                   <Input
-                    id="username"
-                    {...register('username')}
-                    placeholder="Enter your username"
+                    id="description"
+                    {...register('description')}
+                    placeholder="Enter debt description"
                   />
                 </div>
 
+                <div className="space-y-1.5">
+                  <Label htmlFor="reason">Reason</Label>
+                  <Input
+                    id="reason"
+                    {...register('reason')}
+                    placeholder="Enter reason for debt"
+                  />
+                </div>
+
+                {/* Person / Company */}
                 <div className="flex gap-4">
                   {[
                     { label: 'Person', value: false },
@@ -185,11 +169,12 @@ export default function CreateDebtForm() {
                         onChange={() => dispatch(setIsCompany(value))}
                         className="w-4 h-4 accent-blue-600"
                       />
-                      <span className="text-sm text-gray-700">{label}</span>
+                      <span className="text-sm">{label}</span>
                     </label>
                   ))}
                 </div>
 
+                {/* Add debtor */}
                 <div className="space-y-1.5">
                   <Label htmlFor="debtor">Add debtor</Label>
                   <Input
@@ -225,80 +210,30 @@ export default function CreateDebtForm() {
                     </div>
                   )}
                 </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    {...register('description')}
-                    placeholder="Enter debt description"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="type">Type of debt</Label>
-                  <select
-                    id="type"
-                    {...register('type')}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background transition ${
-                      errors.type ? 'border-red-400' : 'border-input'
-                    }`}
-                  >
-                    <option value="">Choose the type of your debt</option>
-                    {DEBT_TYPES.map(({ value, label }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.type && (
-                    <p className="text-xs text-red-500">{errors.type.message}</p>
-                  )}
-                </div>
               </Card>
 
               {/* Right column */}
               <div className="space-y-6">
                 <Card className="p-6 space-y-5">
 
+                  {/* Due date */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="startDate">Choose a start date</Label>
+                    <Label htmlFor="dueDate">Due date</Label>
                     <Input
-                      id="startDate"
+                      id="dueDate"
                       type="date"
-                      {...register('startDate')}
-                      className={errors.startDate ? 'border-red-400' : ''}
+                      {...register('dueDate')}
+                      className={errors.dueDate ? 'border-red-400' : ''}
                     />
-                    {errors.startDate && (
-                      <p className="text-xs text-red-500">{errors.startDate.message}</p>
+                    {errors.dueDate && (
+                      <p className="text-xs text-red-500">{errors.dueDate.message}</p>
                     )}
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="endDate">Choose end date</Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      {...register('endDate')}
-                      className={errors.endDate ? 'border-red-400' : ''}
-                    />
-                    {errors.endDate && (
-                      <p className="text-xs text-red-500">{errors.endDate.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="delayDate">Date of delay (max.)</Label>
-                    <Input
-                      id="delayDate"
-                      type="date"
-                      {...register('delayDate')}
-                    />
-                  </div>
-
+                  {/* Currency + Amount */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <Label htmlFor="currency">Select currency</Label>
+                      <Label htmlFor="currency">Currency</Label>
                       <select
                         id="currency"
                         {...register('currency')}
@@ -310,7 +245,7 @@ export default function CreateDebtForm() {
                       </select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="amount">Debt amount</Label>
+                      <Label htmlFor="amount">Amount</Label>
                       <Input
                         id="amount"
                         type="number"
@@ -327,18 +262,14 @@ export default function CreateDebtForm() {
                   </div>
                 </Card>
 
+                {/* Image upload */}
                 <Card className="p-6">
                   <ImageUpload files={files} onChange={setFiles} />
                 </Card>
               </div>
             </div>
 
-            {state.requests.length > 0 && (
-              <div className="mt-6">
-                <RequestStatus requests={state.requests} />
-              </div>
-            )}
-
+            {/* Buttons */}
             <div className="flex gap-3 mt-8 justify-center">
               <Button
                 type="submit"
