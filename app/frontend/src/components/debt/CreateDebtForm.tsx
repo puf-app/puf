@@ -91,156 +91,157 @@ export default function CreateDebtForm() {
   const isSuccess = state.status === 'success';
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Page header */}
-      <div className="bg-[#1a2744] px-6 py-5 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          Create debt
-        </h1>
-      </div>
-
+    <div className='min-h-screen bg-background'>
       {/* Success banner */}
       {isSuccess && (
-        <div className="bg-green-50 border-b border-green-200 px-6 py-3 flex items-center gap-2 text-green-700 text-sm font-medium">
-          <HugeiconsIcon icon={Tick01Icon} size={16} color="#15803d" />
+        <div className='bg-green-50 border-b border-green-200 px-6 py-3 flex items-center gap-2 text-green-700 text-sm font-medium'>
+          <HugeiconsIcon icon={Tick01Icon} size={16} color='#15803d' />
           Debt created successfully!
         </div>
       )}
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <main className='max-w-5xl mx-auto px-4 sm:px-6 py-8'>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Left column */}
-            <Card className="p-6 space-y-5">
-
-              <div className="space-y-1.5">
-                <Label htmlFor="debtor_username">Debtor username</Label>
+            <Card className='p-6 space-y-5'>
+              <div className='space-y-1.5'>
+                <Label htmlFor='debtor_username'>Debtor username</Label>
                 <Input
-                  id="debtor_username"
+                  id='debtor_username'
                   {...register('debtor_username')}
-                  placeholder="Enter debtor username"
+                  placeholder='Enter debtor username'
                   className={errors.debtor_username ? 'border-red-400' : ''}
                 />
                 {errors.debtor_username && (
-                  <p className="text-xs text-red-500">{errors.debtor_username.message}</p>
+                  <p className='text-xs text-red-500'>
+                    {errors.debtor_username.message}
+                  </p>
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="title">Title</Label>
+              <div className='space-y-1.5'>
+                <Label htmlFor='title'>Title</Label>
                 <Input
-                  id="title"
+                  id='title'
                   {...register('title')}
-                  placeholder="Enter debt title"
+                  placeholder='Enter debt title'
                   className={errors.title ? 'border-red-400' : ''}
                 />
                 {errors.title && (
-                  <p className="text-xs text-red-500">{errors.title.message}</p>
+                  <p className='text-xs text-red-500'>{errors.title.message}</p>
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="description">Description</Label>
+              <div className='space-y-1.5'>
+                <Label htmlFor='description'>Description</Label>
                 <Input
-                  id="description"
+                  id='description'
                   {...register('description')}
-                  placeholder="Enter debt description"
+                  placeholder='Enter debt description'
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="reason">Reason</Label>
+              <div className='space-y-1.5'>
+                <Label htmlFor='reason'>Reason</Label>
                 <Input
-                  id="reason"
+                  id='reason'
                   {...register('reason')}
-                  placeholder="Enter reason for debt"
+                  placeholder='Enter reason for debt'
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className='flex items-center gap-2'>
                 <input
-                  type="checkbox"
-                  id="verification_required"
+                  type='checkbox'
+                  id='verification_required'
                   checked={state.verificationRequired}
-                  onChange={(e) => dispatch(setVerificationRequired(e.target.checked))}
-                  className="w-4 h-4 accent-blue-600"
+                  onChange={(e) =>
+                    dispatch(setVerificationRequired(e.target.checked))
+                  }
+                  className='w-4 h-4 accent-blue-600'
                 />
-                <Label htmlFor="verification_required">Verification required</Label>
+                <Label htmlFor='verification_required'>
+                  Verification required
+                </Label>
               </div>
-
             </Card>
 
             {/* Right column */}
-            <div className="space-y-6">
-              <Card className="p-6 space-y-5">
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="due_date">Due date</Label>
+            <div className='space-y-6'>
+              <Card className='p-6 space-y-5'>
+                <div className='space-y-1.5'>
+                  <Label htmlFor='due_date'>Due date</Label>
                   <Input
-                    id="due_date"
-                    type="date"
+                    id='due_date'
+                    type='date'
                     {...register('due_date')}
                     className={errors.due_date ? 'border-red-400' : ''}
                   />
                   {errors.due_date && (
-                    <p className="text-xs text-red-500">{errors.due_date.message}</p>
+                    <p className='text-xs text-red-500'>
+                      {errors.due_date.message}
+                    </p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="currency">Currency</Label>
+                <div className='grid grid-cols-2 gap-3'>
+                  <div className='space-y-1.5'>
+                    <Label htmlFor='currency'>Currency</Label>
                     <select
-                      id="currency"
+                      id='currency'
                       {...register('currency')}
-                      className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background transition"
+                      className='w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background transition'
                     >
                       {CURRENCIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
                       ))}
                     </select>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="amount">Amount</Label>
+                  <div className='space-y-1.5'>
+                    <Label htmlFor='amount'>Amount</Label>
                     <Input
-                      id="amount"
-                      type="number"
-                      min="0"
-                      step="0.01"
+                      id='amount'
+                      type='number'
+                      min='0'
+                      step='0.01'
                       {...register('amount')}
-                      placeholder="Enter amount"
+                      placeholder='Enter amount'
                       className={errors.amount ? 'border-red-400' : ''}
                     />
                     {errors.amount && (
-                      <p className="text-xs text-red-500">{errors.amount.message}</p>
+                      <p className='text-xs text-red-500'>
+                        {errors.amount.message}
+                      </p>
                     )}
                   </div>
                 </div>
               </Card>
 
               {/* Image upload */}
-              <Card className="p-6">
+              <Card className='p-6'>
                 <ImageUpload files={files} onChange={setFiles} />
               </Card>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-3 mt-8 justify-center">
+          <div className='flex gap-3 mt-8 justify-center'>
             <Button
-              type="submit"
+              type='submit'
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className='flex items-center gap-2'
             >
-              <HugeiconsIcon icon={Tick01Icon} size={16} color="white" />
+              <HugeiconsIcon icon={Tick01Icon} size={16} color='white' />
               {isSubmitting ? 'Sending...' : 'Create debt'}
             </Button>
             <Button
-              type="button"
-              variant="secondary"
+              type='button'
+              variant='secondary'
               onClick={onAbort}
-              className="flex items-center gap-2"
+              className='flex items-center gap-2'
             >
               <HugeiconsIcon icon={Cancel01Icon} size={16} />
               Abort debt

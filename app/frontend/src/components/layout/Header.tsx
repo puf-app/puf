@@ -3,13 +3,15 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
+import { getHeaderText } from '@/lib/utils';
 
 export default function Header() {
   const pathname = usePathname();
+  const header = getHeaderText(pathname);
 
   return (
     <header className='h-16 md:h-24 bg-header flex items-center justify-between px-4 md:px-12 text-primary-foreground border-b border-primary/20'>
-      <div className='text-4xl font-semibold'>Puf</div>
+      <div className='text-4xl font-semibold'>{header}</div>
 
       <nav className='flex gap-4'>
         {pathname === '/' && (

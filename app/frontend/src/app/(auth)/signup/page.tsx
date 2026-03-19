@@ -65,7 +65,6 @@ export default function SignupPage() {
                 id='username-mobile'
                 type='text'
                 placeholder='Enter your username'
-                className='h-10 border-input text-sm'
                 {...register('username')}
               />
               {errors.username && (
@@ -83,7 +82,6 @@ export default function SignupPage() {
                 id='email-mobile'
                 type='email'
                 placeholder='Enter your email address'
-                className='h-10 border-input text-sm'
                 {...register('email')}
               />
               {errors.email && (
@@ -104,7 +102,6 @@ export default function SignupPage() {
                 id='password-mobile'
                 type='password'
                 placeholder='Enter your password'
-                className='h-10 border-input text-sm'
                 {...register('password')}
               />
               {errors.password && (
@@ -140,14 +137,11 @@ export default function SignupPage() {
           <CardContent className='pt-0'>
             <form className='space-y-8' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='fullName'>
-                  Full name
-                </Label>
+                <Label htmlFor='fullName'>Full name</Label>
                 <Input
                   id='fullName'
                   type='text'
                   placeholder='Enter your full name'
-                  className='h-10 border-input text-sm'
                   {...register('fullName')}
                 />
                 {errors.fullName && (
@@ -158,14 +152,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='username'>
-                  Username
-                </Label>
+                <Label htmlFor='username'>Username</Label>
                 <Input
                   id='username'
                   type='text'
                   placeholder='Enter your username'
-                  className='h-10 border-input text-sm'
                   {...register('username')}
                 />
                 {errors.username && (
@@ -176,14 +167,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='email'>
-                  Email address
-                </Label>
+                <Label htmlFor='email'>Email address</Label>
                 <Input
                   id='email'
                   type='email'
                   placeholder='Enter your email address'
-                  className='h-10 border-input text-sm'
                   {...register('email')}
                 />
                 {errors.email && (
@@ -194,27 +182,21 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='phone'>
-                  Telephone number
-                </Label>
+                <Label htmlFor='phone'>Telephone number</Label>
                 <Input
                   id='phone'
                   type='tel'
                   placeholder='Enter your telephone number'
-                  className='h-10 border-input text-sm'
                   {...register('phone')}
                 />
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='password'>
-                  Password
-                </Label>
+                <Label htmlFor='password'>Password</Label>
                 <Input
                   id='password'
                   type='password'
                   placeholder='Enter your password'
-                  className='h-10 border-input text-sm'
                   {...register('password')}
                 />
                 {errors.password && (
