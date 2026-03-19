@@ -1,34 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IDebt, IDebtStatus } from '@/types';
 
-export type TDebtType =
-  | 'personal'
-  | 'business'
-  | 'mortgage'
-  | 'student'
-  | 'credit_card'
-  | 'other';
-
-export type TRequestStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'rejected'
-  | 'cancelled';
-
+// Local interface for debtor selection in the form
+// (not from backend, used only for UI state)
 export interface IDebtor {
   id: string;
   username: string;
   displayName: string;
   email?: string;
-}
-
-export interface IDebtRequest {
-  id: string;
-  debtId: string;
-  debtorId: string;
-  debtorUsername: string;
-  status: TRequestStatus;
-  sentAt: string;
-  respondedAt?: string;
 }
 
 interface DebtState {
@@ -38,12 +17,10 @@ interface DebtState {
   description: string;
   amount: string;
   currency: string;
-  type: TDebtType | '';
-  startDate: string;
-  endDate: string;
-  delayDate: string;
+  reason: string;
+  dueDate: string;
   debtors: IDebtor[];
-  requests: IDebtRequest[];
+  createdDebt: IDebt | null;
   status: 'idle' | 'submitting' | 'success' | 'error';
   error: string | null;
 }
@@ -55,12 +32,10 @@ const initialState: DebtState = {
   description: '',
   amount: '',
   currency: 'EUR',
-  type: '',
-  startDate: '',
-  endDate: '',
-  delayDate: '',
+  reason: '',
+  dueDate: '',
   debtors: [],
-  requests: [],
+  createdDebt: null,
   status: 'idle',
   error: null,
 };
@@ -84,8 +59,8 @@ const debtSlice = createSlice({
       state.debtors = state.debtors.filter((d) => d.id !== action.payload);
     },
 
-    setRequests: (state, action: PayloadAction<IDebtRequest[]>) => {
-      state.requests = action.payload;
+    setCreatedDebt: (state, action: PayloadAction<IDebt>) => {
+      state.createdDebt = action.payload;
     },
 
     setStatus: (state, action: PayloadAction<DebtState['status']>) => {
@@ -104,7 +79,7 @@ export const {
   setIsCompany,
   addDebtor,
   removeDebtor,
-  setRequests,
+  setCreatedDebt,
   setStatus,
   setError,
   resetForm,
