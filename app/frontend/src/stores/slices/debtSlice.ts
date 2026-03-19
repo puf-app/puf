@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IDebt, IDebtStatus } from '@/types';
+import { IDebt } from '@/types';
 
 // Local interface for debtor selection in the form
 // (not from backend, used only for UI state)
