@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { setUser, clearUser } from '@/stores/slices/userSlice';
+import { getHeaderText } from '@/lib/utils';
 
 export default function Header() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
+  const headerText = getHeaderText(pathname);
 
   // TODO: REMOVE MOCK LOGIN - This is temporary for testing the dashboard without a backend
   const toggleMockLogin = () => {
@@ -29,7 +31,7 @@ export default function Header() {
           admin: false,
           company: false,
           createdAt: new Date('2024-01-15').toISOString(),
-        } as any)
+        } as any),
       );
     }
   };
@@ -37,7 +39,9 @@ export default function Header() {
   return (
     <header className='h-16 md:h-24 bg-header flex items-center justify-between px-4 md:px-12 text-primary-foreground border-b border-primary/20'>
       <div className='flex items-center gap-8'>
-        <div className='text-4xl font-semibold'>Puf</div>
+        <Link href='/' className='text-4xl font-semibold'>
+          <h1>{headerText}</h1>
+        </Link>
         {/* TODO: REMOVE MOCK LOGIN BUTTON */}
         <Button
           onClick={toggleMockLogin}
