@@ -12,16 +12,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const settingsSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email'),
+  email: z.email('Please enter a valid email'),
   phone: z
     .string()
     .min(6, 'Phone number is too short')
     .max(32, 'Phone number is too long')
     .optional()
     .or(z.literal('')),
-  profilePhoto: z.string().optional().or(z.literal('')),
+  profileImageUrl: z.string().optional().or(z.literal('')),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -31,9 +32,9 @@ type FieldKey = keyof SettingsValues;
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-3xl font-semibold text-foreground">{children}</h2>
-      <div className="h-px w-full bg-border" />
+    <div className='flex flex-col gap-2'>
+      <h2 className='text-3xl font-semibold text-foreground'>{children}</h2>
+      <div className='h-px w-full bg-border' />
     </div>
   );
 }
@@ -47,7 +48,7 @@ function FieldRow({
   error,
   onChangeClick,
   buttonLabel = 'Change',
-  buttonVariant = 'default',
+  buttonVariant = 'tertiary',
 }: {
   label: string;
   fieldKey: FieldKey;
@@ -60,21 +61,24 @@ function FieldRow({
   buttonVariant?: React.ComponentProps<typeof Button>['variant'];
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center">
-      <Label className="text-base font-semibold md:font-semibold">{label}:</Label>
-      <div className="flex flex-col">
+    <div className='grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center'>
+      <Label className='text-base font-semibold md:font-semibold'>
+        {label}:
+      </Label>
+      <div className='flex flex-col'>
         <Input
           type={type}
           placeholder={placeholder}
-          className="h-10"
+          className='h-10'
           {...register(fieldKey)}
         />
-        {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+        {error && <p className='text-xs text-destructive mt-1'>{error}</p>}
       </div>
       <Button
-        type="button"
+        type='button'
         variant={buttonVariant}
-        className="w-full md:w-auto"
+        size='lg'
+        className='w-full md:w-auto'
         onClick={onChangeClick}
       >
         {buttonLabel}
@@ -88,14 +92,15 @@ export default function SettingsPage() {
 
   const defaultValues = useMemo<SettingsValues>(
     () => ({
-      name: 'Janez Novak',
+      firstName: 'Janez',
+      lastName: 'Novak',
       username: 'DebtCollector3000',
       email: 'debtcollector300@mail.com',
       phone: '+386 31 123 456',
-      profilePhoto: 'janez.png',
+      profileImageUrl: 'https://i.pravatar.cc/300',
       password: '**********************',
     }),
-    []
+    [],
   );
 
   const {
@@ -111,7 +116,7 @@ export default function SettingsPage() {
   });
 
   const [lastSaved, setLastSaved] = useState<Partial<Record<FieldKey, number>>>(
-    {}
+    {},
   );
 
   const saveField = async (field: FieldKey) => {
@@ -129,99 +134,119 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="w-full flex justify-center px-4 py-8 md:py-10">
-      <div className="w-full max-w-5xl flex flex-col gap-6 md:gap-8">
-        <Card className="p-6 md:p-8 shadow-md">
+    <main className='w-full flex justify-center px-4 py-8 md:py-10'>
+      <div className='w-full max-w-5xl flex flex-col gap-6 md:gap-8'>
+        <Card className='p-6 md:p-8 shadow-md'>
           <SectionTitle>Account</SectionTitle>
 
-          <div className="mt-6 flex flex-col gap-5 md:gap-6">
+          <div className='mt-6 flex flex-col gap-5 md:gap-6'>
             <FieldRow
-              label="Change name"
-              fieldKey="name"
-              placeholder="Enter your name"
+              label='Change first name'
+              fieldKey='firstName'
+              placeholder='Enter your first name'
               register={register}
-              error={errors.name?.message}
-              onChangeClick={() => saveField('name')}
+              error={errors.firstName?.message}
+              onChangeClick={() => saveField('firstName')}
             />
 
             <FieldRow
-              label="Change username"
-              fieldKey="username"
-              placeholder="Enter your username"
+              label='Change last name'
+              fieldKey='lastName'
+              placeholder='Enter your last name'
+              register={register}
+              error={errors.lastName?.message}
+              onChangeClick={() => saveField('lastName')}
+            />
+
+            <FieldRow
+              label='Change username'
+              fieldKey='username'
+              placeholder='Enter your username'
               register={register}
               error={errors.username?.message}
               onChangeClick={() => saveField('username')}
             />
 
             <FieldRow
-              label="Change email address"
-              fieldKey="email"
-              placeholder="Enter your email"
-              type="email"
+              label='Change email address'
+              fieldKey='email'
+              placeholder='Enter your email'
+              type='email'
               register={register}
               error={errors.email?.message}
               onChangeClick={() => saveField('email')}
             />
 
             <FieldRow
-              label="Change telephone number"
-              fieldKey="phone"
-              placeholder="Enter your phone number"
+              label='Change telephone number'
+              fieldKey='phone'
+              placeholder='Enter your phone number'
               register={register}
               error={errors.phone?.message}
               onChangeClick={() => saveField('phone')}
             />
 
             <FieldRow
-              label="Change profile photo"
-              fieldKey="profilePhoto"
-              placeholder="Choose a file"
+              label='Change profile photo'
+              fieldKey='profileImageUrl'
+              placeholder='Choose a file'
               register={register}
-              error={errors.profilePhoto?.message}
-              onChangeClick={() => saveField('profilePhoto')}
+              error={errors.profileImageUrl?.message}
+              onChangeClick={() => saveField('profileImageUrl')}
             />
 
             {/* subtle saved feedback */}
-            <div className="text-xs text-muted-foreground">
-              {lastSaved.name && (
-                <span>Last saved: {new Date(lastSaved.name).toLocaleTimeString()}</span>
+            <div className='text-xs text-muted-foreground'>
+              {lastSaved.firstName && (
+                <span>
+                  Last saved:{' '}
+                  {new Date(lastSaved.firstName).toLocaleTimeString()}
+                </span>
               )}
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 md:p-8 shadow-md">
+        <Card className='p-6 md:p-8 shadow-md'>
           <SectionTitle>Security</SectionTitle>
 
-          <div className="mt-6 flex flex-col gap-5 md:gap-6">
+          <div className='mt-6 flex flex-col gap-5 md:gap-6'>
             <FieldRow
-              label="Change password"
-              fieldKey="password"
-              placeholder="Enter new password"
-              type="password"
+              label='Change password'
+              fieldKey='password'
+              placeholder='Enter new password'
+              type='password'
               register={register}
               error={errors.password?.message}
               onChangeClick={() => saveField('password')}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center">
-              <Label className="text-base font-semibold">Verify account:</Label>
-              <div className="text-sm text-muted-foreground md:pr-4">
+            <div className='grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center'>
+              <Label className='text-base font-semibold'>Verify account:</Label>
+              <div className='text-sm text-muted-foreground md:pr-4'>
                 Upload a photo of your ID document.
               </div>
-              <div className="flex flex-col gap-2">
+              <div className='flex flex-col gap-2'>
                 <input
                   ref={fileInputRef}
-                  type="file"
-                  accept="image/*,application/pdf"
-                  className="hidden"
+                  type='file'
+                  accept='image/*,application/pdf'
+                  className='hidden'
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    setValue('profilePhoto', file.name, { shouldDirty: true });
+                    setValue('profileImageUrl', file.name, {
+                      shouldDirty: true,
+                    });
                   }}
                 />
-                <Button type="button" className="w-full md:w-auto" onClick={uploadProof}>
+                <Button
+                  type='button'
+                  variant='tertiary'
+                  size='lg'
+                  className='w-full md:w-auto'
+                  onClick={uploadProof}
+                >
                   Upload photo
                 </Button>
               </div>
@@ -232,4 +257,3 @@ export default function SettingsPage() {
     </main>
   );
 }
-
