@@ -1,40 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IDebt } from '@/types';
 
-// Local interface for debtor selection in the form
-// (not from backend, used only for UI state)
-export interface IDebtor {
-  id: string;
-  username: string;
-  displayName: string;
-  email?: string;
-}
-
 interface DebtState {
+  debtorUsername: string;
   title: string;
-  username: string;
-  isCompany: boolean;
   description: string;
   amount: string;
   currency: string;
   reason: string;
   dueDate: string;
-  debtors: IDebtor[];
+  verificationRequired: boolean;
   createdDebt: IDebt | null;
   status: 'idle' | 'submitting' | 'success' | 'error';
   error: string | null;
 }
 
 const initialState: DebtState = {
+  debtorUsername: '',
   title: '',
-  username: '',
-  isCompany: false,
   description: '',
   amount: '',
   currency: 'EUR',
   reason: '',
   dueDate: '',
-  debtors: [],
+  verificationRequired: false,
   createdDebt: null,
   status: 'idle',
   error: null,
@@ -44,19 +33,8 @@ const debtSlice = createSlice({
   name: 'debt',
   initialState,
   reducers: {
-    setIsCompany: (state, action: PayloadAction<boolean>) => {
-      state.isCompany = action.payload;
-    },
-
-    addDebtor: (state, action: PayloadAction<IDebtor>) => {
-      const exists = state.debtors.find((d) => d.id === action.payload.id);
-      if (!exists) {
-        state.debtors.push(action.payload);
-      }
-    },
-
-    removeDebtor: (state, action: PayloadAction<string>) => {
-      state.debtors = state.debtors.filter((d) => d.id !== action.payload);
+    setVerificationRequired: (state, action: PayloadAction<boolean>) => {
+      state.verificationRequired = action.payload;
     },
 
     setCreatedDebt: (state, action: PayloadAction<IDebt>) => {
@@ -76,9 +54,7 @@ const debtSlice = createSlice({
 });
 
 export const {
-  setIsCompany,
-  addDebtor,
-  removeDebtor,
+  setVerificationRequired,
   setCreatedDebt,
   setStatus,
   setError,
