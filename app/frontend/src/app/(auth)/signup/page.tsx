@@ -15,6 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { postToApi } from '@/lib/api/client';
+import { useAppDispatch } from '@/hooks/redux';
+import { setUser } from '@/stores/slices/userSlice';
+import type { IUser } from '@/types';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -49,6 +52,7 @@ function deriveFirstLast(fullName: string, email: string, username: string) {
 export default function SignupPage() {
   const router = useRouter();
   const [apiError, setApiError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -87,7 +91,55 @@ export default function SignupPage() {
 
     try {
       await postToApi('/api/auth/registerUser', payload);
-      router.push('/signin');
+      // Auto-login after successful registration.
+      // This matches the expected UX: register -> land on main app.
+      const loginRes = await postToApi<{
+        message?: string;
+        requires2FA?: boolean;
+        user?: { username?: string; admin?: boolean };
+      }>('/api/auth/loginUser', {
+        username: data.username,
+        password: data.password,
+      });
+
+      if (loginRes.requires2FA) {
+        // 2FA flow UI isn't implemented yet; for now send the user to sign-in.
+        setApiError(
+          'Two-factor authentication is required. Please complete login with 2FA on the sign-in page.'
+        );
+        router.push('/signin');
+        return;
+      }
+
+      if (loginRes.user) {
+        // We only need "user exists" for main dashboard access right now.
+        // Backend session cookies may not be usable yet (CORS), so we set
+        // the minimal user object from the login response.
+        const minimalUser: Partial<IUser> = {
+          // Some backends include the Mongo `_id` in the login response.
+          // If present, keep it so Settings can call update endpoints reliably.
+          _id: (loginRes.user as any)?._id ?? 'unknown',
+          firstName,
+          lastName,
+          username: loginRes.user.username ?? data.username,
+          email: data.email,
+          phone: typeof data.phone === 'string' && data.phone.trim() ? data.phone.trim() : undefined,
+          profileImageUrl: undefined,
+          isVerified: false,
+          verificationLevel: 'NONE',
+          status: 'ACTIVE',
+          admin: Boolean(loginRes.user.admin),
+          company: false,
+          createdAt: new Date().toISOString(),
+        };
+
+        dispatch(setUser(minimalUser as IUser));
+
+        router.push('/');
+        return;
+      }
+
+      setApiError('Login succeeded but user data is missing from backend response.');
     } catch (e) {
       setApiError(e instanceof Error ? e.message : 'Registration failed');
     }

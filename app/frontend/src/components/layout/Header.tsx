@@ -1,38 +1,40 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { setUser, clearUser } from '@/stores/slices/userSlice';
+import { clearUser } from '@/stores/slices/userSlice';
 import { getHeaderText } from '@/lib/utils';
+import { postToApi } from '@/lib/api/client';
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const headerText = getHeaderText(pathname);
 
-  // TODO: REMOVE MOCK LOGIN - This is temporary for testing the dashboard without a backend
-  const toggleMockLogin = () => {
-    if (user) {
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    try {
+      setLoggingOut(true);
+      // Backend logout: clears session on the server side.
+      try {
+        await postToApi('/api/auth/logoutUser', {});
+      } catch (e) {
+        // If the backend session cookie isn't present (dummy mode / expired session),
+        // we still want the local UI to log out without crashing.
+      }
+    } finally {
+      // Always clear client state so the UI updates immediately.
       dispatch(clearUser());
-    } else {
-      dispatch(
-        setUser({
-          _id: '1',
-          firstName: 'Jane',
-          lastName: 'Doe',
-          username: 'janedoe',
-          email: 'jane@example.com',
-          phone: '+386 40 123 456',
-          isVerified: true,
-          status: 'ACTIVE',
-          admin: false,
-          company: false,
-          createdAt: new Date('2024-01-15').toISOString(),
-        } as any),
-      );
+      router.push('/');
+      setLoggingOut(false);
     }
   };
 
@@ -42,15 +44,17 @@ export default function Header() {
         <Link href='/' className='text-4xl font-semibold'>
           <h1>{headerText}</h1>
         </Link>
-        {/* TODO: REMOVE MOCK LOGIN BUTTON */}
-        <Button
-          onClick={toggleMockLogin}
-          variant='outline'
-          size='sm'
-          className='text-xs h-8 bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-white/10'
-        >
-          Dev: {user ? 'Logout' : 'Login'}
-        </Button>
+        {user && (
+          <Button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            variant='outline'
+            size='sm'
+            className='text-xs h-8 bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-white/10'
+          >
+            {loggingOut ? 'Logging out...' : 'Logout'}
+          </Button>
+        )}
       </div>
 
       <nav className='flex gap-4'>

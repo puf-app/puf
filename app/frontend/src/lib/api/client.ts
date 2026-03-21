@@ -1,5 +1,3 @@
-import { API_BASE_URL } from '@/config/constants';
-
 interface IApiResponse<TData> {
   data: TData;
   error: string;
@@ -9,14 +7,14 @@ const buildUrl = (
   path: string,
   query: Record<string, string | number | undefined> = {}
 ) => {
-  const url = new URL(path, API_BASE_URL);
-
+  const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === '') return;
-    url.searchParams.set(key, String(value));
+    params.set(key, String(value));
   });
 
-  return url.toString();
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
 };
 
 export const getFromApi = async <TData>(
@@ -35,7 +33,7 @@ export const getFromApi = async <TData>(
     throw new Error(payload.error || `HTTP ${response.status}`);
   }
 
-  return payload.data;
+    return payload.data;
 };
 
 export const patchToApi = async <TData>(
@@ -45,7 +43,9 @@ export const patchToApi = async <TData>(
   const response = await fetch(buildUrl(path), {
     method: 'PATCH',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body),
   });
 
@@ -65,7 +65,9 @@ export const postToApi = async <TData>(
   const response = await fetch(buildUrl(path), {
     method: 'POST',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body),
   });
 

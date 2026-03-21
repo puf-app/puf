@@ -6,7 +6,7 @@ import { store } from '@/stores/store';
 import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { clearUser, setUser } from '@/stores/slices/userSlice';
+import { clearUser, setHydrated, setUser } from '@/stores/slices/userSlice';
 
 const queryClient = new QueryClient();
 
@@ -22,12 +22,15 @@ function AuthPersistence() {
 
   useEffect(() => {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!raw) return;
+    if (!raw) {
+      dispatch(setHydrated());
+      return;
+    }
 
     try {
       dispatch(setUser(JSON.parse(raw)));
     } catch {
-      // Ignore invalid localStorage payloads
+      dispatch(setHydrated());
     }
   }, [dispatch]);
 
