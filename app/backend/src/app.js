@@ -1,4 +1,3 @@
-require('dotenv').config();
 const MongoStore = require('connect-mongo').default;
 const express = require("express");
 const mongoose = require("mongoose");
@@ -52,12 +51,15 @@ app.use(
 app.use(hpp());
 app.disable('x-powered-by');
 
+const isTestEnv = process.env.NODE_ENV === 'test' || String(process.env.DISABLE_RATE_LIMIT || '').toLowerCase() === 'true';
+
 const generalLimiter = rateLimit({
     windowMs: 15*60*1000,
     max: 100,
     message: {data: {}, error:"Too many requests from this IP address, please try again in 15 minutes."},
     standardHeaders: true,
     legacyHeaders: true,
+    skip: () => isTestEnv
 });
 app.use("/api/", generalLimiter)
 
@@ -65,6 +67,7 @@ const authLimiter = rateLimit({
     windowMs: 60*60*1000,
     max: 100, //trenutno 100 poskusov za testiranje
     message: {data: {}, error:"Too many failed login attempts. Your account has been temporarily locked for your IP."},
+    skip: () => isTestEnv
 })
 
 app.use(express.json({ limit: '10kb' }));
@@ -110,6 +113,9 @@ app.use("/docs", swaggerUi.serve, (req, res, next) => {
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/debts', debtRoutes);
+app.use('/api/debtEvidence', debtEvidenceRoutes);
+app.use('/api/debtStatusHistory', debtHistoryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friendships', friendshipRoutes);
 app.use('/api/verification', verificationRoutes);
