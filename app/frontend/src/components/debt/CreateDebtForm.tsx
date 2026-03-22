@@ -58,24 +58,24 @@ export default function CreateDebtForm() {
   const onSubmit = async (data: FormValues) => {
     dispatch(setStatus('submitting'));
 
-    // TODO: Replace with real API call when backend is ready
-    // const response = await fetch('/api/debts/createDebt', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     debtor_username: data.debtor_username,
-    //     title: data.title,
-    //     description: data.description,
-    //     amount: parseFloat(data.amount),
-    //     currency: data.currency,
-    //     reason: data.reason,
-    //     due_date: data.due_date,
-    //     verification_required: state.verificationRequired,
-    //   }),
-    // });
-    // const result = await response.json();
-    // dispatch(setCreatedDebt(result));
-    // dispatch(setStatus('success'));
+
+   const response = await fetch('https://api.fl0rijan.freemyip.com/debts/createDebt', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        debtor_username: data.debtor_username,
+         title: data.title,
+         description: data.description,
+         amount: parseFloat(data.amount),
+         currency: data.currency,
+         reason: data.reason,
+         due_date: data.due_date,
+        verification_required: state.verificationRequired,
+       }),
+     });
+     const result = await response.json();
+     dispatch(setCreatedDebt(result));
+     dispatch(setStatus('success'));
 
     setTimeout(() => {
       dispatch(setStatus('success'));
