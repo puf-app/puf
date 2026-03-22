@@ -192,4 +192,4 @@ const getDebtById = async (req, res) => {
     }
 };
 
-module.exports = { createDebt, updateDebt, completeDebt, deleteDebt };
+module.exports = { createDebt, updateDebt, completeDebt, deleteDebt, getDebts, getDebtById };

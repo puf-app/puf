@@ -158,4 +158,4 @@ const getDebtEvidenceById = async (req, res) => {
 };
  
 
-module.exports = { createDebtEvidence, updateDebtEvidence, deleteDebtEvidence };
+module.exports = { createDebtEvidence, updateDebtEvidence, deleteDebtEvidence, getDebtEvidences, getDebtEvidenceById };

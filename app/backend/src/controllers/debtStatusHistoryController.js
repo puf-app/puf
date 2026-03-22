@@ -152,4 +152,4 @@ const getDebtStatusHistoryById = async (req, res) => {
 };
  
 
-module.exports = { createDebtStatusHistory, updateDebtStatusHistory, deleteDebtStatusHistory };
+module.exports = { createDebtStatusHistory, updateDebtStatusHistory, deleteDebtStatusHistory, getDebtStatusHistories, getDebtStatusHistoryById };

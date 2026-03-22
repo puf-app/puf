@@ -30,12 +30,6 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
 });
 
-// temp to get swagger docs to work, will fix later -tilcica
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
-app.set("trust proxy", false);
-/*
 app.set('trust proxy', 1);
 app.use(
     helmet({
@@ -48,7 +42,6 @@ app.use(
         },
     })
 );
-*/
 app.use(hpp());
 app.disable('x-powered-by');
 
