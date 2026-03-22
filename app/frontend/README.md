@@ -1,61 +1,69 @@
 # PUF Frontend
 
-Welcome to the frontend repository for the PUF project. This project is built using [Next.js](https://nextjs.org/) (App Router).
+To je frontend del projekta PUF. Ta projekt je zgrajen z uporabo [Next.js](https://nextjs.org/) (App Router).
 
-## 🚀 Getting Started
+## Začetek
 
-First, install the dependencies:
+Najprej namestite dependencies:
+
 ```bash
 npm install
 ```
 
-Run the development server:
+Zaženite strežnik, da bote lahko delali:
+
 ```bash
 npm run dev
 ```
-Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
 
-## 📁 Project Structure
+Odprite [http://localhost:3001](http://localhost:3001) v svojem brskalniku.
 
-We follow a modular, scalable folder structure based on battle-tested best practices to keep the codebase consistent and easy to navigate.
+## Struktura Projekta
 
-- `src/app/` - Next.js App Router pages, layouts, and API routes.
-- `src/components/` - Reusable, UI-level shared components. (We will be using **shadcn/ui** for the design system).
-- `src/features/` - Feature-based modules (e.g., debts, user profile) containing their own components, hooks, services, and types.
-- `src/lib/` - Utility functions, API clients, and third-party library configurations.
-- `src/hooks/` - Shared custom React hooks.
-- `src/config/` - Global configuration and constants.
-- `src/types/` - Global TypeScript interfaces and types. Note: API types are currently drafted but might change once the backend models and required fields are finalized.
-- `src/stores/` - Redux Toolkit global state management (e.g., `userSlice`).
-- `src/providers/` - React context providers (like Redux Provider).
+Sledimo modularni, razširljivi strukturi map, ki temelji na preverjenih najboljših praksah, da ohranimo kodo dosledno in enostavno za navigacijo.
 
-## 🛠️ Development Guidelines
+- `src/app/` - Next.js App Router strani, postavitve in API poti.
+- `src/components/` - Ponovno uporabne, skupne UI komponente. (Za oblikovni sistem bomo uporabljali **shadcn/ui**).
+- `src/features/` - Moduli po funkcionalnostih (npr. dolgovi, uporabniški profil), ki vsebujejo lastne komponente, hooke, storitve in tipe.
+- `src/lib/` - Pomožne funkcije, API klienti in konfiguracije knjižnic tretjih oseb.
+- `src/hooks/` - Skupni custom React hooki.
+- `src/config/` - Globalne konfiguracije in konstante.
+- `src/types/` - Globalni TypeScript vmesniki in tipi. Opomba: API tipi se še trenutno spreminjajo, tako, da če kaj ne dela napišite.
+- `src/stores/` - Globalno upravljanje stanja z Redux Toolkit (npr. `userSlice`).
+- `src/providers/` - React context providerji (kot je Redux Provider).
 
-Please adhere strictly to the following rules when contributing to this project to maintain code quality and consistency:
+## Splošna navodila za razvoj
 
-### Git & Branching Strategy
-1. **Base Branch:** Always create your new branches from the `frontend` branch.
-2. **Branch Naming:** Use descriptive prefixes for branch names based on the work you are doing:
-   - `feature/task-name` - for new features
-   - `fix/task-name` - for bug fixes
-3. **Pull Requests (PRs):**
-   - Open a PR when your task is done.
-   - **DO NOT merge your own PR!** Leave a comment explaining your work and wait for someone else to review and approve it.
-4. **Task Distribution:** Follow the assignments defined in the project `.docx` file, or communicate with the team before picking up unassigned tasks. We need to organize so everybody gets their points!
+Prosimo, da se pri prispevanju k temu projektu strogo držite naslednjih pravil, da ohranimo kakovost in doslednost kode:
 
-### Commit Messages
-Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to keep the git history readable. Start your commit messages with:
-- `feat:` (e.g., `feat: add debt creation form`)
-- `fix:` (e.g., `fix: resolve crash on missing summary`)
-- `chore:` (e.g., `chore: update dependencies`)
-- `docs:`, `style:`, `refactor:`, etc.
+### Git & Strategija vej
 
-### Coding Best Practices
-- **Clean Code:** Remove all `console.log` statements and debugging code before committing your work once the APIs are ready.
-- **State Management:** We use **Redux Toolkit** for global state. Check out the `userSlice` to see an example of how the global store is structured and added to `store.ts`. To access the state, use the custom typed hooks found in `src/hooks/redux.ts`.
-- **API Status:** The backend API is currently under development. Until it is fully functional, there is no need to make real API requests.
-- **Styling:** The design is intended to be simple and consistent. We will be integrating **shadcn/ui** soon.
-- **Translations:** We need to implement `i18next` for localization. Currently, strings are hardcoded (like in the footer), but this needs to be transitioned to the translation system. If you pick up this task, start mapping out the translation dictionaries!
+1. **Osnovna veja:** Vedno ustvarite nove veje iz veje `frontend`.
+2. **Poimenovanje vej:** Uporabljajte opisne predpone za imena vej glede na delo, ki ga opravljate:
+   - `feature/naloga` - za nove funkcionalnosti
+   - `fix/naloga` - za popravke napak
+3. **Pull Requesti (PR):**
+   - Odprite PR, ko je vaša naloga končana.
+   - **NE združujte svojega PR sami!** Dodajte komentar z razlago svojega dela in počakajte, da ga nekdo drug pregleda in odobri.
+4. **Razdelitev nalog:** Sledite zadolžitvam, določenim v projektni `.docx` datoteki, ali se pred prevzemom nezačetih nalog posvetujte z ekipo. Organizirati se moramo, da vsak dobi svoje točke!
 
-## 🤝 Questions or Issues?
-If you are unsure how to use a specific tool (like Redux), or don't want to do a specific task, feel free to ask in the chat or contact the team lead for help. We are working together!
+### Sporočila commitov
+
+Uporabljajte [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), da bo git zgodovina pregledna. Začnite sporočila commitov z:
+
+- `feat:` (npr. `feat: dodaj obrazec za ustvarjanje dolga`)
+- `fix:` (npr. `fix: odpravi sesutje pri manjkajočem povzetku`)
+- `chore:` (npr. `chore: posodobi odvisnosti`)
+- `docs:`, `style:`, `refactor:`, itd.
+
+### Najboljše prakse kodiranja
+
+- **Čista koda:** Odstranite vse `console.log` stavke in debug kodo pred commitom, ko bodo API-ji pripravljeni.
+- **Upravljanje stanja:** Uporabljamo **Redux Toolkit** za globalno stanje. Oglejte si `userSlice` za primer, kako je globalna shramba strukturirana in dodana v `store.ts`. Za dostop do stanja uporabite custom hooke iz `src/hooks/redux.ts`.
+- **Stanje API-ja:** Backend API je trenutno v razvoju. Dokler ni popolnoma funkcionalen, ni potrebe po pravih API zahtevkih.
+- **Oblikovanje:** Dizajn naj bo preprost in dosleden. Kmalu bomo integrirali **shadcn/ui**.
+- **Prevodi:** Implementirati moramo `i18next` za lokalizacijo. Trenutno so nizi hardcodani (npr. v footerju), to pa je treba prenesti v prevajalski sistem. Če prevzamete to nalogo, začnite z mapiranjem prevajalskih slovarjev!
+
+## Vprašanja ali težave?
+
+Če niste prepričani, kako uporabiti določeno orodje (npr. Redux), ali ne želite opraviti določene naloge, vprašajte v klepetu ali kontaktirajte vodjo ekipe za pomoč.
