@@ -1,3 +1,5 @@
+import { IDebt } from '@/types';
+
 export * from '@/types/api/IDebt';
 export * from '@/types/api/IDebtEvidence';
 export * from '@/types/api/IDebtStatusHistory';
@@ -8,4 +10,8 @@ export interface IDebtor {
   firstName: string;
   lastName: string;
   email?: string;
+}
+
+export interface IDebtsResponse {
+  debts: IDebt[];
 }

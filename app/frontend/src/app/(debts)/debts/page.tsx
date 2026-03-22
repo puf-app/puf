@@ -2,7 +2,11 @@
 
 import { useAppSelector } from '@/hooks/redux';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon, Money01Icon, MoneyReceive01Icon } from '@hugeicons/core-free-icons';
+import {
+  Add01Icon,
+  Money01Icon,
+  MoneyReceive01Icon,
+} from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { DebtList } from '@/features/debt/components';
 import { useDebtsQuery } from '@/features/debt/hooks/useDebtQuery';
@@ -10,7 +14,7 @@ import Hero from '@/components/layout/Hero';
 
 export default function DebtsPage() {
   const user = useAppSelector((state) => state.user.user);
-  const { data: debts = [], isLoading, error } = useDebtsQuery();
+  const { data: debts, isLoading, error } = useDebtsQuery();
 
   if (!user) {
     return (
@@ -20,13 +24,24 @@ export default function DebtsPage() {
     );
   }
 
-  const receivables = debts
-    .filter((d) => d.creditorUserId === user._id && d.status !== 'PAID')
-    .reduce((acc, d) => acc + d.amount, 0);
+  const formatAmount = (amount: any): number => {
+    if (typeof amount === 'number') return amount;
+    if (amount && amount.$numberDecimal)
+      return parseFloat(amount.$numberDecimal);
+    return 0;
+  };
 
-  const obligations = debts
-    .filter((d) => d.debtorUserId === user._id && d.status !== 'PAID')
-    .reduce((acc, d) => acc + d.amount, 0);
+  const receivables =
+    debts &&
+    debts.debts
+      .filter((d) => d.creditorUserId === user._id && d.status !== 'PAID')
+      .reduce((acc, d) => acc + d.amount, 0);
+
+  const obligations =
+    debts &&
+    debts.debts
+      .filter((d) => d.debtorUserId === user._id && d.status !== 'PAID')
+      .reduce((acc, d) => acc + d.amount, 0);
 
   return (
     <main className='flex-grow bg-slate-50/50'>
@@ -62,7 +77,7 @@ export default function DebtsPage() {
                 Receivables
               </p>
               <h2 className='text-3xl font-black text-green-600 mt-1'>
-                {receivables.toFixed(2)} EUR
+                {receivables && receivables.toFixed(2)} EUR
               </h2>
             </div>
           </div>
@@ -80,7 +95,7 @@ export default function DebtsPage() {
                 Obligations
               </p>
               <h2 className='text-3xl font-black text-red-600 mt-1'>
-                {obligations.toFixed(2)} EUR
+                {obligations && obligations.toFixed(2)} EUR
               </h2>
             </div>
           </div>
@@ -99,10 +114,22 @@ export default function DebtsPage() {
             </div>
           ) : error ? (
             <div className='bg-red-50 border-2 border-red-100 p-8 rounded-3xl text-center'>
-              <p className='text-red-600 font-bold'>Failed to load debts. Please try again later.</p>
+              <p className='text-red-600 font-bold'>
+                Failed to load debts. Please try again later.
+              </p>
             </div>
           ) : (
-            <DebtList debts={debts} currentUserId={user._id} />
+            <DebtList
+              debts={
+                (debts &&
+                  debts.debts.map((d) => ({
+                    ...d,
+                    amount: formatAmount(d.amount), // Pretvorba tukaj!
+                  }))) ||
+                []
+              }
+              currentUserId={user._id}
+            />
           )}
         </div>
       </div>

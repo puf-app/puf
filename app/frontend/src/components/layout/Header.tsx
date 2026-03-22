@@ -43,6 +43,13 @@ export default function Header() {
                 Sign in
               </Button>
             </Link>
+
+            <Button
+              className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'
+              onClick={handleLogout}
+            >
+              Log out
+            </Button>
           </>
         )}
 
