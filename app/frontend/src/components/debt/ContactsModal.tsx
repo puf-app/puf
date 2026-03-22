@@ -5,7 +5,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IDebtor } from '@/stores/slices/debtSlice';
+import { IDebtor } from '@/features/debt/types';
 
 
 const CONTACTS: IDebtor[] = [];
@@ -37,7 +37,7 @@ export default function ContactsModal({
 
   const filtered = CONTACTS.filter(
     (c) =>
-      c.displayName.toLowerCase().includes(search.toLowerCase()) ||
+      `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
       c.username.toLowerCase().includes(search.toLowerCase()) ||
       c.email?.toLowerCase().includes(search.toLowerCase())
   );
@@ -79,9 +79,9 @@ export default function ContactsModal({
               </li>
             )}
             {filtered.map((contact) => {
-              const isSelected = selectedDebtorIds.includes(contact.id);
+              const isSelected = selectedDebtorIds.includes(contact._id);
               return (
-                <li key={contact.id}>
+                <li key={contact._id}>
                   <button
                     type="button"
                     onClick={() => !isSelected && onAddDebtor(contact)}
@@ -92,11 +92,11 @@ export default function ContactsModal({
                     }`}
                   >
                     <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {contact.displayName.charAt(0)}
+                      {(contact.firstName || '?').charAt(0)}
                     </span>
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-medium truncate">
-                        {contact.displayName}
+                        {contact.firstName} {contact.lastName}
                       </span>
                       <span className="block text-xs text-gray-400 truncate">
                         @{contact.username}

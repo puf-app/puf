@@ -1,12 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Upload01Icon } from '@hugeicons/core-free-icons';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,61 +28,32 @@ import {
 } from '@/features/verification/services/verificationService';
 import type { IUser } from '@/types';
 
-const COUNTRIES = [
-  { value: '', label: 'Select country' },
-  { value: 'SI', label: 'Slovenia' },
-  { value: 'AT', label: 'Austria' },
-  { value: 'DE', label: 'Germany' },
-  { value: 'IT', label: 'Italy' },
-  { value: 'HR', label: 'Croatia' },
-  { value: 'HU', label: 'Hungary' },
-  { value: 'OTHER', label: 'Other' },
-] as const;
+// We will define COUNTRIES and DOCUMENT_TYPES inside the component using translations.
 
-const COUNTRY_CODES = [
-  { value: '', label: 'Select code' },
-  { value: '+386', label: '+386 (SI)' },
-  { value: '+43', label: '+43 (AT)' },
-  { value: '+49', label: '+49 (DE)' },
-  { value: '+39', label: '+39 (IT)' },
-  { value: '+385', label: '+385 (HR)' },
-] as const;
-
-const DOCUMENT_TYPES = [
-  { value: '', label: 'Select type' },
-  { value: 'PASSPORT', label: 'Passport' },
-  { value: 'NATIONAL_ID', label: 'National ID card' },
-  { value: 'DRIVERS_LICENSE', label: "Driver's license" },
-] as const;
-
-const verificationSchema = z.object({
-  firstName: z.string().min(2, 'Required'),
-  lastName: z.string().min(2, 'Required'),
-  gender: z.enum(['male', 'female'], { message: 'Select gender' }),
-  dateOfBirth: z.string().min(1, 'Required'),
+const getVerificationSchema = (t: any) => z.object({
+  firstName: z.string().min(2, t('validation.required')),
+  lastName: z.string().min(2, t('validation.required')),
+  gender: z.enum(['male', 'female'], { message: t('validation.selectGender') }),
+  dateOfBirth: z.string().min(1, t('validation.required')),
   country: z
     .string()
-    .min(1, 'Select country')
+    .min(1, t('validation.selectCountry'))
     .refine((c) => c !== 'OTHER', {
-      message: 'Pick a country with an ISO code (required for verification)',
+      message: t('validation.countryISO'),
     }),
-  address: z.string().min(3, 'Required'),
-  postalCode: z.string().min(2, 'Required'),
-  phoneNumber: z.string().min(5, 'Required'),
-  countryCode: z.string().min(1, 'Required'),
-  documentType: z.string().min(1, 'Select document type'),
-  documentNumber: z.string().min(3, 'Enter document number'),
+  address: z.string().min(3, t('validation.required')),
+  postalCode: z.string().min(2, t('validation.required')),
+  phoneNumber: z.string().min(5, t('validation.required')),
+  countryCode: z.string().min(1, t('validation.required')),
+  documentType: z.string().min(1, t('validation.selectDocType')),
+  documentNumber: z.string().min(3, t('validation.enterDocNumber')),
 });
 
-type VerificationFormValues = z.infer<typeof verificationSchema>;
+type VerificationFormValues = z.infer<ReturnType<typeof getVerificationSchema>>;
 
 type DocumentSide = 'FRONT' | 'BACK' | 'SELFIE';
 
-const SIDES: { side: DocumentSide; label: string }[] = [
-  { side: 'FRONT', label: 'Front of ID' },
-  { side: 'BACK', label: 'Back of ID' },
-  { side: 'SELFIE', label: 'Selfie with ID' },
-];
+// SIDES defined inside component to use translations
 
 const selectClassName = cn(
   'h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
@@ -177,6 +149,7 @@ function UploadSlot({
 }
 
 export default function VerificationPage() {
+  const t = useTranslations('Verification');
   const reduxUser = useAppSelector((s) => s.user.user);
 
   const [remote, setRemote] = useState<IMyVerificationStatus | null | undefined>(undefined);
@@ -194,6 +167,41 @@ export default function VerificationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resubmitting, setResubmitting] = useState(false);
 
+  const COUNTRIES = useMemo(() => [
+    { value: '', label: t('selectCountry') },
+    { value: 'SI', label: t('countries.SI') },
+    { value: 'AT', label: t('countries.AT') },
+    { value: 'DE', label: t('countries.DE') },
+    { value: 'IT', label: t('countries.IT') },
+    { value: 'HR', label: t('countries.HR') },
+    { value: 'HU', label: t('countries.HU') },
+    { value: 'OTHER', label: t('countries.OTHER') },
+  ], [t]);
+
+  const COUNTRY_CODES = useMemo(() => [
+    { value: '', label: t('selectCode') },
+    { value: '+386', label: '+386 (SI)' },
+    { value: '+43', label: '+43 (AT)' },
+    { value: '+49', label: '+49 (DE)' },
+    { value: '+39', label: '+39 (IT)' },
+    { value: '+385', label: '+385 (HR)' },
+  ], [t]);
+
+  const DOCUMENT_TYPES = useMemo(() => [
+    { value: '', label: t('selectType') },
+    { value: 'PASSPORT', label: t('docTypes.PASSPORT') },
+    { value: 'NATIONAL_ID', label: t('docTypes.NATIONAL_ID') },
+    { value: 'DRIVERS_LICENSE', label: t('docTypes.DRIVERS_LICENSE') },
+  ], [t]);
+
+  const SIDES = useMemo((): { side: DocumentSide; label: string }[] => [
+    { side: 'FRONT', label: t('sides.FRONT') },
+    { side: 'BACK', label: t('sides.BACK') },
+    { side: 'SELFIE', label: t('sides.SELFIE') },
+  ], [t]);
+
+  const schema = useMemo(() => getVerificationSchema(t), [t]);
+
   const {
     register,
     control,
@@ -202,7 +210,7 @@ export default function VerificationPage() {
     setValue,
     formState: { errors },
   } = useForm<VerificationFormValues>({
-    resolver: zodResolver(verificationSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -241,10 +249,10 @@ export default function VerificationPage() {
         setRemote(null);
         return;
       }
-      setLoadError(msg || 'Could not load verification status');
+      setLoadError(msg || t('errors.loadStatus'));
       setRemote(null);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void refreshRemote();
@@ -271,7 +279,7 @@ export default function VerificationPage() {
       await resubmitVerificationDraft(remote._id);
       await refreshRemote();
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : 'Could not unlock verification');
+      setSubmitError(e instanceof Error ? e.message : t('errors.unlockDraft'));
     } finally {
       setResubmitting(false);
     }
@@ -282,7 +290,7 @@ export default function VerificationPage() {
     setSubmitSuccess(null);
 
     if (!files.FRONT || !files.BACK || !files.SELFIE) {
-      setSubmitError('Please upload front, back, and selfie images.');
+      setSubmitError(t('errors.missingImages'));
       return;
     }
 
@@ -316,7 +324,7 @@ export default function VerificationPage() {
       }
 
       if (!verificationId) {
-        throw new Error('Missing verification id');
+        throw new Error(t('errors.missingId'));
       }
 
       await uploadVerificationDocument(verificationId, 'FRONT', files.FRONT);
@@ -325,18 +333,16 @@ export default function VerificationPage() {
 
       await submitVerificationForReview(verificationId);
 
-      setSubmitSuccess('Verification submitted. Our team will review your documents.');
+      setSubmitSuccess(t('success.submitted'));
       setFiles({ FRONT: null, BACK: null, SELFIE: null });
       await refreshRemote();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Submission failed';
+      const msg = e instanceof Error ? e.message : t('errors.submitFailed');
       if (msg.includes('400') || msg.toLowerCase().includes('already')) {
         try {
           const again = await getMyVerificationStatus();
           setRemote(again);
-          setSubmitError(
-            'A verification request already exists. Status was refreshed — try again or continue from your draft.'
-          );
+          setSubmitError(t('errors.alreadyExists'));
         } catch {
           setSubmitError(msg);
         }
@@ -353,14 +359,14 @@ export default function VerificationPage() {
       <div className='mx-auto w-full max-w-5xl'>
         <Card className='rounded-2xl border border-gray-100 bg-white p-6 shadow-md md:p-10'>
           <h1 className='mb-6 text-3xl font-bold text-[#10294b] md:sr-only'>
-            ID verification
+            {t('page.title')}
           </h1>
 
           {authRequired && (
             <div className='mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900'>
-              You must be signed in to verify your identity.{' '}
+              {t('page.authRequired')}{' '}
               <Link href='/signin' className='font-semibold text-primary underline'>
-                Sign in
+                {t('page.signIn')}
               </Link>
             </div>
           )}
@@ -371,23 +377,23 @@ export default function VerificationPage() {
 
           {showApproved && (
             <div className='rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-4 text-emerald-900'>
-              <p className='font-semibold'>Your identity is verified.</p>
-              <p className='mt-1 text-sm'>You can use all features that require a verified account.</p>
+              <p className='font-semibold'>{t('page.verifiedTitle')}</p>
+              <p className='mt-1 text-sm'>{t('page.verifiedDesc')}</p>
             </div>
           )}
 
           {showPending && (
             <div className='rounded-lg border border-sky-200 bg-sky-50 px-4 py-4 text-sky-950'>
-              <p className='font-semibold'>Verification in progress</p>
+              <p className='font-semibold'>{t('page.pendingTitle')}</p>
               <p className='mt-1 text-sm'>
-                We are reviewing your documents. You will be notified when the status changes.
+                {t('page.pendingDesc')}
               </p>
             </div>
           )}
 
           {showRejected && (
             <div className='mb-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm'>
-              <p className='font-semibold text-destructive'>Verification was rejected</p>
+              <p className='font-semibold text-destructive'>{t('page.rejectedTitle')}</p>
               {remote?.reviewNote ? (
                 <p className='mt-1 text-muted-foreground'>{remote.reviewNote}</p>
               ) : null}
@@ -398,7 +404,7 @@ export default function VerificationPage() {
                 disabled={resubmitting}
                 onClick={() => void onResubmit()}
               >
-                {resubmitting ? 'Working…' : 'Reset to draft and resubmit'}
+                {resubmitting ? t('page.working') : t('page.resetDraft')}
               </Button>
             </div>
           )}
@@ -407,10 +413,10 @@ export default function VerificationPage() {
             <form onSubmit={handleSubmit(onSubmit)} className='grid gap-8 md:grid-cols-2 md:gap-10 md:items-start'>
               <div className='flex flex-col gap-5'>
                 <div className='flex flex-col gap-1.5'>
-                  <Label htmlFor='firstName'>First name</Label>
+                  <Label htmlFor='firstName'>{t('page.fields.firstName')}</Label>
                   <Input
                     id='firstName'
-                    placeholder='Enter your first name'
+                    placeholder={t('page.fields.firstNamePlaceholder')}
                     {...register('firstName')}
                     aria-invalid={!!errors.firstName}
                   />
@@ -420,10 +426,10 @@ export default function VerificationPage() {
                 </div>
 
                 <div className='flex flex-col gap-1.5'>
-                  <Label htmlFor='lastName'>Last name</Label>
+                  <Label htmlFor='lastName'>{t('page.fields.lastName')}</Label>
                   <Input
                     id='lastName'
-                    placeholder='Enter your last name'
+                    placeholder={t('page.fields.lastNamePlaceholder')}
                     {...register('lastName')}
                     aria-invalid={!!errors.lastName}
                   />
@@ -433,7 +439,7 @@ export default function VerificationPage() {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                  <span className='text-sm font-medium text-muted-foreground'>Gender</span>
+                  <span className='text-sm font-medium text-muted-foreground'>{t('page.fields.gender')}</span>
                   <div className='grid grid-cols-2 gap-3'>
                     {(['male', 'female'] as const).map((g) => (
                       <button
@@ -447,7 +453,7 @@ export default function VerificationPage() {
                             : 'border-input text-muted-foreground hover:border-primary/40'
                         )}
                       >
-                        <span className='capitalize'>{g === 'male' ? 'Male' : 'Female'}</span>
+                        <span className='capitalize'>{g === 'male' ? t('page.fields.male') : t('page.fields.female')}</span>
                         <span
                           className={cn(
                             'flex h-4 w-4 shrink-0 rounded border-2',
@@ -464,7 +470,7 @@ export default function VerificationPage() {
 
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                   <div className='flex flex-col gap-1.5'>
-                    <Label htmlFor='dateOfBirth'>Date of birth</Label>
+                    <Label htmlFor='dateOfBirth'>{t('page.fields.dob')}</Label>
                     <div className='relative'>
                       <Input
                         id='dateOfBirth'
@@ -487,7 +493,7 @@ export default function VerificationPage() {
                     render={({ field }) => (
                       <SelectField
                         id='country'
-                        label='Country'
+                        label={t('page.fields.country')}
                         value={field.value}
                         onChange={field.onChange}
                         options={COUNTRIES as unknown as { value: string; label: string }[]}
@@ -500,10 +506,10 @@ export default function VerificationPage() {
                 )}
 
                 <div className='flex flex-col gap-1.5'>
-                  <Label htmlFor='address'>Address</Label>
+                  <Label htmlFor='address'>{t('page.fields.address')}</Label>
                   <Input
                     id='address'
-                    placeholder='Enter your address'
+                    placeholder={t('page.fields.addressPlaceholder')}
                     {...register('address')}
                     aria-invalid={!!errors.address}
                   />
@@ -514,10 +520,10 @@ export default function VerificationPage() {
 
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                   <div className='flex flex-col gap-1.5 sm:col-span-1'>
-                    <Label htmlFor='postalCode'>Postal code</Label>
+                    <Label htmlFor='postalCode'>{t('page.fields.postalCode')}</Label>
                     <Input
                       id='postalCode'
-                      placeholder='Enter code'
+                      placeholder={t('page.fields.postalCodePlaceholder')}
                       {...register('postalCode')}
                       aria-invalid={!!errors.postalCode}
                     />
@@ -529,11 +535,11 @@ export default function VerificationPage() {
 
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                   <div className='flex flex-col gap-1.5'>
-                    <Label htmlFor='phoneNumber'>Phone number</Label>
+                    <Label htmlFor='phoneNumber'>{t('page.fields.phone')}</Label>
                     <Input
                       id='phoneNumber'
                       type='tel'
-                      placeholder='Enter phone number'
+                      placeholder={t('page.fields.phonePlaceholder')}
                       {...register('phoneNumber')}
                       aria-invalid={!!errors.phoneNumber}
                     />
@@ -547,7 +553,7 @@ export default function VerificationPage() {
                     render={({ field }) => (
                       <SelectField
                         id='countryCode'
-                        label='Country code'
+                        label={t('page.fields.countryCode')}
                         value={field.value}
                         onChange={field.onChange}
                         options={COUNTRY_CODES as unknown as { value: string; label: string }[]}
@@ -566,7 +572,7 @@ export default function VerificationPage() {
                       render={({ field }) => (
                         <SelectField
                           id='documentType'
-                          label='Select document type'
+                          label={t('page.fields.docType')}
                           value={field.value}
                           onChange={field.onChange}
                           options={DOCUMENT_TYPES as unknown as { value: string; label: string }[]}
@@ -579,10 +585,10 @@ export default function VerificationPage() {
                   </div>
 
                   <div className='flex flex-col gap-1.5'>
-                    <Label htmlFor='documentNumber'>Document number</Label>
+                    <Label htmlFor='documentNumber'>{t('page.fields.docNumber')}</Label>
                     <Input
                       id='documentNumber'
-                      placeholder='As shown on your ID'
+                      placeholder={t('page.fields.docNumberPlaceholder')}
                       {...register('documentNumber')}
                       aria-invalid={!!errors.documentNumber}
                     />
@@ -593,9 +599,9 @@ export default function VerificationPage() {
                 </div>
 
                 <div>
-                  <p className='mb-2 text-sm font-medium text-muted-foreground'>Upload documents</p>
+                  <p className='mb-2 text-sm font-medium text-muted-foreground'>{t('page.uploadDocTitle')}</p>
                   <p className='mb-3 text-xs text-muted-foreground'>
-                    JPG, PNG, or PDF. Required: front, back, and a selfie holding your ID.
+                    {t('page.uploadDocDesc')}
                   </p>
                   <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
                     {SIDES.map(({ side, label }) => (
@@ -612,10 +618,10 @@ export default function VerificationPage() {
                 </div>
 
                 <p className='text-center text-sm italic text-muted-foreground md:text-left'>
-                  Upload proof of identity for verification
+                  {t('page.uploadProof')}
                 </p>
                 <p className='text-center text-xs italic text-muted-foreground md:hidden'>
-                  Upload document
+                  {t('page.uploadDocMobile')}
                 </p>
               </div>
 
@@ -632,7 +638,7 @@ export default function VerificationPage() {
 
               {showRejected && (
                 <p className='col-span-full text-sm text-muted-foreground'>
-                  Use &quot;Reset to draft and resubmit&quot; above before sending new documents.
+                  {t('page.useResetDraft')}
                 </p>
               )}
 
@@ -643,14 +649,14 @@ export default function VerificationPage() {
                   className='min-w-[160px] rounded-md'
                   disabled={isSubmitting || showRejected}
                 >
-                  {isSubmitting ? 'Submitting…' : 'Submit'}
+                  {isSubmitting ? t('page.submitting') : t('page.submit')}
                 </Button>
               </div>
             </form>
           )}
 
           {remote === undefined && !loadError && !authRequired && (
-            <p className='text-sm text-muted-foreground'>Loading…</p>
+            <p className='text-sm text-muted-foreground'>{t('page.loading')}</p>
           )}
         </Card>
       </div>

@@ -12,11 +12,13 @@ import { DebtList } from '@/features/debt/components';
 import { useDebtsQuery } from '@/features/debt/hooks/useDebtQuery';
 import Hero from '@/components/layout/Hero';
 import { formatAmount } from '@/lib/utils';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function DebtsPage() {
   const user = useAppSelector((state) => state.user.user);
   const { data: debts, isLoading, error } = useDebtsQuery();
+  const t = useTranslations('Debts.debtsPage');
 
   if (!user) {
     return (
@@ -49,16 +51,16 @@ export default function DebtsPage() {
         <div className='flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10'>
           <div>
             <h1 className='text-4xl font-black text-black tracking-tight'>
-              My Debts
+              {t('title')}
             </h1>
             <p className='text-gray-500 mt-2 text-lg font-medium'>
-              Manage your receivables and obligations in one place.
+              {t('description')}
             </p>
           </div>
           <Link href='/create-debt'>
             <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02] active:scale-[0.98]'>
               <HugeiconsIcon icon={Add01Icon} size={20} />
-              Create New Debt
+              {t('createNew')}
             </Button>
           </Link>
         </div>
@@ -75,7 +77,7 @@ export default function DebtsPage() {
             </div>
             <div>
               <p className='text-sm font-bold text-gray-400 uppercase tracking-wider'>
-                Receivables
+                {t('receivables')}
               </p>
               <h2 className='text-3xl font-black text-green-600 mt-1'>
                 {receivables && receivables.toFixed(2)} EUR
@@ -93,7 +95,7 @@ export default function DebtsPage() {
             </div>
             <div>
               <p className='text-sm font-bold text-gray-400 uppercase tracking-wider'>
-                Obligations
+                {t('obligations')}
               </p>
               <h2 className='text-3xl font-black text-red-600 mt-1'>
                 {obligations && obligations.toFixed(2)} EUR
@@ -105,18 +107,18 @@ export default function DebtsPage() {
         {/* Debts List Section */}
         <div className='space-y-6'>
           <div className='flex items-center justify-between'>
-            <h3 className='text-2xl font-bold text-black'>Active Debts</h3>
+            <h3 className='text-2xl font-bold text-black'>{t('activeDebts')}</h3>
             <div className='h-1 flex-1 mx-6 bg-gray-100 rounded-full hidden sm:block' />
           </div>
 
           {isLoading ? (
             <div className='flex justify-center py-20'>
-              <p className='text-gray-400 font-medium'>Loading debts...</p>
+              <p className='text-gray-400 font-medium'>{t('loading')}</p>
             </div>
           ) : error ? (
             <div className='bg-red-50 border-2 border-red-100 p-8 rounded-3xl text-center'>
               <p className='text-red-600 font-bold'>
-                Failed to load debts. Please try again later.
+                {t('errorLoad')}
               </p>
             </div>
           ) : (

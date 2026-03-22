@@ -24,21 +24,7 @@ import ImageUpload from './ImageUpload';
 import RequestStatus from './RequestStatus';
 import { useCreateDebtMutation } from '../hooks/useDebtQuery';
 import { IDebt } from '../types';
-
-const debtSchema = z.object({
-  debtor_username: z.string().min(1, 'Debtor username is required'),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
-  amount: z
-    .string()
-    .min(1, 'Amount is required')
-    .refine((v) => parseFloat(v) > 0, 'Amount must be greater than 0'),
-  currency: z.string().min(1),
-  reason: z.string().optional(),
-  due_date: z.string().min(1, 'Due date is required'),
-});
-
-type FormValues = z.infer<typeof debtSchema>;
+import { useTranslations } from 'next-intl';
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF'];
 
@@ -47,6 +33,22 @@ export default function CreateDebtForm() {
   const state = useAppSelector((s) => s.debt);
   const [files, setFiles] = useState<File[]>([]);
   const createDebtMutation = useCreateDebtMutation();
+  const t = useTranslations('Debts.createForm');
+
+  const debtSchema = z.object({
+    debtor_username: z.string().min(1, t('validation.usernameReq')),
+    title: z.string().min(1, t('validation.titleReq')),
+    description: z.string().optional(),
+    amount: z
+      .string()
+      .min(1, t('validation.amountReq'))
+      .refine((v) => parseFloat(v) > 0, t('validation.amountMin')),
+    currency: z.string().min(1),
+    reason: z.string().optional(),
+    due_date: z.string().min(1, t('validation.dueDateReq')),
+  });
+
+  type FormValues = z.infer<typeof debtSchema>;
 
   const {
     register,
@@ -95,7 +97,7 @@ export default function CreateDebtForm() {
       {isSuccess && (
         <div className='bg-green-50 border-b border-green-200 px-6 py-3 flex items-center gap-2 text-green-700 text-sm font-medium'>
           <HugeiconsIcon icon={Tick01Icon} size={16} color='#15803d' />
-          Debt created successfully!
+          {t('success')}
         </div>
       )}
 
@@ -105,11 +107,11 @@ export default function CreateDebtForm() {
             {/* Left column */}
             <Card className='p-6 space-y-5'>
               <div className='space-y-1.5'>
-                <Label htmlFor='debtor_username'>Debtor username</Label>
+                <Label htmlFor='debtor_username'>{t('fields.username')}</Label>
                 <Input
                   id='debtor_username'
                   {...register('debtor_username')}
-                  placeholder='Enter debtor username'
+                  placeholder={t('fields.usernamePlaceholder')}
                   className={errors.debtor_username ? 'border-red-400' : ''}
                 />
                 {errors.debtor_username && (
@@ -120,11 +122,11 @@ export default function CreateDebtForm() {
               </div>
 
               <div className='space-y-1.5'>
-                <Label htmlFor='title'>Title</Label>
+                <Label htmlFor='title'>{t('fields.title')}</Label>
                 <Input
                   id='title'
                   {...register('title')}
-                  placeholder='Enter debt title'
+                  placeholder={t('fields.titlePlaceholder')}
                   className={errors.title ? 'border-red-400' : ''}
                 />
                 {errors.title && (
@@ -133,20 +135,20 @@ export default function CreateDebtForm() {
               </div>
 
               <div className='space-y-1.5'>
-                <Label htmlFor='description'>Description</Label>
+                <Label htmlFor='description'>{t('fields.description')}</Label>
                 <Input
                   id='description'
                   {...register('description')}
-                  placeholder='Enter debt description'
+                  placeholder={t('fields.descriptionPlaceholder')}
                 />
               </div>
 
               <div className='space-y-1.5'>
-                <Label htmlFor='reason'>Reason</Label>
+                <Label htmlFor='reason'>{t('fields.reason')}</Label>
                 <Input
                   id='reason'
                   {...register('reason')}
-                  placeholder='Enter reason for debt'
+                  placeholder={t('fields.reasonPlaceholder')}
                 />
               </div>
 
@@ -161,7 +163,7 @@ export default function CreateDebtForm() {
                   className='w-4 h-4 accent-blue-600'
                 />
                 <Label htmlFor='verification_required'>
-                  Verification required
+                  {t('fields.verificationReq')}
                 </Label>
               </div>
             </Card>
@@ -170,7 +172,7 @@ export default function CreateDebtForm() {
             <div className='space-y-6'>
               <Card className='p-6 space-y-5'>
                 <div className='space-y-1.5'>
-                  <Label htmlFor='due_date'>Due date</Label>
+                  <Label htmlFor='due_date'>{t('fields.dueDate')}</Label>
                   <Input
                     id='due_date'
                     type='date'
@@ -186,7 +188,7 @@ export default function CreateDebtForm() {
 
                 <div className='grid grid-cols-2 gap-3'>
                   <div className='space-y-1.5'>
-                    <Label htmlFor='currency'>Currency</Label>
+                    <Label htmlFor='currency'>{t('fields.currency')}</Label>
                     <select
                       id='currency'
                       {...register('currency')}
@@ -200,14 +202,14 @@ export default function CreateDebtForm() {
                     </select>
                   </div>
                   <div className='space-y-1.5'>
-                    <Label htmlFor='amount'>Amount</Label>
+                    <Label htmlFor='amount'>{t('fields.amount')}</Label>
                     <Input
                       id='amount'
                       type='number'
                       min='0'
                       step='0.01'
                       {...register('amount')}
-                      placeholder='Enter amount'
+                      placeholder={t('fields.amountPlaceholder')}
                       className={errors.amount ? 'border-red-400' : ''}
                     />
                     {errors.amount && (
@@ -241,7 +243,7 @@ export default function CreateDebtForm() {
               className='flex items-center gap-2'
             >
               <HugeiconsIcon icon={Tick01Icon} size={16} color='white' />
-              {isSubmitting ? 'Sending...' : 'Create debt'}
+              {isSubmitting ? t('actions.sending') : t('actions.create')}
             </Button>
             <Button
               type='button'
@@ -250,7 +252,7 @@ export default function CreateDebtForm() {
               className='flex items-center gap-2'
             >
               <HugeiconsIcon icon={Cancel01Icon} size={16} />
-              Abort debt
+              {t('actions.abort')}
             </Button>
           </div>
         </form>

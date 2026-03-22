@@ -8,8 +8,9 @@ import { Tick01Icon, PencilEdit01Icon, Money01Icon } from '@hugeicons/core-free-
 import { useState } from 'react';
 import { useAppDispatch } from '@/hooks/redux';
 import { setStatus } from '@/stores/slices/debtSlice';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useUpdateDebtMutation, useCompleteDebtMutation } from '../hooks/useDebtQuery';
+import { useTranslations } from 'next-intl';
 
 interface DebtDetailViewProps {
   debt: IDebt;
@@ -17,11 +18,12 @@ interface DebtDetailViewProps {
 }
 
 export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewProps) {
-  const isCreditor = debt.creditorUserId === currentUserId;
+  const isCreditor = (debt.creditorUserId as any)._id === currentUserId || debt.creditorUserId === currentUserId as unknown;
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const t = useTranslations('Debts.detailView');
   
   const updateMutation = useUpdateDebtMutation();
   const completeMutation = useCompleteDebtMutation();
@@ -56,16 +58,16 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
   };
 
   const handleSettle = async () => {
-    if (!confirm('Are you sure you want to mark this debt as settled?')) return;
+    if (!confirm(t('alerts.confirmSettle'))) return;
     
     setLoading(true);
     try {
       await completeMutation.mutateAsync(debt._id);
-      alert('Debt marked as settled!');
+      alert(t('alerts.settleSuccess'));
       router.refresh();
       router.push('/debts');
     } catch (err: any) {
-      alert(err.message || 'Failed to settle debt');
+      alert(err.message || t('alerts.settleError'));
     } finally {
       setLoading(false);
     }
@@ -81,11 +83,11 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
           amount: parseFloat(editAmount),
         }
       });
-      alert('Debt updated successfully!');
+      alert(t('alerts.updateSuccess'));
       setIsEditing(false);
       router.refresh();
     } catch (err: any) {
-      alert(err.message || 'Failed to update debt');
+      alert(err.message || t('alerts.updateError'));
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
         <Button variant='ghost' onClick={() => router.push('/debts')} className='p-2 hover:bg-gray-100 rounded-full'>
           <HugeiconsIcon icon={Money01Icon} size={24} className='rotate-180' />
         </Button>
-        <h1 className='text-3xl font-bold text-black'>Debt Details</h1>
+        <h1 className='text-3xl font-bold text-black'>{t('title')}</h1>
       </div>
 
       <Card className='border-2 border-gray-100 rounded-3xl overflow-hidden'>
@@ -118,11 +120,11 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                 <span className={`${getStatusColor(debt.status)} font-semibold px-3 py-1 rounded-full border text-sm`}>
                   {debt.status}
                 </span>
-                <span className='text-gray-400 text-sm'>Created on {formatDate(debt.createdAt)}</span>
+                <span className='text-gray-400 text-sm'>{t('createdOn')} {formatDate(debt.createdAt)}</span>
               </div>
             </div>
             <div className='text-right ml-4'>
-              <p className='text-sm text-gray-500 font-medium uppercase tracking-wider mb-1'>Amount</p>
+              <p className='text-sm text-gray-500 font-medium uppercase tracking-wider mb-1'>{t('amount')}</p>
               {isEditing ? (
                 <div className='flex items-center gap-2 justify-end'>
                   <input 
@@ -134,7 +136,9 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                   <span className='text-2xl font-black text-[#001f3f]'>{debt.currency}</span>
                 </div>
               ) : (
-                <p className='text-4xl font-black text-[#001f3f]'>{debt.amount} {debt.currency}</p>
+                <p className='text-4xl font-black text-[#001f3f]'>
+                  {String((debt.amount as any).$numberDecimal ?? debt.amount)} {debt.currency}
+                </p>
               )}
             </div>
           </div>
@@ -144,30 +148,30 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             <div className='space-y-4'>
               <div>
-                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>Creditor</h3>
-                <p className='text-lg font-semibold text-black'>{isCreditor ? 'You' : 'User'}</p>
+                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>{t('creditorLabel')}</h3>
+                <p className='text-lg font-semibold text-black'>{isCreditor ? t('you') : t('user')}</p>
               </div>
               <div>
-                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>Debtor</h3>
-                <p className='text-lg font-semibold text-black'>{isCreditor ? 'User' : 'You'}</p>
+                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>{t('debtorLabel')}</h3>
+                <p className='text-lg font-semibold text-black'>{isCreditor ? t('user') : t('you')}</p>
               </div>
             </div>
             <div className='space-y-4'>
               <div>
-                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>Due Date</h3>
+                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>{t('dueDateLabel')}</h3>
                 <p className='text-lg font-semibold text-black'>{formatDate(debt.dueDate)}</p>
               </div>
               <div>
-                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>Reason</h3>
-                <p className='text-lg font-semibold text-black capitalize'>{debt.reason || 'N/A'}</p>
+                <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-1'>{t('reasonLabel')}</h3>
+                <p className='text-lg font-semibold text-black capitalize'>{debt.reason || t('na')}</p>
               </div>
             </div>
           </div>
 
           <div className='border-t border-gray-100 pt-8'>
-            <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-2'>Description</h3>
+            <h3 className='text-sm font-bold text-gray-400 uppercase tracking-wider mb-2'>{t('descriptionLabel')}</h3>
             <p className='text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-2xl italic'>
-              &quot;{debt.description || 'No description provided.'}&quot;
+              &quot;{debt.description || t('noDescription')}&quot;
             </p>
           </div>
 
@@ -181,7 +185,7 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                     disabled={loading || updateMutation.isPending}
                   >
                     <HugeiconsIcon icon={Tick01Icon} size={20} />
-                    {loading || updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+                    {loading || updateMutation.isPending ? t('actions.saving') : t('actions.saveChanges')}
                   </Button>
                   <Button 
                     variant='outline'
@@ -204,7 +208,7 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                     disabled={loading || completeMutation.isPending}
                   >
                     <HugeiconsIcon icon={Tick01Icon} size={20} />
-                    {loading || completeMutation.isPending ? 'Processing...' : 'Settle Debt'}
+                    {loading || completeMutation.isPending ? t('actions.processing') : t('actions.settleDebt')}
                   </Button>
                   <Button 
                     variant='outline' 
@@ -213,7 +217,7 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                     disabled={loading || completeMutation.isPending}
                   >
                     <HugeiconsIcon icon={PencilEdit01Icon} size={20} />
-                    Edit Details
+                    {t('actions.editDetails')}
                   </Button>
                 </>
               )}

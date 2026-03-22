@@ -1,6 +1,7 @@
 import { IDebt } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 interface DebtCardProps {
   debt: IDebt;
@@ -8,6 +9,9 @@ interface DebtCardProps {
 }
 
 export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
+  const t = useTranslations('Debts.debtCard');
+  const userTranslation = useTranslations('Debts.detailView');
+  
   const getStatusColor = (status: IDebt['status']) => {
     switch (status) {
       case 'ACCEPTED':
@@ -54,23 +58,23 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
         <CardContent>
           <div className='flex flex-col gap-2'>
             <div className='flex justify-between items-center'>
-              <span className='text-sm text-gray-500 font-medium'>Amount:</span>
+              <span className='text-sm text-gray-500 font-medium'>{t('amountLabel')}</span>
               <span className='text-xl font-bold text-[#001f3f]'>
-                {debt.amount.$numberDecimal} {debt.currency}
+                {String((debt.amount as any).$numberDecimal ?? debt.amount)} {debt.currency}
               </span>
             </div>
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-500 font-medium'>
-                {isCreditor ? 'Debtor:' : 'Creditor:'}
+                {isCreditor ? t('debtorLabel') : t('creditorLabel')}
               </span>
               <span className='text-sm font-semibold text-black'>
                 {/* placeholder for username */}
-                {isCreditor ? 'User' : 'You'}
+                {isCreditor ? userTranslation('user') : userTranslation('you')}
               </span>
             </div>
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-500 font-medium'>
-                Due Date:
+                {t('dueDateLabel')}
               </span>
               <span className='text-sm text-black'>
                 {formatDate(debt.dueDate)}

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, Inter_Tight } from 'next/font/google';
-import './globals.css';
+import '../globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { setRequestLocale, getMessages } from 'next-intl/server';
 
 // providers
 import Providers from '@/providers/Providers';
@@ -68,23 +70,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const messages = await getMessages();
+
   return (
-    <html lang='en'>
+    <html lang={locale}>
       <body
         className={`${interSans.variable} ${interTight.variable} antialiased`}
       >
-        <Providers>
-          <div className='flex flex-col min-h-screen justify-between font-sans'>
-            <Header />
-            {children}
-            <Footer />
-          </div>
-        </Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            <div className='flex flex-col min-h-screen justify-between font-sans'>
+              <Header />
+              {children}
+              <Footer />
+            </div>
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

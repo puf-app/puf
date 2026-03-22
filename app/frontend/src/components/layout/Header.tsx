@@ -1,15 +1,19 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { clearUser } from '@/stores/slices/userSlice';
 import { getHeaderText } from '@/lib/utils';
 import { postToApi } from '@/lib/api/client';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
+import LocaleSwitcher from '@/components/layout/LocaleSwitcher';
 
 export default function Header() {
+  const t = useTranslations('Header');
+  const tTitles = useTranslations('PageTitles');
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -30,51 +34,25 @@ export default function Header() {
     <header className='h-16 md:h-24 bg-header flex items-center justify-between px-4 md:px-12 text-primary-foreground border-b border-primary/20'>
       <div className='flex items-center gap-8'>
         <Link href='/' className='text-4xl font-semibold'>
-          <h1>{headerText}</h1>
+          <h1>{tTitles(headerText as any)}</h1>
         </Link>
       </div>
 
-      <nav className='flex gap-4'>
+      <nav className='flex items-center gap-4'>
         {pathname === '/' && !user && (
           <>
             <Link href='/signup'>
               <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Sign up
+                {t('signUp')}
               </Button>
             </Link>
 
             <Link href='/signin'>
               <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Sign in
+                {t('signIn')}
               </Button>
             </Link>
           </>
-        )}
-
-        {user && (
-          <div className='flex items-center gap-4'>
-            <Link href='/contacts'>
-              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Contacts
-              </Button>
-            </Link>
-            <Link href='/debts'>
-              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Debts
-              </Button>
-            </Link>
-            <Link href='/profile'>
-              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Profile
-              </Button>
-            </Link>
-            <Button
-              className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'
-              onClick={handleLogout}
-            >
-              Log out
-            </Button>
-          </div>
         )}
 
         {(pathname === '/signin' ||
@@ -82,7 +60,7 @@ export default function Header() {
           pathname === '/verification') && (
           <Link href='/'>
             <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-              Home
+              {t('home')}
             </Button>
           </Link>
         )}
@@ -93,16 +71,44 @@ export default function Header() {
             <>
               <Link href='/home'>
                 <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                  Home
+                  {t('home')}
                 </Button>
               </Link>
               <Link href='/statistics'>
                 <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                  Statistics
+                  {t('statistics')}
                 </Button>
               </Link>
             </>
           )}
+
+        {user && (
+          <div className='flex items-center gap-4'>
+            <Link href='/contacts'>
+              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                {t('contacts')}
+              </Button>
+            </Link>
+            <Link href='/debts'>
+              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                {t('debts')}
+              </Button>
+            </Link>
+            <Link href='/profile'>
+              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                {t('profile')}
+              </Button>
+            </Link>
+            <Button
+              className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'
+              onClick={handleLogout}
+            >
+              {t('logOut')}
+            </Button>
+          </div>
+        )}
+
+        <LocaleSwitcher />
       </nav>
     </header>
   );

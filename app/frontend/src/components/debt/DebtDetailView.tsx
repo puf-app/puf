@@ -9,7 +9,7 @@ import { patchToApi } from '@/lib/api/client';
 import { useState } from 'react';
 import { useAppDispatch } from '@/hooks/redux';
 import { setStatus } from '@/stores/slices/debtSlice';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 
 interface DebtDetailViewProps {
   debt: IDebt;
@@ -17,7 +17,7 @@ interface DebtDetailViewProps {
 }
 
 export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewProps) {
-  const isCreditor = debt.creditorUserId === currentUserId;
+  const isCreditor = (debt.creditorUserId as any)._id === currentUserId || debt.creditorUserId === currentUserId as unknown;
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -128,7 +128,9 @@ export default function DebtDetailView({ debt, currentUserId }: DebtDetailViewPr
                   <span className='text-2xl font-black text-[#001f3f]'>{debt.currency}</span>
                 </div>
               ) : (
-                <p className='text-4xl font-black text-[#001f3f]'>{debt.amount} {debt.currency}</p>
+                <p className='text-4xl font-black text-[#001f3f]'>
+                  {String((debt.amount as any).$numberDecimal ?? debt.amount)} {debt.currency}
+                </p>
               )}
             </div>
           </div>

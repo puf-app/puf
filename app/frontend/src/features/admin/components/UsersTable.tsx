@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { IUser } from '@/types';
 import { useUpdateUserMutation } from '../hooks/useAdminQueries';
+import { useTranslations } from 'next-intl';
 
 const PAGE_SIZE = 10;
 
@@ -19,6 +20,7 @@ interface IUsersTableProps {
 export default function UsersTable({ users }: IUsersTableProps) {
   const [page, setPage] = useState(0);
   const updateUser = useUpdateUserMutation();
+  const t = useTranslations('Admin.usersTable');
 
   const totalPages = Math.ceil(users.length / PAGE_SIZE);
   const pageUsers = users.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -33,19 +35,19 @@ export default function UsersTable({ users }: IUsersTableProps) {
         <table className='w-full text-sm'>
           <thead className='bg-slate-50 border-b border-slate-200'>
             <tr>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>User</th>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>Status</th>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>Verification</th>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>Last activity</th>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>Role</th>
-              <th className='px-4 py-3 text-left font-medium text-slate-600'>Action</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.user')}</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.status')}</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.verification')}</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.lastActivity')}</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.role')}</th>
+              <th className='px-4 py-3 text-left font-medium text-slate-600'>{t('columns.action')}</th>
             </tr>
           </thead>
           <tbody className='divide-y divide-slate-100'>
             {pageUsers.length === 0 && (
               <tr>
                 <td colSpan={6} className='px-4 py-8 text-center text-sm text-slate-400'>
-                  No users found.
+                  {t('noUsers')}
                 </td>
               </tr>
             )}
@@ -66,7 +68,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
                 <td className='px-4 py-3 text-slate-500 text-xs'>
                   {user.lastSeenAt
                     ? dateFormatter.format(new Date(user.lastSeenAt))
-                    : '—'}
+                    : t('unknownDate')}
                 </td>
                 <td className='px-4 py-3'>
                   <span
@@ -76,7 +78,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
                         : 'bg-slate-100 text-slate-600'
                     }`}
                   >
-                    {user.admin ? 'Admin' : 'User'}
+                    {user.admin ? t('roles.admin') : t('roles.user')}
                   </span>
                 </td>
                 <td className='px-4 py-3'>
@@ -87,7 +89,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
                     disabled={updateUser.isPending}
                     className='h-7 text-xs'
                   >
-                    {user.admin ? 'Remove admin' : 'Make admin'}
+                    {user.admin ? t('actions.removeAdmin') : t('actions.makeAdmin')}
                   </Button>
                 </td>
               </tr>
@@ -99,7 +101,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
       {totalPages > 1 && (
         <div className='flex items-center justify-between px-4 py-3 border-t border-slate-200'>
           <span className='text-xs text-slate-500'>
-            Page {page + 1} of {totalPages} ({users.length} users)
+            {t('pagination.page', { page: page + 1, total: totalPages, count: users.length })}
           </span>
           <div className='flex gap-2'>
             <Button
@@ -109,7 +111,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
               disabled={page === 0}
               className='h-7 text-xs'
             >
-              Previous
+              {t('pagination.prev')}
             </Button>
             <Button
               variant='outline'
@@ -118,7 +120,7 @@ export default function UsersTable({ users }: IUsersTableProps) {
               disabled={page >= totalPages - 1}
               className='h-7 text-xs'
             >
-              Next
+              {t('pagination.next')}
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { IDebt } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface DebtCardProps {
   debt: IDebt;
@@ -53,7 +53,7 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-500 font-medium'>Amount:</span>
               <span className='text-xl font-bold text-[#001f3f]'>
-                {debt.amount} {debt.currency}
+                {String((debt.amount as any).$numberDecimal ?? debt.amount)} {debt.currency}
               </span>
             </div>
             <div className='flex justify-between items-center'>

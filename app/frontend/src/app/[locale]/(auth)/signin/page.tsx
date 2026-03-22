@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 // form validation
 import { useForm } from 'react-hook-form';
@@ -18,17 +19,21 @@ import { Label } from '@/components/ui/label';
 import { useAppDispatch } from '@/hooks/redux';
 import { loginWithCredentials } from '@/lib/auth/loginWithCredentials';
 
-const signinSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type SigninFormValues = z.infer<typeof signinSchema>;
+type SigninFormValues = {
+  username: string;
+  password: string;
+}
 
 export default function SigninPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [apiError, setApiError] = useState<string | null>(null);
+  const t = useTranslations('Auth');
+
+  const signinSchema = useMemo(() => z.object({
+    username: z.string().min(3, t('validation.usernameMin')),
+    password: z.string().min(6, t('validation.passwordMin')),
+  }), [t]);
 
   const {
     register,
@@ -51,15 +56,13 @@ export default function SigninPage() {
       });
 
       if (requires2FA) {
-        setApiError(
-          'Two-factor authentication is required (2FA not implemented yet).',
-        );
+        setApiError(t('errors.twoFactorRequired'));
         return;
       }
 
       router.push('/');
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Login failed');
+      setApiError(e instanceof Error ? e.message : t('errors.loginFailed'));
     }
   };
 
@@ -69,18 +72,18 @@ export default function SigninPage() {
         {/* Mobile: no card */}
         <div className='w-full max-w-md md:hidden flex flex-col'>
           <h1 className='text-3xl font-semibold text-foreground text-center mt-8 mb-10'>
-            Sign in
+            {t('actions.signIn')}
           </h1>
 
           <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2'>
               <Label className='text-sm' htmlFor='username-mobile'>
-                Username
+                {t('fields.username')}
               </Label>
               <Input
                 id='username-mobile'
                 type='text'
-                placeholder='Enter your username'
+                placeholder={t('fields.usernamePlaceholder')}
                 className='h-10'
                 {...register('username')}
               />
@@ -93,12 +96,12 @@ export default function SigninPage() {
 
             <div className='flex flex-col gap-2'>
               <Label className='text-sm' htmlFor='password-mobile'>
-                Password
+                {t('fields.password')}
               </Label>
               <Input
                 id='password-mobile'
                 type='password'
-                placeholder='Enter your password'
+                placeholder={t('fields.passwordPlaceholder')}
                 className='h-10'
                 {...register('password')}
               />
@@ -113,15 +116,15 @@ export default function SigninPage() {
             </div>
 
             <p className='text-xs text-center pt-10'>
-              Don&apos;t have an account?{' '}
+              {t('actions.noAccount')}{' '}
               <Link href='/signup' className='underline text-primary'>
-                Sign up
+                {t('actions.signUp')}
               </Link>
             </p>
 
             <div className='pt-10'>
               <Button type='submit' className='w-full h-11'>
-                Sign in
+                {t('actions.signIn')}
               </Button>
             </div>
           </form>
@@ -131,19 +134,19 @@ export default function SigninPage() {
         <Card className='hidden md:block w-full max-w-xl shadow-md py-10 px-10'>
           <CardHeader className='pb-6'>
             <CardTitle className='text-3xl font-semibold text-foreground text-center'>
-              Sign in
+              {t('actions.signIn')}
             </CardTitle>
           </CardHeader>
           <CardContent className='pt-0'>
             <form className='space-y-8' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-2'>
                 <Label className='text-sm' htmlFor='username'>
-                  Username
+                  {t('fields.username')}
                 </Label>
                 <Input
                   id='username'
                   type='text'
-                  placeholder='Enter your username'
+                  placeholder={t('fields.usernamePlaceholder')}
                   className='h-10'
                   {...register('username')}
                 />
@@ -156,12 +159,12 @@ export default function SigninPage() {
 
               <div className='flex flex-col gap-2'>
                 <Label className='text-sm' htmlFor='password'>
-                  Password
+                  {t('fields.password')}
                 </Label>
                 <Input
                   id='password'
                   type='password'
-                  placeholder='Enter your password'
+                  placeholder={t('fields.passwordPlaceholder')}
                   className='h-10'
                   {...register('password')}
                 />
@@ -176,13 +179,13 @@ export default function SigninPage() {
               </div>
 
               <Button type='submit' className='w-full h-11'>
-                Sign in
+                {t('actions.signIn')}
               </Button>
 
               <p className='text-sm text-center'>
-                Don&apos;t have an account?{' '}
+                {t('actions.noAccount')}{' '}
                 <Link href='/signup' className='underline text-primary'>
-                  Sign up
+                  {t('actions.signUp')}
                 </Link>
               </p>
             </form>

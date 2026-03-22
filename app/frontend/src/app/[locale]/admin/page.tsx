@@ -9,6 +9,7 @@ import {
 } from '@/features/admin/hooks/useAdminQueries';
 import UsersTable from '@/features/admin/components/UsersTable';
 import VerificationsTable from '@/features/admin/components/VerificationsTable';
+import { useTranslations } from 'next-intl';
 
 type TTab = 'users' | 'verifications';
 
@@ -22,11 +23,12 @@ export default function AdminPage() {
   const verificationsQuery = useVerificationsQuery(
     verificationStatus || undefined,
   );
+  const t = useTranslations('Admin.adminPage');
 
   if (!user?.admin) {
     return (
       <main className='flex-1 flex items-center justify-center bg-[#eceef2]'>
-        <p className='text-slate-500'>Access denied. Admins only.</p>
+        <p className='text-slate-500'>{t('accessDenied')}</p>
       </main>
     );
   }
@@ -36,15 +38,15 @@ export default function AdminPage() {
       <section className='mx-auto w-full max-w-7xl space-y-6'>
         {/* Header */}
         <div className='rounded-3xl bg-[#1f2f4c] px-6 py-6 text-white shadow-sm'>
-          <h1 className='text-4xl font-semibold'>Admin panel</h1>
+          <h1 className='text-4xl font-semibold'>{t('title')}</h1>
           <p className='mt-1 text-sm text-blue-100'>
-            Manage users and verifications.
+            {t('description')}
           </p>
 
           <div className='mt-4 grid gap-3 sm:grid-cols-2'>
             <div className='rounded-2xl bg-white/10 px-4 py-3'>
               <p className='text-xs uppercase tracking-wide text-blue-100'>
-                Total users
+                {t('totalUsers')}
               </p>
               <p className='mt-1 text-2xl font-semibold'>
                 {usersQuery.isLoading
@@ -54,7 +56,7 @@ export default function AdminPage() {
             </div>
             <div className='rounded-2xl bg-white/10 px-4 py-3'>
               <p className='text-xs uppercase tracking-wide text-blue-100'>
-                Pending verifications
+                {t('pendingVerifications')}
               </p>
               <p className='mt-1 text-2xl font-semibold'>
                 {verificationsQuery.isLoading
@@ -72,14 +74,14 @@ export default function AdminPage() {
             variant={tab === 'users' ? 'default' : 'outline'}
             size='sm'
           >
-            Users
+            {t('tabs.users')}
           </Button>
           <Button
             onClick={() => setTab('verifications')}
             variant={tab === 'verifications' ? 'default' : 'outline'}
             size='sm'
           >
-            Verifications
+            {t('tabs.verifications')}
           </Button>
         </div>
 
@@ -87,7 +89,7 @@ export default function AdminPage() {
         {tab === 'users' && (
           <>
             {usersQuery.isLoading && (
-              <p className='text-sm text-slate-500'>Loading users...</p>
+              <p className='text-sm text-slate-500'>{t('loadingUsers')}</p>
             )}
             {usersQuery.error && (
               <p className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
@@ -109,13 +111,13 @@ export default function AdminPage() {
                   variant={verificationStatus === s ? 'default' : 'outline'}
                   size='sm'
                 >
-                  {s || 'All'}
+                  {s || t('all')}
                 </Button>
               ))}
             </div>
 
             {verificationsQuery.isLoading && (
-              <p className='text-sm text-slate-500'>Loading verifications...</p>
+              <p className='text-sm text-slate-500'>{t('loadingVerifs')}</p>
             )}
             {verificationsQuery.error && (
               <p className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>

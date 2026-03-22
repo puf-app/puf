@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Upload01Icon, Cancel01Icon } from '@hugeicons/core-free-icons';
+import { useTranslations } from 'next-intl';
 
 interface ImageUploadProps {
   files: File[];
@@ -12,6 +13,7 @@ interface ImageUploadProps {
 export default function ImageUpload({ files, onChange }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const t = useTranslations('Debts.imageUpload');
 
   const handleFiles = useCallback(
     (incoming: FileList | null) => {
@@ -57,7 +59,7 @@ export default function ImageUpload({ files, onChange }: ImageUploadProps) {
           />
         </div>
         <p className="text-sm text-gray-500 text-center px-4">
-          Upload proof of debt
+          {t('uploadProof')}
         </p>
         <input
           ref={inputRef}

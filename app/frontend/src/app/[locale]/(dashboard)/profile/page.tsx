@@ -2,20 +2,22 @@
 
 import { useAppSelector } from '@/hooks/redux';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ProfilePage() {
+  const t = useTranslations('Profile');
   const user = useAppSelector((state) => state.user.user);
 
   if (!user) {
     return (
       <div className='flex flex-col items-center justify-center min-h-[60vh] gap-4'>
         <h1 className='text-2xl font-bold text-red-600'>
-          Error: User not logged in
+          {t('errors.notLoggedInTitle')}
         </h1>
-        <p className='text-gray-600'>Please log in to view your profile.</p>
+        <p className='text-gray-600'>{t('errors.notLoggedInDesc')}</p>
         <Link href='/'>
-          <Button>Go to Home</Button>
+          <Button>{t('actions.goHome')}</Button>
         </Link>
       </div>
     );
@@ -25,12 +27,12 @@ export default function ProfilePage() {
   const firstName = user.firstName || 'User';
   const lastName = user.lastName || '';
   const username = user.username || 'username';
-  const email = user.email || 'No email provided';
-  const phone = user.phone || 'No phone number provided';
+  const email = user.email || t('fields.noEmail');
+  const phone = user.phone || t('fields.noPhone');
   const createdAt = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString()
-    : 'N/A';
-  const isVerified = user.isVerified ? 'Verified' : 'Not verified';
+    : t('fields.na');
+  const isVerified = user.isVerified ? t('fields.verified') : t('fields.notVerified');
 
   return (
     <div className='max-w-5xl mx-auto px-8 py-12 w-full'>
@@ -58,7 +60,7 @@ export default function ProfilePage() {
 
           <Link href='/settings' className='mt-2'>
             <Button className='bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8'>
-              Settings
+              {t('actions.settings')}
             </Button>
           </Link>
         </div>
@@ -66,30 +68,30 @@ export default function ProfilePage() {
         {/* Right Column: Basic Info */}
         <div className='flex-grow'>
           <div className='bg-white rounded-2xl border-2 border-gray-50 p-8 shadow-sm'>
-            <h2 className='text-2xl font-bold text-black mb-2'>Basic info</h2>
+            <h2 className='text-2xl font-bold text-black mb-2'>{t('fields.basicInfo')}</h2>
             <hr className='border-gray-100 mb-6' />
 
             <div className='space-y-6'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
-                <span className='font-semibold text-black'>Email address:</span>
+                <span className='font-semibold text-black'>{t('fields.email')}</span>
                 <span className='text-gray-600'>{email}</span>
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
-                <span className='font-semibold text-black'>Telephone:</span>
+                <span className='font-semibold text-black'>{t('fields.telephone')}</span>
                 <span className='text-gray-600'>{phone}</span>
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 <span className='font-semibold text-black'>
-                  Account created:
+                  {t('fields.accountCreated')}
                 </span>
                 <span className='text-gray-600'>{createdAt}</span>
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 <span className='font-semibold text-black'>
-                  Verification status:
+                  {t('fields.verificationStatus')}
                 </span>
                 <span
                   className={`font-medium ${user.isVerified ? 'text-blue-600' : 'text-gray-500'}`}

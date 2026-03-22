@@ -1,0 +1,409 @@
+{
+  "Hero": {
+    "aboutUs": "O nas",
+    "description": "Dobrodošli na naši platformi. To je preprost prostor, kjer lahko spremljate skupne stroške in dolgove med ljudmi. Enostavno ustvarite nov dolg, preverite, kdo komu dolguje in imejte vse organizirano na enem mestu. Za začetek preprosto ustvarite nov vnos in jasno ter hitro upravljajte stanje na računih."
+  },
+  "Dashboard": {
+    "logDebt": "Zabeleži dolg",
+    "logDebtDesc": "Imejte jasen pregled nad vsem, kar dolgujete.",
+    "createDebt": "Ustvari dolg",
+    "pendingDebts": "Neporavnani dolgovi",
+    "noDebtsYet": "še ni dolgov"
+  },
+  "Header": {
+    "signUp": "Registracija",
+    "signIn": "Prijava",
+    "contacts": "Stiki",
+    "debts": "Dolgovi",
+    "profile": "Profil",
+    "logOut": "Odjavi se",
+    "home": "Domov",
+    "statistics": "Statistika"
+  },
+  "Footer": {
+    "noAccount": "Nimate računa?",
+    "signUp": "Registriraj se",
+    "copyright": "© {year} Puff Inc."
+  },
+  "PageTitles": {
+    "signin": "Prijava v PUF",
+    "signup": "Registracija v PUF",
+    "profile": "Profil",
+    "debts": "Vaši dolgovi",
+    "home": "Domov",
+    "createDebt": "Ustvari dolg",
+    "verification": "Vaši dolgovi",
+    "default": "PUF - reši se dolgov"
+  },
+  "Auth": {
+    "validation": {
+      "usernameMin": "Uporabniško ime mora imeti vsaj 3 znake",
+      "passwordMin": "Geslo mora imeti vsaj 6 znakov",
+      "emailInvalid": "Prosimo, vnesite veljaven e-poštni naslov",
+      "fullNameRequired": "Polno ime je obvezno"
+    },
+    "errors": {
+      "twoFactorRequired": "Potrebna je dvofaktorska avtentikacija (2FA še ni implementiran).",
+      "twoFactorRequiredSignup": "Račun je ustvarjen. Potrebna je dvofaktorska avtentikacija — prosimo, prijavite se za nadaljevanje.",
+      "loginFailed": "Prijava ni uspela",
+      "registrationFailed": "Registracija ni uspela"
+    },
+    "fields": {
+      "username": "Uporabniško ime",
+      "usernamePlaceholder": "Vnesite uporabniško ime",
+      "password": "Geslo",
+      "passwordPlaceholder": "Vnesite geslo",
+      "email": "E-poštni naslov",
+      "emailPlaceholder": "Vnesite e-poštni naslov",
+      "fullName": "Polno ime",
+      "fullNamePlaceholder": "Vnesite polno ime",
+      "phone": "Telefonska številka",
+      "phonePlaceholder": "Vnesite telefonsko številko"
+    },
+    "actions": {
+      "signIn": "Prijava",
+      "signUp": "Registracija",
+      "noAccount": "Nimate računa?",
+      "hasAccount": "Že imate račun?"
+    }
+  },
+  "Profile": {
+    "errors": {
+      "notLoggedInTitle": "Napaka: Niste prijavljeni",
+      "notLoggedInDesc": "Prosimo, prijavite se za ogled profila."
+    },
+    "actions": {
+      "goHome": "Domov",
+      "settings": "Nastavitve"
+    },
+    "fields": {
+      "basicInfo": "Osnovni podatki",
+      "email": "E-poštni naslov:",
+      "noEmail": "Ni podanega e-poštnega naslova",
+      "telephone": "Telefon:",
+      "noPhone": "Ni podane telefonske številke",
+      "accountCreated": "Račun ustvarjen:",
+      "verificationStatus": "Status verifikacije:",
+      "verified": "Verificiran",
+      "notVerified": "Ni verificiran",
+      "na": "N/A"
+    }
+  },
+  "Settings": {
+    "sections": {
+      "account": "Račun",
+      "security": "Varnost"
+    },
+    "fields": {
+      "firstName": "Spremeni ime",
+      "firstNamePlaceholder": "Vnesite ime",
+      "lastName": "Spremeni priimek",
+      "lastNamePlaceholder": "Vnesite priimek",
+      "username": "Spremeni uporabniško ime",
+      "usernamePlaceholder": "Vnesite uporabniško ime",
+      "email": "Spremeni e-poštni naslov",
+      "emailPlaceholder": "Vnesite e-pošto",
+      "phone": "Spremeni telefonsko številko",
+      "phonePlaceholder": "Vnesite telefonsko številko",
+      "profilePhoto": "Spremeni sliko profila",
+      "profilePhotoPlaceholder": "Izberite datoteko",
+      "oldPassword": "Staro geslo",
+      "oldPasswordPlaceholder": "Vnesite staro geslo",
+      "newPassword": "Spremeni geslo",
+      "newPasswordPlaceholder": "Vnesite novo geslo"
+    },
+    "actions": {
+      "change": "Spremeni"
+    },
+    "messages": {
+      "lastSaved": "Nazadnje shranjeno:",
+      "passwordSuccess": "Geslo je bilo uspešno posodobljeno.",
+      "passwordErrorDefault": "Gesla ni bilo mogoče posodobiti"
+    },
+    "validation": {
+      "firstNameMin": "Ime mora imeti vsaj 2 znaka",
+      "lastNameMin": "Priimek mora imeti vsaj 2 znaka",
+      "usernameMin": "Uporabniško ime mora imeti vsaj 3 znake",
+      "emailInvalid": "Prosimo, vnesite veljaven e-poštni naslov",
+      "phoneShort": "Telefonska številka je prekratka",
+      "phoneLong": "Telefonska številka je predolga",
+      "passwordMin": "Geslo mora imeti vsaj 6 znakov",
+      "oldPasswordMin": "Staro geslo mora imeti vsaj 6 znakov"
+    }
+  },
+  "Statistics": {
+    "title": "Statistika",
+    "cards": {
+      "totalDebts": "Skupaj dolgov",
+      "lastWeek": "Prejšnji teden",
+      "totalAmount": "Skupni znesek"
+    },
+    "chart": {
+      "title": "Dolgovi v času"
+    },
+    "loading": "Nalaganje statistike..."
+  },
+  "Debts": {
+    "debtsPage": {
+      "title": "Moji dolgovi",
+      "description": "Upravljajte svoje terjatve in obveznosti na enem mestu.",
+      "createNew": "Ustvari nov dolg",
+      "receivables": "Terjatve",
+      "obligations": "Obveznosti",
+      "activeDebts": "Aktivni dolgovi",
+      "loading": "Nalaganje dolgov...",
+      "errorLoad": "Napaka pri nalaganju dolgov. Prosimo, poskusite kasneje."
+    },
+    "debtDetail": {
+      "loading": "Nalaganje podrobnosti dolga...",
+      "notFound": "Dolg ni najden",
+      "notFoundDesc": "Dolg, ki ga iščete, ne obstaja ali je bil izbrisan."
+    },
+    "debtList": {
+      "emptyTitle": "Ni najdenih dolgov.",
+      "emptyDesc": "Vaši dolgovi in terjatve se bodo prikazali tukaj."
+    },
+    "contactsModal": {
+      "title": "Dodaj osebe",
+      "searchPlaceholder": "Vnesite ime ali e-pošto",
+      "add": "Dodaj",
+      "yourContacts": "Vaši stiki:",
+      "noContacts": "Ni najdenih stikov",
+      "close": "Zapri"
+    },
+    "createForm": {
+      "success": "Dolg uspešno ustvarjen!",
+      "validation": {
+        "usernameReq": "Uporabniško ime dolžnika je obvezno",
+        "titleReq": "Naslov je obvezen",
+        "amountReq": "Znesek je obvezen",
+        "amountMin": "Znesek mora biti večji od 0",
+        "dueDateReq": "Rok plačila je obvezen"
+      },
+      "fields": {
+        "username": "Uporabniško ime dolžnika",
+        "usernamePlaceholder": "Vnesite uporabniško ime",
+        "title": "Naslov",
+        "titlePlaceholder": "Vnesite naslov dolga",
+        "description": "Opis",
+        "descriptionPlaceholder": "Vnesite opis dolga",
+        "reason": "Razlog",
+        "reasonPlaceholder": "Vnesite razlog za dolg",
+        "verificationReq": "Zahtevana verifikacija",
+        "dueDate": "Rok plačila",
+        "currency": "Valuta",
+        "amount": "Znesek",
+        "amountPlaceholder": "Vnesite znesek"
+      },
+      "actions": {
+        "sending": "Pošiljam...",
+        "create": "Ustvari dolg",
+        "abort": "Prekliči"
+      }
+    },
+    "detailView": {
+      "title": "Podrobnosti dolga",
+      "createdOn": "Ustvarjeno",
+      "amount": "Znesek",
+      "creditorLabel": "Upnik",
+      "debtorLabel": "Dolžnik",
+      "you": "Ti",
+      "user": "Uporabnik",
+      "dueDateLabel": "Rok plačila",
+      "reasonLabel": "Razlog",
+      "na": "N/A",
+      "descriptionLabel": "Opis",
+      "noDescription": "Ni opisa.",
+      "actions": {
+        "saving": "Shranjujem...",
+        "saveChanges": "Shrani spremembe",
+        "cancel": "Prekliči",
+        "processing": "Obdelujem...",
+        "settleDebt": "Poravnaj dolg",
+        "editDetails": "Uredi podrobnosti"
+      },
+      "alerts": {
+        "confirmSettle": "Ste prepričani, da želite označiti ta dolg kot poravnan?",
+        "settleSuccess": "Dolg označen kot poravnan!",
+        "settleError": "Napaka pri poravnavi dolga",
+        "updateSuccess": "Dolg uspešno posodobljen!",
+        "updateError": "Napaka pri posodabljanju dolga"
+      }
+    },
+    "debtCard": {
+      "amountLabel": "Znesek:",
+      "debtorLabel": "Dolžnik:",
+      "creditorLabel": "Upnik:",
+      "dueDateLabel": "Rok plačila:"
+    },
+    "imageUpload": {
+      "uploadProof": "Naloži dokazilo o dolgu"
+    },
+    "requestStatus": {
+      "title": "Status zahteve",
+      "due": "Rok",
+      "status": {
+        "PENDING": "V čakanju",
+        "ACCEPTED": "Sprejeto",
+        "REJECTED": "Zavrnjeno",
+        "PARTIALLY_PAID": "Delno plačano",
+        "PAID": "Plačano",
+        "CANCELLED": "Preklicano",
+        "DISPUTED": "Sporedno"
+      }
+    },
+    "debtorTag": {
+      "remove": "Odstrani"
+    }
+  },
+  "Admin": {
+    "adminPage": {
+      "accessDenied": "Dostop zavrnjen. Samo za administratorje.",
+      "title": "Nadzorna plošča",
+      "description": "Upravljajte uporabnike in preverjanja.",
+      "totalUsers": "Skupaj uporabnikov",
+      "pendingVerifications": "Preverjanja v čakanju",
+      "loadingUsers": "Nalaganje uporabnikov...",
+      "loadingVerifs": "Nalaganje preverjanj...",
+      "tabs": {
+        "users": "Uporabniki",
+        "verifications": "Preverjanja"
+      },
+      "all": "Vse"
+    },
+    "usersTable": {
+      "columns": {
+        "user": "Uporabnik",
+        "status": "Status",
+        "verification": "Preverjanje",
+        "lastActivity": "Zadnja aktivnost",
+        "role": "Vloga",
+        "action": "Akcija"
+      },
+      "noUsers": "Ni najdenih uporabnikov.",
+      "unknownDate": "—",
+      "roles": {
+        "admin": "Admin",
+        "user": "Uporabnik"
+      },
+      "actions": {
+        "removeAdmin": "Odstrani admina",
+        "makeAdmin": "Naredi admina"
+      },
+      "pagination": {
+        "page": "Stran {page} od {total} ({count} uporabnikov)",
+        "prev": "Nazaj",
+        "next": "Naprej"
+      }
+    },
+    "verificationsTable": {
+      "columns": {
+        "user": "Uporabnik",
+        "type": "Tip",
+        "status": "Status",
+        "date": "Datum",
+        "action": "Akcija"
+      },
+      "noVerifs": "Ni preverjanj.",
+      "actions": {
+        "close": "Zapri",
+        "review": "Preglej"
+      },
+      "reviewPanel": {
+        "title": "Pregled dokumentov",
+        "loading": "Nalaganje...",
+        "noteLabel": "Opomba (neobvezno)",
+        "notePlaceholder": "Razlog za zavrnitev ali komentar...",
+        "approve": "Odobri",
+        "reject": "Zavrni"
+      }
+    }
+  },
+  "Verification": {
+    "selectCountry": "Izberi državo",
+    "selectCode": "Izberi kodo",
+    "selectType": "Izberi vrsto",
+    "countries": {
+      "SI": "Slovenija",
+      "AT": "Avstrija",
+      "DE": "Nemčija",
+      "IT": "Italija",
+      "HR": "Hrvaška",
+      "HU": "Madžarska",
+      "OTHER": "Drugo"
+    },
+    "docTypes": {
+      "PASSPORT": "Potni list",
+      "NATIONAL_ID": "Osebna izkaznica",
+      "DRIVERS_LICENSE": "Vozniško dovoljenje"
+    },
+    "sides": {
+      "FRONT": "Sprednja stran",
+      "BACK": "Zadnja stran",
+      "SELFIE": "Selfie z dokumentom"
+    },
+    "validation": {
+      "required": "Obvezno",
+      "selectGender": "Izberite spol",
+      "selectCountry": "Izberite državo",
+      "countryISO": "Izberite državo, ki ima ISO kodo",
+      "selectDocType": "Izberite vrsto dokumenta",
+      "enterDocNumber": "Vnesite številko dokumenta"
+    },
+    "upload": {
+      "tapToUpload": "Pritisnite za nalaganje"
+    },
+    "errors": {
+      "loadStatus": "Napaka pri nalaganju statusa",
+      "unlockDraft": "Potrditve ni bilo mogoče odkleniti",
+      "missingImages": "Naložite sprednjo stran, zadnjo stran in selfie.",
+      "missingId": "Manjka ID",
+      "submitFailed": "Oddaja ni uspela",
+      "alreadyExists": "Zahtevek že obstaja."
+    },
+    "success": {
+      "submitted": "Uspešno oddano. Naša ekipa bo pregledala dokumente."
+    },
+    "page": {
+      "title": "Osebna verifikacija",
+      "authRequired": "Za verifikacijo se morate prijaviti.",
+      "signIn": "Prijava",
+      "verifiedTitle": "Vaša identiteta je potrjena.",
+      "verifiedDesc": "Uporabljate lahko vse funkcije, ki zahtevajo potrjen račun.",
+      "pendingTitle": "Preverjanje v teku",
+      "pendingDesc": "Vaše dokumente še pregledujemo. Obvestili vas bomo ob spremembi statusa.",
+      "rejectedTitle": "Preverjanje zavrnjeno",
+      "resetDraft": "Ponastavi v osnutek",
+      "working": "Obdelava...",
+      "fields": {
+        "firstName": "Ime",
+        "firstNamePlaceholder": "Vnesite svoje ime",
+        "lastName": "Priimek",
+        "lastNamePlaceholder": "Vnesite svoj priimek",
+        "gender": "Spol",
+        "male": "Moški",
+        "female": "Ženski",
+        "dob": "Datum rojstva",
+        "country": "Država",
+        "address": "Naslov",
+        "addressPlaceholder": "Vnesite svoj naslov",
+        "postalCode": "Poštna številka",
+        "postalCodePlaceholder": "Vnesite kodo",
+        "phone": "Telefonska številka",
+        "phonePlaceholder": "Vnesite številko",
+        "countryCode": "Koda države",
+        "docType": "Izberite vrsto dokumenta",
+        "docNumber": "Številka dokumenta",
+        "docNumberPlaceholder": "Kot je na vašem dokumentu"
+      },
+      "uploadDocTitle": "Naloži dokumente",
+      "uploadDocDesc": "JPG, PNG ali PDF. Obvezno: sprednja in zadnja stran ter selfie.",
+      "uploadProof": "Naložite dokazilo o identiteti",
+      "uploadDocMobile": "Naloži dokument",
+      "useResetDraft": "Uporabite \"Ponastavi...\" pred nalaganjem novih dokumentov.",
+      "submit": "Oddaj",
+      "submitting": "Oddajanje...",
+      "loading": "Nalaganje..."
+    }
+  }
+}

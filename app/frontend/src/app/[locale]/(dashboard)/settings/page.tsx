@@ -14,26 +14,17 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { patchToApi, postToApi } from '@/lib/api/client';
 import { setUser } from '@/stores/slices/userSlice';
 import { IUser } from '@/types';
+import { useTranslations } from 'next-intl';
 
-const settingsSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.email('Please enter a valid email'),
-  phone: z
-    .string()
-    .min(6, 'Phone number is too short')
-    .max(32, 'Phone number is too long')
-    .optional()
-    .or(z.literal('')),
-  profileImageUrl: z.string().optional().or(z.literal('')),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  oldPassword: z.string().min(6, 'Old password must be at least 6 characters'),
-});
-
-type SettingsValues = z.infer<typeof settingsSchema>;
-
-type FieldKey = keyof SettingsValues;
+type FieldKey = 
+  | 'firstName' 
+  | 'lastName' 
+  | 'username' 
+  | 'email' 
+  | 'phone' 
+  | 'profileImageUrl' 
+  | 'password' 
+  | 'oldPassword';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -60,7 +51,7 @@ function FieldRow({
   fieldKey: FieldKey;
   placeholder: string;
   type?: React.ComponentProps<typeof Input>['type'];
-  register: ReturnType<typeof useForm<SettingsValues>>['register'];
+  register: any;
   error?: string;
   onChangeClick: () => void;
   buttonLabel?: string;
@@ -99,6 +90,25 @@ function FieldRow({
 export default function SettingsPage() {
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
+  const t = useTranslations('Settings');
+
+  const settingsSchema = useMemo(() => z.object({
+    firstName: z.string().min(2, t('validation.firstNameMin')),
+    lastName: z.string().min(2, t('validation.lastNameMin')),
+    username: z.string().min(3, t('validation.usernameMin')),
+    email: z.email(t('validation.emailInvalid')),
+    phone: z
+      .string()
+      .min(6, t('validation.phoneShort'))
+      .max(32, t('validation.phoneLong'))
+      .optional()
+      .or(z.literal('')),
+    profileImageUrl: z.string().optional().or(z.literal('')),
+    password: z.string().min(6, t('validation.passwordMin')),
+    oldPassword: z.string().min(6, t('validation.oldPasswordMin')),
+  }), [t]);
+
+  type SettingsValues = z.infer<typeof settingsSchema>;
 
   const defaultValues = useMemo<SettingsValues>(
     () => ({
@@ -165,7 +175,7 @@ export default function SettingsPage() {
         setPasswordSuccess(true);
       } catch (e) {
         setPasswordError(
-          e instanceof Error ? e.message : 'Could not update password',
+          e instanceof Error ? e.message : t('messages.passwordErrorDefault'),
         );
       }
       return;
@@ -193,69 +203,75 @@ export default function SettingsPage() {
     <main className='w-full flex justify-center px-4 py-8 md:py-10'>
       <div className='w-full max-w-5xl flex flex-col gap-6 md:gap-8'>
         <Card className='p-6 md:p-8 shadow-md'>
-          <SectionTitle>Account</SectionTitle>
+          <SectionTitle>{t('sections.account')}</SectionTitle>
 
           <div className='mt-6 flex flex-col gap-5 md:gap-6'>
             <FieldRow
-              label='Change first name'
+              label={t('fields.firstName')}
               fieldKey='firstName'
-              placeholder='Enter your first name'
+              placeholder={t('fields.firstNamePlaceholder')}
               register={register}
               error={errors.firstName?.message}
               onChangeClick={() => saveField('firstName')}
+              buttonLabel={t('actions.change')}
             />
 
             <FieldRow
-              label='Change last name'
+              label={t('fields.lastName')}
               fieldKey='lastName'
-              placeholder='Enter your last name'
+              placeholder={t('fields.lastNamePlaceholder')}
               register={register}
               error={errors.lastName?.message}
               onChangeClick={() => saveField('lastName')}
+              buttonLabel={t('actions.change')}
             />
 
             <FieldRow
-              label='Change username'
+              label={t('fields.username')}
               fieldKey='username'
-              placeholder='Enter your username'
+              placeholder={t('fields.usernamePlaceholder')}
               register={register}
               error={errors.username?.message}
               onChangeClick={() => saveField('username')}
+              buttonLabel={t('actions.change')}
             />
 
             <FieldRow
-              label='Change email address'
+              label={t('fields.email')}
               fieldKey='email'
-              placeholder='Enter your email'
+              placeholder={t('fields.emailPlaceholder')}
               type='email'
               register={register}
               error={errors.email?.message}
               onChangeClick={() => saveField('email')}
+              buttonLabel={t('actions.change')}
             />
 
             <FieldRow
-              label='Change telephone number'
+              label={t('fields.phone')}
               fieldKey='phone'
-              placeholder='Enter your phone number'
+              placeholder={t('fields.phonePlaceholder')}
               register={register}
               error={errors.phone?.message}
               onChangeClick={() => saveField('phone')}
+              buttonLabel={t('actions.change')}
             />
 
             <FieldRow
-              label='Change profile photo'
+              label={t('fields.profilePhoto')}
               fieldKey='profileImageUrl'
-              placeholder='Choose a file'
+              placeholder={t('fields.profilePhotoPlaceholder')}
               register={register}
               error={errors.profileImageUrl?.message}
               onChangeClick={() => saveField('profileImageUrl')}
+              buttonLabel={t('actions.change')}
             />
 
             {/* subtle saved feedback */}
             <div className='text-xs text-muted-foreground'>
               {lastSaved.firstName && (
                 <span>
-                  Last saved:{' '}
+                  {t('messages.lastSaved')}{' '}
                   {new Date(lastSaved.firstName).toLocaleTimeString()}
                 </span>
               )}
@@ -264,14 +280,14 @@ export default function SettingsPage() {
         </Card>
 
         <Card className='p-6 md:p-8 shadow-md'>
-          <SectionTitle>Security</SectionTitle>
+          <SectionTitle>{t('sections.security')}</SectionTitle>
 
           {passwordSuccess && (
             <div
               className='mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900'
               role='status'
             >
-              Your password was updated successfully.
+              {t('messages.passwordSuccess')}
             </div>
           )}
           {passwordError && (
@@ -285,9 +301,9 @@ export default function SettingsPage() {
 
           <div className='mt-6 flex flex-col gap-5 md:gap-6'>
             <FieldRow
-              label='Old password'
+              label={t('fields.oldPassword')}
               fieldKey='oldPassword'
-              placeholder='Enter old password'
+              placeholder={t('fields.oldPasswordPlaceholder')}
               type='password'
               register={register}
               error={errors.oldPassword?.message}
@@ -296,13 +312,14 @@ export default function SettingsPage() {
             />
 
             <FieldRow
-              label='Change password'
+              label={t('fields.newPassword')}
               fieldKey='password'
-              placeholder='Enter new password'
+              placeholder={t('fields.newPasswordPlaceholder')}
               type='password'
               register={register}
               error={errors.password?.message}
               onChangeClick={() => saveField('password')}
+              buttonLabel={t('actions.change')}
             />
           </div>
         </Card>

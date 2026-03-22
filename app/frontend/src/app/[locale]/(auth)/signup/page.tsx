@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 // form validation
 import { useForm } from 'react-hook-form';
@@ -18,19 +19,13 @@ import { useAppDispatch } from '@/hooks/redux';
 import { loginWithCredentials } from '@/lib/auth/loginWithCredentials';
 import { postToApi } from '@/lib/api/client';
 
-const signupSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  // On mobile the UI only shows username/email/password, so allow empty fullName.
-  fullName: z.union([
-    z.string().min(1, 'Full name is required'),
-    z.literal(''),
-  ]),
-  phone: z.string().optional().or(z.literal('')),
-});
-
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SignupFormValues = {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+};
 
 function deriveFirstLast(fullName: string, email: string, username: string) {
   const cleanedFull = fullName.trim();
@@ -55,6 +50,19 @@ export default function SignupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [apiError, setApiError] = useState<string | null>(null);
+  const t = useTranslations('Auth');
+
+  const signupSchema = useMemo(() => z.object({
+    username: z.string().min(3, t('validation.usernameMin')),
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(6, t('validation.passwordMin')),
+    // On mobile the UI only shows username/email/password, so allow empty fullName.
+    fullName: z.union([
+      z.string().min(1, t('validation.fullNameRequired')),
+      z.literal(''),
+    ]),
+    phone: z.string().optional().or(z.literal('')),
+  }), [t]);
 
   const {
     register,
@@ -100,16 +108,14 @@ export default function SignupPage() {
       });
 
       if (requires2FA) {
-        setApiError(
-          'Account created. Two-factor authentication is required — please sign in to continue.',
-        );
+        setApiError(t('errors.twoFactorRequiredSignup'));
         router.push('/signin');
         return;
       }
 
       router.push('/');
     } catch (e) {
-      setApiError(e instanceof Error ? e.message : 'Registration failed');
+      setApiError(e instanceof Error ? e.message : t('errors.registrationFailed'));
     }
   };
 
@@ -120,7 +126,7 @@ export default function SignupPage() {
         {/* Mobile layout: no card, only fields */}
         <div className='w-full max-w-md md:hidden'>
           <h1 className='text-2xl font-semibold text-[#10294b] text-center mb-6'>
-            Sign up
+            {t('actions.signUp')}
           </h1>
           <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-1'>
@@ -128,12 +134,12 @@ export default function SignupPage() {
                 className='text-sm text-gray-700'
                 htmlFor='username-mobile'
               >
-                Username
+                {t('fields.username')}
               </Label>
               <Input
                 id='username-mobile'
                 type='text'
-                placeholder='Enter your username'
+                placeholder={t('fields.usernamePlaceholder')}
                 {...register('username')}
               />
               {errors.username && (
@@ -145,12 +151,12 @@ export default function SignupPage() {
 
             <div className='flex flex-col gap-1'>
               <Label className='text-sm text-gray-700' htmlFor='email-mobile'>
-                Email address
+                {t('fields.email')}
               </Label>
               <Input
                 id='email-mobile'
                 type='email'
-                placeholder='Enter your email address'
+                placeholder={t('fields.emailPlaceholder')}
                 {...register('email')}
               />
               {errors.email && (
@@ -165,12 +171,12 @@ export default function SignupPage() {
                 className='text-sm text-gray-700'
                 htmlFor='password-mobile'
               >
-                Password
+                {t('fields.password')}
               </Label>
               <Input
                 id='password-mobile'
                 type='password'
-                placeholder='Enter your password'
+                placeholder={t('fields.passwordPlaceholder')}
                 {...register('password')}
               />
               {errors.password && (
@@ -184,7 +190,7 @@ export default function SignupPage() {
               type='submit'
               className='mt-4 h-10 w-full text-sm font-medium shadow-sm'
             >
-              Sign up
+              {t('actions.signUp')}
             </Button>
             {apiError && (
               <p className='text-xs text-destructive mt-3'>{apiError}</p>
@@ -192,9 +198,9 @@ export default function SignupPage() {
           </form>
 
           <p className='mt-4 text-sm text-center w-full'>
-            Already have an account?{' '}
+            {t('actions.hasAccount')}{' '}
             <Link href='/signin' className='underline text-primary'>
-              Sign in
+              {t('actions.signIn')}
             </Link>
           </p>
         </div>
@@ -203,17 +209,17 @@ export default function SignupPage() {
         <Card className='hidden md:block w-full max-w-xl shadow-md py-8 px-10'>
           <CardHeader className='pb-6'>
             <CardTitle className='text-3xl font-semibold text-[#10294b] text-center'>
-              Sign up
+              {t('actions.signUp')}
             </CardTitle>
           </CardHeader>
           <CardContent className='pt-0'>
             <form className='space-y-8' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-1'>
-                <Label htmlFor='fullName'>Full name</Label>
+                <Label htmlFor='fullName'>{t('fields.fullName')}</Label>
                 <Input
                   id='fullName'
                   type='text'
-                  placeholder='Enter your full name'
+                  placeholder={t('fields.fullNamePlaceholder')}
                   {...register('fullName')}
                 />
                 {errors.fullName && (
@@ -224,11 +230,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label htmlFor='username'>Username</Label>
+                <Label htmlFor='username'>{t('fields.username')}</Label>
                 <Input
                   id='username'
                   type='text'
-                  placeholder='Enter your username'
+                  placeholder={t('fields.usernamePlaceholder')}
                   {...register('username')}
                 />
                 {errors.username && (
@@ -239,11 +245,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label htmlFor='email'>Email address</Label>
+                <Label htmlFor='email'>{t('fields.email')}</Label>
                 <Input
                   id='email'
                   type='email'
-                  placeholder='Enter your email address'
+                  placeholder={t('fields.emailPlaceholder')}
                   {...register('email')}
                 />
                 {errors.email && (
@@ -254,21 +260,21 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label htmlFor='phone'>Telephone number</Label>
+                <Label htmlFor='phone'>{t('fields.phone')}</Label>
                 <Input
                   id='phone'
                   type='tel'
-                  placeholder='Enter your telephone number'
+                  placeholder={t('fields.phonePlaceholder')}
                   {...register('phone')}
                 />
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label htmlFor='password'>Password</Label>
+                <Label htmlFor='password'>{t('fields.password')}</Label>
                 <Input
                   id='password'
                   type='password'
-                  placeholder='Enter your password'
+                  placeholder={t('fields.passwordPlaceholder')}
                   {...register('password')}
                 />
                 {errors.password && (
@@ -282,12 +288,19 @@ export default function SignupPage() {
                 type='submit'
                 className='mt-4 h-10 w-full text-sm font-medium shadow-sm'
               >
-                Sign up
+                {t('actions.signUp')}
               </Button>
               {apiError && (
                 <p className='text-xs text-destructive mt-3'>{apiError}</p>
               )}
             </form>
+
+            <p className='text-sm text-center mt-6'>
+              {t('actions.hasAccount')}{' '}
+              <Link href='/signin' className='underline text-primary'>
+                {t('actions.signIn')}
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </section>

@@ -6,25 +6,28 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getHeaderText(pathname: string) {
-  switch (pathname) {
+  // Extract path without locale prefix if it exists
+  const path = pathname.replace(/^\/(en|sl)/, '') || '/';
+  
+  switch (path) {
     case '/create-debt':
-      return 'Create Debt';
+      return 'createDebt';
     case '/approve-debt':
-      return 'Approve Debt';
+      return 'approveDebt';
     case '/check-debt':
-      return 'Check Debt';
+      return 'checkDebt';
     case '/debts-all':
-      return 'Debts';
+      return 'debts';
     case '/profile':
-      return 'Profile';
+      return 'profile';
     case '/settings':
-      return 'Settings';
+      return 'settings';
     case '/verification':
-      return 'ID verification';
+      return 'verification';
     case '/contacts':
-      return 'Contacts';
+      return 'contacts';
     default:
-      return 'Puf';
+      return 'default';
   }
 }
 

@@ -8,6 +8,7 @@ import {
   useReviewVerificationMutation,
   useVerificationDetailsQuery,
 } from '../hooks/useAdminQueries';
+import { useTranslations } from 'next-intl';
 
 const dateFormatter = new Intl.DateTimeFormat('sl-SI', { dateStyle: 'medium' });
 
@@ -20,6 +21,7 @@ export default function VerificationsTable({
 }: IVerificationsTableProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState('');
+  const t = useTranslations('Admin.verificationsTable');
 
   const detailsQuery = useVerificationDetailsQuery(selectedId);
   const reviewMutation = useReviewVerificationMutation();
@@ -51,19 +53,19 @@ export default function VerificationsTable({
             <thead className='bg-slate-50 border-b border-slate-200'>
               <tr>
                 <th className='px-4 py-3 text-left font-medium text-slate-600'>
-                  User
+                  {t('columns.user')}
                 </th>
                 <th className='px-4 py-3 text-left font-medium text-slate-600'>
-                  Type
+                  {t('columns.type')}
                 </th>
                 <th className='px-4 py-3 text-left font-medium text-slate-600'>
-                  Status
+                  {t('columns.status')}
                 </th>
                 <th className='px-4 py-3 text-left font-medium text-slate-600'>
-                  Date
+                  {t('columns.date')}
                 </th>
                 <th className='px-4 py-3 text-left font-medium text-slate-600'>
-                  Action
+                  {t('columns.action')}
                 </th>
               </tr>
             </thead>
@@ -74,7 +76,7 @@ export default function VerificationsTable({
                     colSpan={5}
                     className='px-4 py-8 text-center text-sm text-slate-400'
                   >
-                    No verifications found.
+                    {t('noVerifs')}
                   </td>
                 </tr>
               )}
@@ -117,7 +119,7 @@ export default function VerificationsTable({
                       }
                       className='h-7 text-xs'
                     >
-                      {selectedId === v._id ? 'Close' : 'Review'}
+                      {selectedId === v._id ? t('actions.close') : t('actions.review')}
                     </Button>
                   </td>
                 </tr>
@@ -129,10 +131,10 @@ export default function VerificationsTable({
 
       {selectedId && (
         <div className='rounded-2xl border border-slate-200 bg-white shadow-sm p-6 space-y-4'>
-          <h3 className='font-semibold text-slate-800'>Document review</h3>
+          <h3 className='font-semibold text-slate-800'>{t('reviewPanel.title')}</h3>
 
           {detailsQuery.isLoading && (
-            <p className='text-sm text-slate-500'>Loading...</p>
+            <p className='text-sm text-slate-500'>{t('reviewPanel.loading')}</p>
           )}
 
           {detailsQuery.error && (
@@ -160,13 +162,13 @@ export default function VerificationsTable({
 
               <div className='space-y-2'>
                 <label className='text-xs font-medium text-slate-600'>
-                  Note (optional)
+                  {t('reviewPanel.noteLabel')}
                 </label>
                 <textarea
                   value={reviewNote}
                   onChange={(e) => setReviewNote(e.target.value)}
                   rows={2}
-                  placeholder='Rejection reason or comment...'
+                  placeholder={t('reviewPanel.notePlaceholder')}
                   className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
               </div>
@@ -177,7 +179,7 @@ export default function VerificationsTable({
                   disabled={reviewMutation.isPending}
                   className='bg-green-600 hover:bg-green-700 text-white'
                 >
-                  Approve
+                  {t('reviewPanel.approve')}
                 </Button>
                 <Button
                   variant='outline'
@@ -185,7 +187,7 @@ export default function VerificationsTable({
                   disabled={reviewMutation.isPending}
                   className='border-red-300 text-red-600 hover:bg-red-50'
                 >
-                  Reject
+                  {t('reviewPanel.reject')}
                 </Button>
               </div>
             </>

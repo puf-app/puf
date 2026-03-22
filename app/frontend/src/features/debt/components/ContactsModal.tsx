@@ -6,7 +6,7 @@ import { Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { IDebtor } from '../types';
-
+import { useTranslations } from 'next-intl';
 
 const CONTACTS: IDebtor[] = [];
 
@@ -25,6 +25,7 @@ export default function ContactsModal({
 }: ContactsModalProps) {
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('Debts.contactsModal');
 
   useEffect(() => {
     if (isOpen) {
@@ -51,7 +52,7 @@ export default function ContactsModal({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Add people</h3>
+            <h3 className="text-base font-semibold text-gray-900">{t('title')}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -66,17 +67,17 @@ export default function ContactsModal({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Enter name or email"
+              placeholder={t('searchPlaceholder')}
             />
-            <Button type="button">Add</Button>
+            <Button type="button">{t('add')}</Button>
           </div>
 
-          <p className="text-xs font-medium text-gray-500 mb-2">Your contacts:</p>
+          <p className="text-xs font-medium text-gray-500 mb-2">{t('yourContacts')}</p>
 
           <ul className="space-y-1 max-h-52 overflow-y-auto">
             {filtered.length === 0 && (
               <li className="py-4 text-center text-sm text-gray-400">
-                No contacts found
+                {t('noContacts')}
               </li>
             )}
             {filtered.map((contact) => {
@@ -115,7 +116,7 @@ export default function ContactsModal({
 
         <div className="px-5 py-3 border-t border-gray-100 flex justify-end">
           <Button variant="secondary" onClick={onClose}>
-            Close
+            {t('close')}
           </Button>
         </div>
       </div>

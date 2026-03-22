@@ -1,0 +1,410 @@
+{
+  "Hero": {
+    "aboutUs": "About us",
+    "description": "Welcome to our platform. This is a simple space where you can keep track of shared expenses and debts between people. Easily create a new debt, see who owes what, and keep everything organized in one place. To get started, just create a new entry and manage your balances quickly and clearly."
+  },
+  "Dashboard": {
+    "logDebt": "Log a Debt",
+    "logDebtDesc": "Keep a clear record of everything you owe.",
+    "createDebt": "Create Debt",
+    "pendingDebts": "Pending debts",
+    "noDebtsYet": "no debts yet"
+  },
+  "Header": {
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "contacts": "Contacts",
+    "debts": "Debts",
+    "profile": "Profile",
+    "logOut": "Log out",
+    "home": "Home",
+    "statistics": "Statistics"
+  },
+  "Footer": {
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "copyright": "© {year} Puff Inc."
+  },
+  "PageTitles": {
+    "signin": "Sign in to PUF",
+    "signup": "Sign up to PUF",
+    "profile": "Profile",
+    "debts": "Your debts",
+    "createDebt": "Create debt",
+    "home": "Home",
+    "verification": "Your debts",
+    "statistics": "Statistics",
+    "default": "PUF - get rid of debts"
+  },
+  "Auth": {
+    "validation": {
+      "usernameMin": "Username must be at least 3 characters",
+      "passwordMin": "Password must be at least 6 characters",
+      "emailInvalid": "Please enter a valid email address",
+      "fullNameRequired": "Full name is required"
+    },
+    "errors": {
+      "twoFactorRequired": "Two-factor authentication is required (2FA not implemented yet).",
+      "twoFactorRequiredSignup": "Account created. Two-factor authentication is required — please sign in to continue.",
+      "loginFailed": "Login failed",
+      "registrationFailed": "Registration failed"
+    },
+    "fields": {
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "email": "Email address",
+      "emailPlaceholder": "Enter your email address",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Enter your full name",
+      "phone": "Telephone number",
+      "phonePlaceholder": "Enter your telephone number"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "noAccount": "Don't have an account?",
+      "hasAccount": "Already have an account?"
+    }
+  },
+  "Profile": {
+    "errors": {
+      "notLoggedInTitle": "Error: User not logged in",
+      "notLoggedInDesc": "Please log in to view your profile."
+    },
+    "actions": {
+      "goHome": "Go to Home",
+      "settings": "Settings"
+    },
+    "fields": {
+      "basicInfo": "Basic info",
+      "email": "Email address:",
+      "noEmail": "No email provided",
+      "telephone": "Telephone:",
+      "noPhone": "No phone number provided",
+      "accountCreated": "Account created:",
+      "verificationStatus": "Verification status:",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "na": "N/A"
+    }
+  },
+  "Settings": {
+    "sections": {
+      "account": "Account",
+      "security": "Security"
+    },
+    "fields": {
+      "firstName": "Change first name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Change last name",
+      "lastNamePlaceholder": "Enter your last name",
+      "username": "Change username",
+      "usernamePlaceholder": "Enter your username",
+      "email": "Change email address",
+      "emailPlaceholder": "Enter your email",
+      "phone": "Change telephone number",
+      "phonePlaceholder": "Enter your phone number",
+      "profilePhoto": "Change profile photo",
+      "profilePhotoPlaceholder": "Choose a file",
+      "oldPassword": "Old password",
+      "oldPasswordPlaceholder": "Enter old password",
+      "newPassword": "Change password",
+      "newPasswordPlaceholder": "Enter new password"
+    },
+    "actions": {
+      "change": "Change"
+    },
+    "messages": {
+      "lastSaved": "Last saved:",
+      "passwordSuccess": "Your password was updated successfully.",
+      "passwordErrorDefault": "Could not update password"
+    },
+    "validation": {
+      "firstNameMin": "First name must be at least 2 characters",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "usernameMin": "Username must be at least 3 characters",
+      "emailInvalid": "Please enter a valid email",
+      "phoneShort": "Phone number is too short",
+      "phoneLong": "Phone number is too long",
+      "passwordMin": "Password must be at least 6 characters",
+      "oldPasswordMin": "Old password must be at least 6 characters"
+    }
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "cards": {
+      "totalDebts": "Total Debts",
+      "lastWeek": "Last Week",
+      "totalAmount": "Total Amount"
+    },
+    "chart": {
+      "title": "Debts Over Time"
+    },
+    "loading": "Loading statistics..."
+  },
+  "Debts": {
+    "debtsPage": {
+      "title": "My Debts",
+      "description": "Manage your receivables and obligations in one place.",
+      "createNew": "Create New Debt",
+      "receivables": "Receivables",
+      "obligations": "Obligations",
+      "activeDebts": "Active Debts",
+      "loading": "Loading debts...",
+      "errorLoad": "Failed to load debts. Please try again later."
+    },
+    "debtDetail": {
+      "loading": "Loading debt details...",
+      "notFound": "Debt not found",
+      "notFoundDesc": "The debt you are looking for does not exist or has been removed."
+    },
+    "debtList": {
+      "emptyTitle": "No debts found.",
+      "emptyDesc": "Your debts and claims will appear here."
+    },
+    "contactsModal": {
+      "title": "Add people",
+      "searchPlaceholder": "Enter name or email",
+      "add": "Add",
+      "yourContacts": "Your contacts:",
+      "noContacts": "No contacts found",
+      "close": "Close"
+    },
+    "createForm": {
+      "success": "Debt created successfully!",
+      "validation": {
+        "usernameReq": "Debtor username is required",
+        "titleReq": "Title is required",
+        "amountReq": "Amount is required",
+        "amountMin": "Amount must be greater than 0",
+        "dueDateReq": "Due date is required"
+      },
+      "fields": {
+        "username": "Debtor username",
+        "usernamePlaceholder": "Enter debtor username",
+        "title": "Title",
+        "titlePlaceholder": "Enter debt title",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter debt description",
+        "reason": "Reason",
+        "reasonPlaceholder": "Enter reason for debt",
+        "verificationReq": "Verification required",
+        "dueDate": "Due date",
+        "currency": "Currency",
+        "amount": "Amount",
+        "amountPlaceholder": "Enter amount"
+      },
+      "actions": {
+        "sending": "Sending...",
+        "create": "Create debt",
+        "abort": "Abort debt"
+      }
+    },
+    "detailView": {
+      "title": "Debt Details",
+      "createdOn": "Created on",
+      "amount": "Amount",
+      "creditorLabel": "Creditor",
+      "debtorLabel": "Debtor",
+      "you": "You",
+      "user": "User",
+      "dueDateLabel": "Due Date",
+      "reasonLabel": "Reason",
+      "na": "N/A",
+      "descriptionLabel": "Description",
+      "noDescription": "No description provided.",
+      "actions": {
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "processing": "Processing...",
+        "settleDebt": "Settle Debt",
+        "editDetails": "Edit Details"
+      },
+      "alerts": {
+        "confirmSettle": "Are you sure you want to mark this debt as settled?",
+        "settleSuccess": "Debt marked as settled!",
+        "settleError": "Failed to settle debt",
+        "updateSuccess": "Debt updated successfully!",
+        "updateError": "Failed to update debt"
+      }
+    },
+    "debtCard": {
+      "amountLabel": "Amount:",
+      "debtorLabel": "Debtor:",
+      "creditorLabel": "Creditor:",
+      "dueDateLabel": "Due Date:"
+    },
+    "imageUpload": {
+      "uploadProof": "Upload proof of debt"
+    },
+    "requestStatus": {
+      "title": "Request status",
+      "due": "Due",
+      "status": {
+        "PENDING": "Pending",
+        "ACCEPTED": "Accepted",
+        "REJECTED": "Rejected",
+        "PARTIALLY_PAID": "Partially paid",
+        "PAID": "Paid",
+        "CANCELLED": "Cancelled",
+        "DISPUTED": "Disputed"
+      }
+    },
+    "debtorTag": {
+      "remove": "Remove"
+    }
+  },
+  "Admin": {
+    "adminPage": {
+      "accessDenied": "Access denied. Admins only.",
+      "title": "Admin panel",
+      "description": "Manage users and verifications.",
+      "totalUsers": "Total users",
+      "pendingVerifications": "Pending verifications",
+      "loadingUsers": "Loading users...",
+      "loadingVerifs": "Loading verifications...",
+      "tabs": {
+        "users": "Users",
+        "verifications": "Verifications"
+      },
+      "all": "All"
+    },
+    "usersTable": {
+      "columns": {
+        "user": "User",
+        "status": "Status",
+        "verification": "Verification",
+        "lastActivity": "Last activity",
+        "role": "Role",
+        "action": "Action"
+      },
+      "noUsers": "No users found.",
+      "unknownDate": "—",
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
+      "actions": {
+        "removeAdmin": "Remove admin",
+        "makeAdmin": "Make admin"
+      },
+      "pagination": {
+        "page": "Page {page} of {total} ({count} users)",
+        "prev": "Previous",
+        "next": "Next"
+      }
+    },
+    "verificationsTable": {
+      "columns": {
+        "user": "User",
+        "type": "Type",
+        "status": "Status",
+        "date": "Date",
+        "action": "Action"
+      },
+      "noVerifs": "No verifications found.",
+      "actions": {
+        "close": "Close",
+        "review": "Review"
+      },
+      "reviewPanel": {
+        "title": "Document review",
+        "loading": "Loading...",
+        "noteLabel": "Note (optional)",
+        "notePlaceholder": "Rejection reason or comment...",
+        "approve": "Approve",
+        "reject": "Reject"
+      }
+    }
+  },
+  "Verification": {
+    "selectCountry": "Select country",
+    "selectCode": "Select code",
+    "selectType": "Select type",
+    "countries": {
+      "SI": "Slovenia",
+      "AT": "Austria",
+      "DE": "Germany",
+      "IT": "Italy",
+      "HR": "Croatia",
+      "HU": "Hungary",
+      "OTHER": "Other"
+    },
+    "docTypes": {
+      "PASSPORT": "Passport",
+      "NATIONAL_ID": "National ID card",
+      "DRIVERS_LICENSE": "Driver's license"
+    },
+    "sides": {
+      "FRONT": "Front of ID",
+      "BACK": "Back of ID",
+      "SELFIE": "Selfie with ID"
+    },
+    "validation": {
+      "required": "Required",
+      "selectGender": "Select gender",
+      "selectCountry": "Select country",
+      "countryISO": "Pick a country with an ISO code (required for verification)",
+      "selectDocType": "Select document type",
+      "enterDocNumber": "Enter document number"
+    },
+    "upload": {
+      "tapToUpload": "Tap to upload"
+    },
+    "errors": {
+      "loadStatus": "Could not load verification status",
+      "unlockDraft": "Could not unlock verification",
+      "missingImages": "Please upload front, back, and selfie images.",
+      "missingId": "Missing verification id",
+      "submitFailed": "Submission failed",
+      "alreadyExists": "A verification request already exists. Status was refreshed — try again or continue from your draft."
+    },
+    "success": {
+      "submitted": "Verification submitted. Our team will review your documents."
+    },
+    "page": {
+      "title": "ID verification",
+      "authRequired": "You must be signed in to verify your identity.",
+      "signIn": "Sign in",
+      "verifiedTitle": "Your identity is verified.",
+      "verifiedDesc": "You can use all features that require a verified account.",
+      "pendingTitle": "Verification in progress",
+      "pendingDesc": "We are reviewing your documents. You will be notified when the status changes.",
+      "rejectedTitle": "Verification was rejected",
+      "resetDraft": "Reset to draft and resubmit",
+      "working": "Working…",
+      "fields": {
+        "firstName": "First name",
+        "firstNamePlaceholder": "Enter your first name",
+        "lastName": "Last name",
+        "lastNamePlaceholder": "Enter your last name",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "dob": "Date of birth",
+        "country": "Country",
+        "address": "Address",
+        "addressPlaceholder": "Enter your address",
+        "postalCode": "Postal code",
+        "postalCodePlaceholder": "Enter code",
+        "phone": "Phone number",
+        "phonePlaceholder": "Enter phone number",
+        "countryCode": "Country code",
+        "docType": "Select document type",
+        "docNumber": "Document number",
+        "docNumberPlaceholder": "As shown on your ID"
+      },
+      "uploadDocTitle": "Upload documents",
+      "uploadDocDesc": "JPG, PNG, or PDF. Required: front, back, and a selfie holding your ID.",
+      "uploadProof": "Upload proof of identity for verification",
+      "uploadDocMobile": "Upload document",
+      "useResetDraft": "Use \"Reset to draft and resubmit\" above before sending new documents.",
+      "submit": "Submit",
+      "submitting": "Submitting…",
+      "loading": "Loading…"
+    }
+  }
+}

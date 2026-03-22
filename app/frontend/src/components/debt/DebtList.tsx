@@ -1,5 +1,6 @@
 import { IDebt } from '@/types';
 import DebtCard from './DebtCard';
+import { useTranslations } from 'next-intl';
 
 interface DebtListProps {
   debts: IDebt[];
@@ -7,11 +8,12 @@ interface DebtListProps {
 }
 
 export default function DebtList({ debts, currentUserId }: DebtListProps) {
+  const t = useTranslations('Debts.debtList');
   if (debts.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200'>
-        <p className='text-xl text-gray-400 font-medium'>No debts found.</p>
-        <p className='text-gray-400 mt-1'>Your debts and claims will appear here.</p>
+        <p className='text-xl text-gray-400 font-medium'>{t('emptyTitle')}</p>
+        <p className='text-gray-400 mt-1'>{t('emptyDesc')}</p>
       </div>
     );
   }
@@ -22,7 +24,7 @@ export default function DebtList({ debts, currentUserId }: DebtListProps) {
         <DebtCard
           key={debt._id}
           debt={debt}
-          isCreditor={debt.creditorUserId === currentUserId}
+          isCreditor={debt.creditorUserId._id === currentUserId}
         />
       ))}
     </div>
