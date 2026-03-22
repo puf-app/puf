@@ -29,7 +29,7 @@ export default function DebtList({ debts, currentUserId }: DebtListProps) {
         <DebtCard
           key={debt._id}
           debt={debt}
-          isCreditor={debt.creditorUserId === currentUserId}
+          isCreditor={debt.creditorUserId._id === currentUserId}
         />
       ))}
     </div>

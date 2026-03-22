@@ -5,7 +5,11 @@ export type TUserVerificationStatus =
   | 'EXPIRED';
 
 export interface IUserVerification {
-  userId: string;
+  userId: {
+    _id: string;
+    username: string;
+    email: string;
+  };
 
   verificationType: string;
   documentNumber: string;

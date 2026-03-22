@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/config/constants';
 import { Button } from '@/components/ui/button';
 import type { IVerificationWithUser } from '../types';
-import { useReviewVerificationMutation, useVerificationDetailsQuery } from '../hooks/useAdminQueries';
+import {
+  useReviewVerificationMutation,
+  useVerificationDetailsQuery,
+} from '../hooks/useAdminQueries';
 
 const dateFormatter = new Intl.DateTimeFormat('sl-SI', { dateStyle: 'medium' });
 
@@ -12,7 +15,9 @@ interface IVerificationsTableProps {
   verifications: IVerificationWithUser[];
 }
 
-export default function VerificationsTable({ verifications }: IVerificationsTableProps) {
+export default function VerificationsTable({
+  verifications,
+}: IVerificationsTableProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState('');
 
@@ -32,9 +37,11 @@ export default function VerificationsTable({ verifications }: IVerificationsTabl
           setSelectedId(null);
           setReviewNote('');
         },
-      }
+      },
     );
   };
+
+  console.log(verifications);
 
   return (
     <div className='space-y-4'>
@@ -43,17 +50,30 @@ export default function VerificationsTable({ verifications }: IVerificationsTabl
           <table className='w-full text-sm'>
             <thead className='bg-slate-50 border-b border-slate-200'>
               <tr>
-                <th className='px-4 py-3 text-left font-medium text-slate-600'>User</th>
-                <th className='px-4 py-3 text-left font-medium text-slate-600'>Type</th>
-                <th className='px-4 py-3 text-left font-medium text-slate-600'>Status</th>
-                <th className='px-4 py-3 text-left font-medium text-slate-600'>Date</th>
-                <th className='px-4 py-3 text-left font-medium text-slate-600'>Action</th>
+                <th className='px-4 py-3 text-left font-medium text-slate-600'>
+                  User
+                </th>
+                <th className='px-4 py-3 text-left font-medium text-slate-600'>
+                  Type
+                </th>
+                <th className='px-4 py-3 text-left font-medium text-slate-600'>
+                  Status
+                </th>
+                <th className='px-4 py-3 text-left font-medium text-slate-600'>
+                  Date
+                </th>
+                <th className='px-4 py-3 text-left font-medium text-slate-600'>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className='divide-y divide-slate-100'>
               {verifications.length === 0 && (
                 <tr>
-                  <td colSpan={5} className='px-4 py-8 text-center text-sm text-slate-400'>
+                  <td
+                    colSpan={5}
+                    className='px-4 py-8 text-center text-sm text-slate-400'
+                  >
                     No verifications found.
                   </td>
                 </tr>
@@ -69,24 +89,32 @@ export default function VerificationsTable({ verifications }: IVerificationsTabl
                         <div className='font-medium text-slate-800'>
                           {v.user.firstName} {v.user.lastName}
                         </div>
-                        <div className='text-xs text-slate-500'>@{v.user.username}</div>
+                        <div className='text-xs text-slate-500'>
+                          @{v.user.username}
+                        </div>
                       </>
                     ) : (
-                      <span className='text-xs text-slate-400'>{v.userId}</span>
+                      <span className='text-xs text-slate-400'>
+                        {v.userId.username}
+                      </span>
                     )}
                   </td>
-                  <td className='px-4 py-3 text-slate-600'>{v.verificationType}</td>
+                  <td className='px-4 py-3 text-slate-600'>
+                    {v.verificationType}
+                  </td>
                   <td className='px-4 py-3'>
                     <VerificationStatusBadge status={v.status} />
                   </td>
                   <td className='px-4 py-3 text-xs text-slate-500'>
-                    {dateFormatter.format(new Date(v.createdAt))}
+                    {dateFormatter.format(new Date(v.createdAt || new Date()))}
                   </td>
                   <td className='px-4 py-3'>
                     <Button
                       variant='outline'
                       size='sm'
-                      onClick={() => setSelectedId(selectedId === v._id ? null : v._id)}
+                      onClick={() =>
+                        setSelectedId(selectedId === v._id ? null : v._id)
+                      }
                       className='h-7 text-xs'
                     >
                       {selectedId === v._id ? 'Close' : 'Review'}
@@ -178,7 +206,9 @@ function VerificationStatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${map[status] ?? 'bg-slate-100 text-slate-500'}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${map[status] ?? 'bg-slate-100 text-slate-500'}`}
+    >
       {status}
     </span>
   );

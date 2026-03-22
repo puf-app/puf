@@ -9,3 +9,8 @@ export interface IVerificationWithUser extends IUserVerification {
 export interface IVerificationDetails extends IVerificationWithUser {
   documents: IVerificationDocument[];
 }
+
+export interface IUsersResponse {
+  users: IUser[];
+  message: string;
+}

@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/hooks/redux';
-import { useUsersQuery, useVerificationsQuery } from '@/features/admin/hooks/useAdminQueries';
+import {
+  useUsersQuery,
+  useVerificationsQuery,
+} from '@/features/admin/hooks/useAdminQueries';
 import UsersTable from '@/features/admin/components/UsersTable';
 import VerificationsTable from '@/features/admin/components/VerificationsTable';
 
@@ -12,10 +15,13 @@ type TTab = 'users' | 'verifications';
 export default function AdminPage() {
   const user = useAppSelector((state) => state.user.user);
   const [tab, setTab] = useState<TTab>('users');
-  const [verificationStatus, setVerificationStatus] = useState<string>('PENDING');
+  const [verificationStatus, setVerificationStatus] =
+    useState<string>('PENDING');
 
   const usersQuery = useUsersQuery();
-  const verificationsQuery = useVerificationsQuery(verificationStatus || undefined);
+  const verificationsQuery = useVerificationsQuery(
+    verificationStatus || undefined,
+  );
 
   if (!user?.admin) {
     return (
@@ -28,7 +34,6 @@ export default function AdminPage() {
   return (
     <main className='flex-1 bg-[#eceef2] px-4 py-8 md:px-8'>
       <section className='mx-auto w-full max-w-7xl space-y-6'>
-
         {/* Header */}
         <div className='rounded-3xl bg-[#1f2f4c] px-6 py-6 text-white shadow-sm'>
           <h1 className='text-4xl font-semibold'>Admin panel</h1>
@@ -38,15 +43,23 @@ export default function AdminPage() {
 
           <div className='mt-4 grid gap-3 sm:grid-cols-2'>
             <div className='rounded-2xl bg-white/10 px-4 py-3'>
-              <p className='text-xs uppercase tracking-wide text-blue-100'>Total users</p>
+              <p className='text-xs uppercase tracking-wide text-blue-100'>
+                Total users
+              </p>
               <p className='mt-1 text-2xl font-semibold'>
-                {usersQuery.isLoading ? '...' : (usersQuery.data?.length ?? 0)}
+                {usersQuery.isLoading
+                  ? '...'
+                  : (usersQuery.data?.users.length ?? 0)}
               </p>
             </div>
             <div className='rounded-2xl bg-white/10 px-4 py-3'>
-              <p className='text-xs uppercase tracking-wide text-blue-100'>Pending verifications</p>
+              <p className='text-xs uppercase tracking-wide text-blue-100'>
+                Pending verifications
+              </p>
               <p className='mt-1 text-2xl font-semibold'>
-                {verificationsQuery.isLoading ? '...' : (verificationsQuery.data?.length ?? 0)}
+                {verificationsQuery.isLoading
+                  ? '...'
+                  : (verificationsQuery.data?.length ?? 0)}
               </p>
             </div>
           </div>
@@ -81,7 +94,7 @@ export default function AdminPage() {
                 {(usersQuery.error as Error).message}
               </p>
             )}
-            {usersQuery.data && <UsersTable users={usersQuery.data} />}
+            {usersQuery.data && <UsersTable users={usersQuery.data.users} />}
           </>
         )}
 
@@ -106,7 +119,7 @@ export default function AdminPage() {
             )}
             {verificationsQuery.error && (
               <p className='rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
-                {(verificationsQuery.error as Error).message}
+                {(verificationsQuery.error as Error).message || ''}
               </p>
             )}
             {verificationsQuery.data && (
@@ -114,7 +127,6 @@ export default function AdminPage() {
             )}
           </>
         )}
-
       </section>
     </main>
   );

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { DebtList } from '@/features/debt/components';
 import { useDebtsQuery } from '@/features/debt/hooks/useDebtQuery';
 import Hero from '@/components/layout/Hero';
+import { formatAmount } from '@/lib/utils';
 
 export default function DebtsPage() {
   const user = useAppSelector((state) => state.user.user);
@@ -24,24 +25,21 @@ export default function DebtsPage() {
     );
   }
 
-  const formatAmount = (amount: any): number => {
-    if (typeof amount === 'number') return amount;
-    if (amount && amount.$numberDecimal)
-      return parseFloat(amount.$numberDecimal);
-    return 0;
-  };
-
   const receivables =
     debts &&
     debts.debts
-      .filter((d) => d.creditorUserId === user._id && d.status !== 'PAID')
-      .reduce((acc, d) => acc + d.amount, 0);
+      .filter((d) => d.creditorUserId._id === user._id && d.status !== 'PAID')
+      .reduce((acc, d) => acc + formatAmount(d.amount), 0);
 
   const obligations =
     debts &&
     debts.debts
-      .filter((d) => d.debtorUserId === user._id && d.status !== 'PAID')
-      .reduce((acc, d) => acc + d.amount, 0);
+      .filter((d) => d.debtorUserId._id === user._id && d.status !== 'PAID')
+      .reduce((acc, d) => acc + formatAmount(d.amount), 0);
+
+  console.log(debts?.debts);
+
+  console.log(receivables, obligations);
 
   return (
     <main className='flex-grow bg-slate-50/50'>
@@ -120,14 +118,7 @@ export default function DebtsPage() {
             </div>
           ) : (
             <DebtList
-              debts={
-                (debts &&
-                  debts.debts.map((d) => ({
-                    ...d,
-                    amount: formatAmount(d.amount), // Pretvorba tukaj!
-                  }))) ||
-                []
-              }
+              debts={(debts && debts.debts) || []}
               currentUserId={user._id}
             />
           )}

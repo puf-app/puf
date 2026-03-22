@@ -1,13 +1,17 @@
 import { getFromApi, patchToApi } from '@/lib/api/client';
 import type { IUser } from '@/types';
-import type { IVerificationDetails, IVerificationWithUser } from '../types';
+import type {
+  IUsersResponse,
+  IVerificationDetails,
+  IVerificationWithUser,
+} from '../types';
 
 export const getAllUsers = () =>
-  getFromApi<IUser[]>('/api/users/getAllUsers');
+  getFromApi<IUsersResponse>('/api/users/getAllUsers');
 
 export const updateUserProfile = (
   userId: string,
-  data: Partial<Pick<IUser, 'admin' | 'status'>>
+  data: Partial<Pick<IUser, 'admin' | 'status'>>,
 ) => patchToApi<IUser>(`/api/users/updateUserProfile/${userId}`, data);
 
 export const listVerifications = (status?: string) =>
@@ -21,5 +25,9 @@ export const getVerificationDetails = (id: string) =>
 export const reviewVerification = (
   id: string,
   status: 'APPROVED' | 'REJECTED',
-  reviewNote?: string
-) => patchToApi<IVerificationWithUser>(`/api/verification/review/${id}`, { status, reviewNote });
+  reviewNote?: string,
+) =>
+  patchToApi<IVerificationWithUser>(`/api/verification/review/${id}`, {
+    status,
+    reviewNote,
+  });

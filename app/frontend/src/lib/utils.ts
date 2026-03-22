@@ -27,3 +27,9 @@ export function getHeaderText(pathname: string) {
       return 'Puf';
   }
 }
+
+export const formatAmount = (amount: any): number => {
+  if (typeof amount === 'number') return amount;
+  if (amount && amount.$numberDecimal) return parseFloat(amount.$numberDecimal);
+  return 0;
+};

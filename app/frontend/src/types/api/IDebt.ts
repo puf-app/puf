@@ -10,13 +10,25 @@ export type TDebtStatus =
 export interface IDebt {
   _id: string;
 
-  creditorUserId: string;
-  debtorUserId: string;
+  creditorUserId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  debtorUserId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 
   title: string;
   description: string;
 
-  amount: number;
+  amount: {
+    $numberDecimal: string;
+  };
   currency: string;
   reason: string;
   status: TDebtStatus;

@@ -32,7 +32,10 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
   };
 
   return (
-    <Link href={`/debts/${debt._id}`} className='block focus:outline-none focus:ring-2 focus:ring-[#001f3f] rounded-2xl'>
+    <Link
+      href={`/debts/${debt._id}`}
+      className='block focus:outline-none focus:ring-2 focus:ring-[#001f3f] rounded-2xl'
+    >
       <Card className='hover:shadow-md transition-shadow border-2 border-gray-100 rounded-2xl h-full'>
         <CardHeader className='pb-2'>
           <div className='flex justify-between items-start'>
@@ -41,7 +44,7 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
             </CardTitle>
             <span
               className={`${getStatusColor(
-                debt.status
+                debt.status,
               )} font-semibold px-2 py-0.5 rounded-full border text-xs`}
             >
               {debt.status}
@@ -53,7 +56,7 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-500 font-medium'>Amount:</span>
               <span className='text-xl font-bold text-[#001f3f]'>
-                {debt.amount} {debt.currency}
+                {debt.amount.$numberDecimal} {debt.currency}
               </span>
             </div>
             <div className='flex justify-between items-center'>
@@ -66,8 +69,12 @@ export default function DebtCard({ debt, isCreditor }: DebtCardProps) {
               </span>
             </div>
             <div className='flex justify-between items-center'>
-              <span className='text-sm text-gray-500 font-medium'>Due Date:</span>
-              <span className='text-sm text-black'>{formatDate(debt.dueDate)}</span>
+              <span className='text-sm text-gray-500 font-medium'>
+                Due Date:
+              </span>
+              <span className='text-sm text-black'>
+                {formatDate(debt.dueDate)}
+              </span>
             </div>
             {debt.description && (
               <p className='text-sm text-gray-600 mt-2 line-clamp-2 italic'>
