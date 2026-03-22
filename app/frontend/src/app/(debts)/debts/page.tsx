@@ -12,6 +12,7 @@ import { DebtList } from '@/features/debt/components';
 import { useDebtsQuery } from '@/features/debt/hooks/useDebtQuery';
 import Hero from '@/components/layout/Hero';
 import { formatAmount } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function DebtsPage() {
   const user = useAppSelector((state) => state.user.user);
@@ -54,10 +55,12 @@ export default function DebtsPage() {
               Manage your receivables and obligations in one place.
             </p>
           </div>
-          <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02] active:scale-[0.98]'>
-            <HugeiconsIcon icon={Add01Icon} size={20} />
-            Create New Debt
-          </Button>
+          <Link href='/create-debt'>
+            <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02] active:scale-[0.98]'>
+              <HugeiconsIcon icon={Add01Icon} size={20} />
+              Create New Debt
+            </Button>
+          </Link>
         </div>
 
         {/* Stats Summary */}

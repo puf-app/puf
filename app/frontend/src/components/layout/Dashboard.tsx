@@ -17,9 +17,11 @@ export default function Dashboard() {
             <p className='text-lg text-black'>
               Keep a clear record of everything you owe.
             </p>
-            <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-xl mt-2'>
-              <Link href='/create-debt'>Create Debt</Link>
-            </Button>
+            <Link href='/create-debt'>
+              <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-xl mt-2'>
+                Create Debt
+              </Button>
+            </Link>
           </div>
 
           {/* Right Box: Pending Debts */}
