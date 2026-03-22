@@ -77,3 +77,49 @@ export const postToApi = async <TData>(
 
   return payload.data;
 };
+
+/** Multipart upload (e.g. verification documents). Do not set Content-Type — browser sets boundary. */
+export const postFormDataToApi = async <TData>(path: string, formData: FormData) => {
+  const response = await fetch(buildUrl(path), {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+
+  const text = await response.text();
+  let payload: IApiResponse<TData> | null = null;
+  if (text) {
+    try {
+      payload = JSON.parse(text) as IApiResponse<TData>;
+    } catch {
+      throw new Error(`HTTP ${response.status}: invalid JSON`);
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(payload?.error || `HTTP ${response.status}`);
+  }
+  if (payload?.error) {
+    throw new Error(payload.error);
+  }
+
+  return payload?.data as TData;
+};
+
+/** Pulls Mongo id from various `{ data: ... }` shapes returned by the API. */
+export const extractIdFromApiData = (data: unknown): string | null => {
+  if (data == null) return null;
+  if (typeof data === 'string') return data;
+  if (typeof data !== 'object') return null;
+  const o = data as Record<string, unknown>;
+  if (typeof o._id === 'string') return o._id;
+  if (typeof o.id === 'string') return o.id;
+  if (typeof o.verificationId === 'string') return o.verificationId;
+  const nested = o.verification;
+  if (nested && typeof nested === 'object') {
+    const v = nested as Record<string, unknown>;
+    if (typeof v._id === 'string') return v._id;
+    if (typeof v.id === 'string') return v.id;
+  }
+  return null;
+};
