@@ -4,21 +4,26 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { setUser, clearUser } from '@/stores/slices/userSlice';
+import { clearUser } from '@/stores/slices/userSlice';
 import { getHeaderText } from '@/lib/utils';
 import { postToApi } from '@/lib/api/client';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const headerText = getHeaderText(pathname);
 
   const handleLogout = async () => {
-    await postToApi('/api/auth/logoutUser', {});
-    dispatch(clearUser());
-    redirect('/');
+    try {
+      await postToApi('/api/auth/logoutUser', {});
+    } finally {
+      dispatch(clearUser());
+      router.push('/');
+      router.refresh();
+    }
   };
 
   return (
@@ -43,13 +48,6 @@ export default function Header() {
                 Sign in
               </Button>
             </Link>
-
-            <Button
-              className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'
-              onClick={handleLogout}
-            >
-              Log out
-            </Button>
           </>
         )}
 

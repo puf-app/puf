@@ -16,9 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { useAppDispatch } from '@/hooks/redux';
-import { setUser } from '@/stores/slices/userSlice';
-import { getFromApi, postToApi } from '@/lib/api/client';
-import { IUser } from '@/types';
+import { loginWithCredentials } from '@/lib/auth/loginWithCredentials';
 
 const signinSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -45,38 +43,18 @@ export default function SigninPage() {
   });
 
   const onSubmit = async (data: SigninFormValues) => {
-    // Backend login: /api/auth/loginUser
-    type LoginResponse = {
-      message?: string;
-      requires2FA?: boolean;
-      user?: { username?: string; admin?: boolean } & Record<string, unknown>;
-    };
-
-    type UserProfileResponse = {
-      user: IUser;
-    };
-
     setApiError(null);
     try {
-      const res = await postToApi<LoginResponse>('/api/auth/loginUser', {
+      const { requires2FA } = await loginWithCredentials(dispatch, {
         username: data.username,
         password: data.password,
       });
 
-      if (res.requires2FA) {
-        // 2FA page is not implemented yet; keep UX simple for now.
-        // Later we can redirect to a dedicated /2fa route.
+      if (requires2FA) {
         setApiError(
           'Two-factor authentication is required (2FA not implemented yet).',
         );
         return;
-      }
-
-      if (res.user) {
-        const user = await getFromApi<UserProfileResponse>(
-          '/api/users/getCurrentUserProfile',
-        );
-        dispatch(setUser(user.user as any));
       }
 
       router.push('/');

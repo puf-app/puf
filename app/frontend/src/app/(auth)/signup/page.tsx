@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useAppDispatch } from '@/hooks/redux';
+import { loginWithCredentials } from '@/lib/auth/loginWithCredentials';
 import { postToApi } from '@/lib/api/client';
 
 const signupSchema = z.object({
@@ -51,6 +53,7 @@ function deriveFirstLast(fullName: string, email: string, username: string) {
 
 export default function SignupPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
@@ -90,7 +93,21 @@ export default function SignupPage() {
 
     try {
       await postToApi('/api/auth/registerUser', payload);
-      router.push('/signin');
+
+      const { requires2FA } = await loginWithCredentials(dispatch, {
+        username: data.username,
+        password: data.password,
+      });
+
+      if (requires2FA) {
+        setApiError(
+          'Account created. Two-factor authentication is required — please sign in to continue.',
+        );
+        router.push('/signin');
+        return;
+      }
+
+      router.push('/');
     } catch (e) {
       setApiError(e instanceof Error ? e.message : 'Registration failed');
     }
