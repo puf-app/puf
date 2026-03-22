@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { setUser, clearUser } from '@/stores/slices/userSlice';
 import { getHeaderText } from '@/lib/utils';
+import { postToApi } from '@/lib/api/client';
+import { redirect } from 'next/navigation';
 
 export default function Header() {
   const pathname = usePathname();
@@ -13,27 +15,10 @@ export default function Header() {
   const user = useAppSelector((state) => state.user.user);
   const headerText = getHeaderText(pathname);
 
-  // TODO: REMOVE MOCK LOGIN - This is temporary for testing the dashboard without a backend
-  const toggleMockLogin = () => {
-    if (user) {
-      dispatch(clearUser());
-    } else {
-      dispatch(
-        setUser({
-          _id: '1',
-          firstName: 'Jane',
-          lastName: 'Doe',
-          username: 'janedoe',
-          email: 'jane@example.com',
-          phone: '+386 40 123 456',
-          isVerified: true,
-          status: 'ACTIVE',
-          admin: false,
-          company: false,
-          createdAt: new Date('2024-01-15').toISOString(),
-        } as any),
-      );
-    }
+  const handleLogout = async () => {
+    await postToApi('/api/auth/logoutUser', {});
+    dispatch(clearUser());
+    redirect('/');
   };
 
   return (
@@ -42,15 +27,6 @@ export default function Header() {
         <Link href='/' className='text-4xl font-semibold'>
           <h1>{headerText}</h1>
         </Link>
-        {/* TODO: REMOVE MOCK LOGIN BUTTON */}
-        <Button
-          onClick={toggleMockLogin}
-          variant='outline'
-          size='sm'
-          className='text-xs h-8 bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-white/10'
-        >
-          Dev: {user ? 'Logout' : 'Login'}
-        </Button>
       </div>
 
       <nav className='flex gap-4'>
@@ -87,6 +63,12 @@ export default function Header() {
                 Profile
               </Button>
             </Link>
+            <Button
+              className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'
+              onClick={handleLogout}
+            >
+              Log out
+            </Button>
           </div>
         )}
 

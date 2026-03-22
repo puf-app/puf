@@ -21,7 +21,10 @@ const signupSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   // On mobile the UI only shows username/email/password, so allow empty fullName.
-  fullName: z.union([z.string().min(1, 'Full name is required'), z.literal('')]),
+  fullName: z.union([
+    z.string().min(1, 'Full name is required'),
+    z.literal(''),
+  ]),
   phone: z.string().optional().or(z.literal('')),
 });
 
