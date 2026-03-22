@@ -11,6 +11,7 @@ interface DebtState {
   dueDate: string;
   verificationRequired: boolean;
   createdDebt: IDebt | null;
+  debts: IDebt[];
   status: 'idle' | 'submitting' | 'success' | 'error';
   error: string | null;
 }
@@ -25,6 +26,7 @@ const initialState: DebtState = {
   dueDate: '',
   verificationRequired: false,
   createdDebt: null,
+  debts: [],
   status: 'idle',
   error: null,
 };
@@ -44,6 +46,9 @@ const debtSlice = createSlice({
     setStatus: (state, action: PayloadAction<DebtState['status']>) => {
       state.status = action.payload;
     },
+    setDebts: (state, action: PayloadAction<IDebt[]>) => {
+      state.debts = action.payload;
+    },
 
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -57,6 +62,7 @@ export const {
   setVerificationRequired,
   setCreatedDebt,
   setStatus,
+  setDebts,
   setError,
   resetForm,
 } = debtSlice.actions;
