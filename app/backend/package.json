@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"add other tests in package.json\" && exit 0",
     "npm": "install",
     "express": "express-session",
     "cors": "dotenv",
@@ -16,11 +16,16 @@
   "license": "ISC",
   "description": "Aplikacija za beleženje dolgov",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-mongo": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.0",
     "express-session": "^1.19.0",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "mongoose": "^9.3.0",
     "morgan": "^1.10.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"

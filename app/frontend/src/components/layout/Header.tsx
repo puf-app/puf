@@ -77,7 +77,9 @@ export default function Header() {
           </div>
         )}
 
-        {(pathname === '/signin' || pathname === '/signup' || pathname === '/verification') && (
+        {(pathname === '/signin' ||
+          pathname === '/signup' ||
+          pathname === '/verification') && (
           <Link href='/'>
             <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
               Home
@@ -87,13 +89,19 @@ export default function Header() {
 
         {pathname !== '/signin' &&
           pathname !== '/signup' &&
-          pathname !== '/' &&
-          !user && (
-            <Link href='/home'>
-              <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
-                Home
-              </Button>
-            </Link>
+          pathname !== '/' && (
+            <>
+              <Link href='/home'>
+                <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                  Home
+                </Button>
+              </Link>
+              <Link href='/statistics'>
+                <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
+                  Statistics
+                </Button>
+              </Link>
+            </>
           )}
       </nav>
     </header>
