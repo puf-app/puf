@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // form validation
 import { useForm } from 'react-hook-form';
@@ -12,18 +14,45 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { postToApi } from '@/lib/api/client';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  fullName: z.string().min(1, 'Full name is required'),
-  phone: z.string().optional(),
+  // On mobile the UI only shows username/email/password, so allow empty fullName.
+  fullName: z.union([
+    z.string().min(1, 'Full name is required'),
+    z.literal(''),
+  ]),
+  phone: z.string().optional().or(z.literal('')),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
+function deriveFirstLast(fullName: string, email: string, username: string) {
+  const cleanedFull = fullName.trim();
+  if (cleanedFull) {
+    const parts = cleanedFull.split(/\s+/).filter(Boolean);
+    const firstName = parts[0] ?? 'User';
+    const lastName = parts.length >= 2 ? parts[parts.length - 1] : firstName;
+    return { firstName, lastName };
+  }
+
+  const emailLocal = (email.split('@')[0] ?? '').trim();
+  const tokens = emailLocal
+    ? emailLocal.split(/[._-]/).filter(Boolean)
+    : username.split(/[._-]/).filter(Boolean);
+
+  const firstName = tokens[0] ?? 'User';
+  const lastName = tokens[1] ?? 'User';
+  return { firstName, lastName };
+}
+
 export default function SignupPage() {
+  const router = useRouter();
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -39,9 +68,32 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = (data: SignupFormValues) => {
-    // TODO: hook up to real API + Redux when backend is ready
-    console.log('signup data', data);
+  const onSubmit = async (data: SignupFormValues) => {
+    setApiError(null);
+    const { firstName, lastName } = deriveFirstLast(
+      data.fullName,
+      data.email,
+      data.username,
+    );
+
+    const payload: Record<string, unknown> = {
+      firstName,
+      lastName,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    };
+
+    if (data.phone && data.phone.trim()) {
+      payload.phone = data.phone.trim();
+    }
+
+    try {
+      await postToApi('/api/auth/registerUser', payload);
+      router.push('/signin');
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : 'Registration failed');
+    }
   };
 
   return (
@@ -117,11 +169,14 @@ export default function SignupPage() {
             >
               Sign up
             </Button>
+            {apiError && (
+              <p className='text-xs text-destructive mt-3'>{apiError}</p>
+            )}
           </form>
 
           <p className='mt-4 text-sm text-center w-full'>
             Already have an account?{' '}
-            <Link href='/login' className='underline text-[#1a448d]'>
+            <Link href='/signin' className='underline text-primary'>
               Sign in
             </Link>
           </p>
@@ -212,6 +267,9 @@ export default function SignupPage() {
               >
                 Sign up
               </Button>
+              {apiError && (
+                <p className='text-xs text-destructive mt-3'>{apiError}</p>
+              )}
             </form>
           </CardContent>
         </Card>

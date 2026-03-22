@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Hero from './Hero';
+import Link from 'next/link';
 
 export default function Dashboard() {
   return (
@@ -17,7 +18,7 @@ export default function Dashboard() {
               Keep a clear record of everything you owe.
             </p>
             <Button className='bg-[#001f3f] hover:bg-[#003366] text-white px-8 py-6 h-auto text-lg rounded-xl mt-2'>
-              Create Debt
+              <Link href='/create-debt'>Create Debt</Link>
             </Button>
           </div>
 

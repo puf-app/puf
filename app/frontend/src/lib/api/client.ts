@@ -57,3 +57,23 @@ export const patchToApi = async <TData>(
 
   return payload.data;
 };
+
+export const postToApi = async <TData>(
+  path: string,
+  body: Record<string, unknown>
+) => {
+  const response = await fetch(buildUrl(path), {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  const payload = (await response.json()) as IApiResponse<TData>;
+
+  if (!response.ok || payload.error) {
+    throw new Error(payload.error || `HTTP ${response.status}`);
+  }
+
+  return payload.data;
+};
