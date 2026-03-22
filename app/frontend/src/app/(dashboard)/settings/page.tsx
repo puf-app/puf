@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -97,7 +97,6 @@ function FieldRow({
 }
 
 export default function SettingsPage() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
@@ -118,7 +117,6 @@ export default function SettingsPage() {
   const {
     register,
     getValues,
-    setValue,
     trigger,
     reset,
     formState: { errors },
@@ -175,10 +173,6 @@ export default function SettingsPage() {
 
     dispatch(setUser(res.user));
     setLastSaved((prev) => ({ ...prev, [field]: Date.now() }));
-  };
-
-  const uploadProof = () => {
-    fileInputRef.current?.click();
   };
 
   return (
@@ -279,37 +273,6 @@ export default function SettingsPage() {
               error={errors.password?.message}
               onChangeClick={() => saveField('password')}
             />
-
-            <div className='grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center'>
-              <Label className='text-base font-semibold'>Verify account:</Label>
-              <div className='text-sm text-muted-foreground md:pr-4'>
-                Upload a photo of your ID document.
-              </div>
-              <div className='flex flex-col gap-2'>
-                <input
-                  ref={fileInputRef}
-                  type='file'
-                  accept='image/*,application/pdf'
-                  className='hidden'
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setValue('profileImageUrl', file.name, {
-                      shouldDirty: true,
-                    });
-                  }}
-                />
-                <Button
-                  type='button'
-                  variant='tertiary'
-                  size='lg'
-                  className='w-full md:w-auto'
-                  onClick={uploadProof}
-                >
-                  Upload photo
-                </Button>
-              </div>
-            </div>
           </div>
         </Card>
       </div>
