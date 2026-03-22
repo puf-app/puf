@@ -103,6 +103,58 @@ router.patch('/updateDebtStatusHistory/:id', requireAuth, debtStatusHistoryContr
  */
 router.delete('/deleteDebtStatusHistory/:id', requireAuth, debtStatusHistoryController.deleteDebtStatusHistory);
 
+/**
+ * @swagger
+ * tags:
+ *   name: DebtStatusHistory
+ *   description: Debt status history tracking
+ */
+ 
+/**
+ * @swagger
+ * /api/debtStatusHistory/getDebtStatusHistories:
+ *   get:
+ *     summary: Get all debt status history entries (admin gets all, user gets own)
+ *     tags: [DebtStatusHistory]
+ *     responses:
+ *       200:
+ *         description: List of debt status history entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     histories: { type: array, items: { type: object } }
+ *                 error: { type: string, example: "" }
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebtStatusHistories', requireAuth, debtStatusHistoryController.getDebtStatusHistories);
+ 
+/**
+ * @swagger
+ * /api/debtStatusHistory/getDebtStatusHistory/{id}:
+ *   get:
+ *     summary: Get a single debt status history entry by ID
+ *     tags: [DebtStatusHistory]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *         description: History entry ID
+ *     responses:
+ *       200:
+ *         description: History entry found
+ *       403:
+ *         description: Forbidden - Not a party of this debt
+ *       404:
+ *         description: History entry not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebtStatusHistory/:id', requireAuth, debtStatusHistoryController.getDebtStatusHistoryById);
 module.exports = router;
