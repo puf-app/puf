@@ -13,6 +13,7 @@ const debtEvidenceSchema = new Schema({
     evidenceType: { type: String, maxLength: 30 },
     description: { type: String, maxLength: 500 }
 }, {
+    collection: 'debt_evidence',
     timestamps: { createdAt: 'uploadedAt', updatedAt: false }
 });
 
