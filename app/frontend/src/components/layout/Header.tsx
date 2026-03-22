@@ -79,7 +79,7 @@ export default function Header() {
           </div>
         )}
 
-        {(pathname === '/signin' || pathname === '/signup') && (
+        {(pathname === '/signin' || pathname === '/signup' || pathname === '/verification') && (
           <Link href='/'>
             <Button className='px-6 py-2 h-auto rounded-md text-sm font-medium shadow-sm'>
               Home
