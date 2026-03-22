@@ -117,6 +117,7 @@ export default function SettingsPage() {
   const {
     register,
     getValues,
+    setValue,
     trigger,
     reset,
     formState: { errors },
@@ -144,22 +145,37 @@ export default function SettingsPage() {
   const [lastSaved, setLastSaved] = useState<Partial<Record<FieldKey, number>>>(
     {},
   );
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const saveField = async (field: FieldKey) => {
+    if (field === 'password') {
+      setPasswordError(null);
+      setPasswordSuccess(false);
+      const ok = await trigger(['oldPassword', 'password']);
+      if (!ok) return;
+
+      try {
+        await postToApi('/api/auth/changePassword', {
+          oldPassword: getValues('oldPassword'),
+          newPassword: getValues('password'),
+        });
+        setValue('password', '');
+        setValue('oldPassword', '');
+        setPasswordSuccess(true);
+      } catch (e) {
+        setPasswordError(
+          e instanceof Error ? e.message : 'Could not update password',
+        );
+      }
+      return;
+    }
+
     const ok = await trigger(field);
     if (!ok) return;
 
     interface UpdatePayload {
       user: IUser;
-    }
-
-    if (field === 'password') {
-      await postToApi('/api/auth/changePassword', {
-        oldPassword: getValues('oldPassword'),
-        newPassword: getValues('password'),
-      });
-
-      return;
     }
 
     const res = await patchToApi<UpdatePayload>(
@@ -168,8 +184,6 @@ export default function SettingsPage() {
         [field]: getValues(field),
       },
     );
-
-    console.log(res);
 
     dispatch(setUser(res.user));
     setLastSaved((prev) => ({ ...prev, [field]: Date.now() }));
@@ -251,6 +265,23 @@ export default function SettingsPage() {
 
         <Card className='p-6 md:p-8 shadow-md'>
           <SectionTitle>Security</SectionTitle>
+
+          {passwordSuccess && (
+            <div
+              className='mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900'
+              role='status'
+            >
+              Your password was updated successfully.
+            </div>
+          )}
+          {passwordError && (
+            <div
+              className='mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive'
+              role='alert'
+            >
+              {passwordError}
+            </div>
+          )}
 
           <div className='mt-6 flex flex-col gap-5 md:gap-6'>
             <FieldRow
