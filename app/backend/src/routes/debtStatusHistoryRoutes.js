@@ -103,4 +103,6 @@ router.patch('/updateDebtStatusHistory/:id', requireAuth, debtStatusHistoryContr
  */
 router.delete('/deleteDebtStatusHistory/:id', requireAuth, debtStatusHistoryController.deleteDebtStatusHistory);
 
+router.get('/getDebtStatusHistories', requireAuth, debtStatusHistoryController.getDebtStatusHistories);
+router.get('/getDebtStatusHistory/:id', requireAuth, debtStatusHistoryController.getDebtStatusHistoryById);
 module.exports = router;

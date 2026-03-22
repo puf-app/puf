@@ -95,5 +95,61 @@ const deleteDebtStatusHistory = async (req, res) => {
         return res.status(500).json({ data: {}, error: "Internal server error while deleting debt status history" });
     }
 };
+const getDebtStatusHistories = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const isAdmin = req.session.role === 'admin';
+ 
+        let query = {};
+        if (!isAdmin) {
+            const userDebts = await Debt.find({
+                $or: [{ creditorUserId: userId }, { debtorUserId: userId }]
+            }).select('_id');
+            const debtIds = userDebts.map(d => d._id);
+            query = { debtId: { $in: debtIds } };
+        }
+ 
+        const histories = await DebtStatusHistory.find(query)
+            .populate('debtId', 'title status')
+            .populate('changedByUserId', 'username firstName lastName')
+            .sort({ changedAt: -1 });
+ 
+        return res.status(200).json({
+            data: { histories },
+            error: ''
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: 'Internal server error while fetching debt status histories' });
+    }
+};
+ 
+const getDebtStatusHistoryById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.session.userId;
+        const isAdmin = req.session.role === 'admin';
+ 
+        const history = await DebtStatusHistory.findById(id)
+            .populate('debtId', 'title status creditorUserId debtorUserId')
+            .populate('changedByUserId', 'username firstName lastName');
+ 
+        if (!history) {
+            return res.status(404).json({ data: {}, error: 'Debt status history entry not found' });
+        }
+ 
+        const isParty = history.debtId.creditorUserId.toString() === userId || history.debtId.debtorUserId.toString() === userId;
+        if (!isAdmin && !isParty) {
+            return res.status(403).json({ data: {}, error: 'You are not authorized to view this history entry' });
+        }
+ 
+        return res.status(200).json({
+            data: { history },
+            error: ''
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: 'Internal server error while fetching debt status history' });
+    }
+};
+ 
 
 module.exports = { createDebtStatusHistory, updateDebtStatusHistory, deleteDebtStatusHistory };

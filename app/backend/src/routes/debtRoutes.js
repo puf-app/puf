@@ -136,4 +136,7 @@ router.patch('/completeDebt/:id', requireAuth, debtController.completeDebt);
  */
 router.delete('/deleteDebt/:id', requireAuth, debtController.deleteDebt);
 
+router.get('/getDebts', requireAuth, debtController.getDebts);
+router.get('/getDebt/:id', requireAuth, debtController.getDebtById);
+
 module.exports = router;

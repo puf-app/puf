@@ -101,4 +101,61 @@ const deleteDebtEvidence = async (req, res) => {
     }
 };
 
+const getDebtEvidences = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const isAdmin = req.session.role === 'admin';
+ 
+        let query = {};
+        if (!isAdmin) {
+            const userDebts = await Debt.find({
+                $or: [{ creditorUserId: userId }, { debtorUserId: userId }]
+            }).select('_id');
+            const debtIds = userDebts.map(d => d._id);
+            query = { debtId: { $in: debtIds } };
+        }
+ 
+        const evidences = await DebtEvidence.find(query)
+            .populate('debtId', 'title status')
+            .populate('uploadedByUserId', 'username firstName lastName')
+            .sort({ uploadedAt: -1 });
+ 
+        return res.status(200).json({
+            data: { evidences },
+            error: ''
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: 'Internal server error while fetching debt evidences' });
+    }
+};
+ 
+const getDebtEvidenceById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.session.userId;
+        const isAdmin = req.session.role === 'admin';
+ 
+        const evidence = await DebtEvidence.findById(id)
+            .populate('debtId', 'title status creditorUserId debtorUserId')
+            .populate('uploadedByUserId', 'username firstName lastName');
+ 
+        if (!evidence) {
+            return res.status(404).json({ data: {}, error: 'Debt evidence not found' });
+        }
+ 
+        const isParty = evidence.debtId.creditorUserId.toString() === userId || evidence.debtId.debtorUserId.toString() === userId;
+        if (!isAdmin && !isParty) {
+            return res.status(403).json({ data: {}, error: 'You are not authorized to view this evidence' });
+        }
+ 
+        return res.status(200).json({
+            data: { evidence },
+            error: ''
+        });
+    } catch (error) {
+        return res.status(500).json({ data: {}, error: 'Internal server error while fetching debt evidence' });
+    }
+};
+ 
+
 module.exports = { createDebtEvidence, updateDebtEvidence, deleteDebtEvidence };

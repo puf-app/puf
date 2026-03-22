@@ -106,4 +106,6 @@ router.patch('/updateDebtEvidence/:id', requireAuth, debtEvidenceController.upda
  */
 router.delete('/deleteDebtEvidence/:id', requireAuth, debtEvidenceController.deleteDebtEvidence);
 
+router.get('/getDebtEvidences', requireAuth, debtEvidenceController.getDebtEvidences);
+router.get('/getDebtEvidence/:id', requireAuth, debtEvidenceController.getDebtEvidenceById);
 module.exports = router;
