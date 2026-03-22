@@ -22,8 +22,8 @@ import { Card } from '@/components/ui/card';
 
 import ImageUpload from './ImageUpload';
 import RequestStatus from './RequestStatus';
-import { postToApi } from '@/lib/api/client';
-import { IDebt } from '@/types';
+import { useCreateDebtMutation } from '../hooks/useDebtQuery';
+import { IDebt } from '../types';
 
 const debtSchema = z.object({
   debtor_username: z.string().min(1, 'Debtor username is required'),
@@ -46,6 +46,7 @@ export default function CreateDebtForm() {
   const dispatch = useAppDispatch();
   const state = useAppSelector((s) => s.debt);
   const [files, setFiles] = useState<File[]>([]);
+  const createDebtMutation = useCreateDebtMutation();
 
   const {
     register,
@@ -60,27 +61,23 @@ export default function CreateDebtForm() {
   const onSubmit = async (data: FormValues) => {
     dispatch(setStatus('submitting'));
 
-    interface CreateDebtResponse {
-      message: string;
-      debt: IDebt;
-    }
-
-    const res = await postToApi<CreateDebtResponse>('/api/debts/createDebt', {
-      debtor_username: data.debtor_username,
-      title: data.title,
-      description: data.description,
-      amount: parseFloat(data.amount),
-      currency: data.currency,
-      reason: data.reason,
-      due_date: data.due_date,
-      verification_required: state.verificationRequired,
-    });
-    dispatch(setCreatedDebt(res.debt));
-    dispatch(setStatus('success'));
-
-    setTimeout(() => {
+    try {
+      const res = await createDebtMutation.mutateAsync({
+        debtor_username: data.debtor_username,
+        title: data.title,
+        description: data.description,
+        amount: parseFloat(data.amount),
+        currency: data.currency,
+        reason: data.reason,
+        due_date: data.due_date,
+        verification_required: state.verificationRequired,
+      });
+      
+      dispatch(setCreatedDebt(res.debt));
       dispatch(setStatus('success'));
-    }, 800);
+    } catch (err) {
+      dispatch(setStatus('error'));
+    }
   };
 
   const onAbort = () => {
@@ -89,8 +86,8 @@ export default function CreateDebtForm() {
     reset();
   };
 
-  const isSubmitting = state.status === 'submitting';
-  const isSuccess = state.status === 'success';
+  const isSubmitting = createDebtMutation.isPending || state.status === 'submitting';
+  const isSuccess = createDebtMutation.isSuccess || state.status === 'success';
 
   return (
     <div className='min-h-screen bg-background'>

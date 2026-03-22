@@ -2,7 +2,7 @@
 
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Clock01Icon, CheckmarkCircle01Icon, Cancel01Icon, BlockedIcon, MoneyReceive01Icon } from '@hugeicons/core-free-icons';
-import { IDebt, TDebtStatus } from '@/types';
+import { IDebt, TDebtStatus } from '../types';
 
 const statusConfig: Record<
   TDebtStatus,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { patchToApi, postToApi } from '@/lib/api/client';
+import { setUser } from '@/stores/slices/userSlice';
+import { IUser } from '@/types';
 
 const settingsSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -24,6 +28,7 @@ const settingsSchema = z.object({
     .or(z.literal('')),
   profileImageUrl: z.string().optional().or(z.literal('')),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  oldPassword: z.string().min(6, 'Old password must be at least 6 characters'),
 });
 
 type SettingsValues = z.infer<typeof settingsSchema>;
@@ -49,6 +54,7 @@ function FieldRow({
   onChangeClick,
   buttonLabel = 'Change',
   buttonVariant = 'tertiary',
+  withoutButton = false,
 }: {
   label: string;
   fieldKey: FieldKey;
@@ -59,6 +65,7 @@ function FieldRow({
   onChangeClick: () => void;
   buttonLabel?: string;
   buttonVariant?: React.ComponentProps<typeof Button>['variant'];
+  withoutButton?: boolean;
 }) {
   return (
     <div className='grid grid-cols-1 md:grid-cols-[240px_1fr_120px] gap-2 md:gap-4 items-start md:items-center'>
@@ -74,33 +81,38 @@ function FieldRow({
         />
         {error && <p className='text-xs text-destructive mt-1'>{error}</p>}
       </div>
-      <Button
-        type='button'
-        variant={buttonVariant}
-        size='lg'
-        className='w-full md:w-auto'
-        onClick={onChangeClick}
-      >
-        {buttonLabel}
-      </Button>
+      {!withoutButton && (
+        <Button
+          type='button'
+          variant={buttonVariant}
+          size='lg'
+          className='w-full md:w-auto'
+          onClick={onChangeClick}
+        >
+          {buttonLabel}
+        </Button>
+      )}
     </div>
   );
 }
 
 export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
 
   const defaultValues = useMemo<SettingsValues>(
     () => ({
-      firstName: 'Janez',
-      lastName: 'Novak',
-      username: 'DebtCollector3000',
-      email: 'debtcollector300@mail.com',
-      phone: '+386 31 123 456',
-      profileImageUrl: 'https://i.pravatar.cc/300',
-      password: '**********************',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      username: user?.username || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      profileImageUrl: user?.profileImageUrl || '',
+      password: '',
+      oldPassword: '',
     }),
-    [],
+    [user],
   );
 
   const {
@@ -108,12 +120,28 @@ export default function SettingsPage() {
     getValues,
     setValue,
     trigger,
+    reset,
     formState: { errors },
   } = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues,
     mode: 'onBlur',
   });
+
+  useEffect(() => {
+    if (user) {
+      reset({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        username: user.username || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        profileImageUrl: user.profileImageUrl || '',
+        password: '',
+        oldPassword: '',
+      });
+    }
+  }, [user, reset]);
 
   const [lastSaved, setLastSaved] = useState<Partial<Record<FieldKey, number>>>(
     {},
@@ -123,9 +151,29 @@ export default function SettingsPage() {
     const ok = await trigger(field);
     if (!ok) return;
 
-    // TODO: replace with API call when backend is ready
-    void getValues(field);
+    interface UpdatePayload {
+      user: IUser;
+    }
 
+    if (field === 'password') {
+      await postToApi('/api/auth/changePassword', {
+        oldPassword: getValues('oldPassword'),
+        newPassword: getValues('password'),
+      });
+
+      return;
+    }
+
+    const res = await patchToApi<UpdatePayload>(
+      `/api/users/updateUserProfile/${user?._id}`,
+      {
+        [field]: getValues(field),
+      },
+    );
+
+    console.log(res);
+
+    dispatch(setUser(res.user));
     setLastSaved((prev) => ({ ...prev, [field]: Date.now() }));
   };
 
@@ -211,6 +259,17 @@ export default function SettingsPage() {
           <SectionTitle>Security</SectionTitle>
 
           <div className='mt-6 flex flex-col gap-5 md:gap-6'>
+            <FieldRow
+              label='Old password'
+              fieldKey='oldPassword'
+              placeholder='Enter old password'
+              type='password'
+              register={register}
+              error={errors.oldPassword?.message}
+              onChangeClick={() => saveField('oldPassword')}
+              withoutButton
+            />
+
             <FieldRow
               label='Change password'
               fieldKey='password'
