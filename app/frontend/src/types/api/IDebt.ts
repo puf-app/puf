@@ -1,4 +1,4 @@
-export type IDebtStatus =
+export type TDebtStatus =
   | 'PENDING'
   | 'ACCEPTED'
   | 'REJECTED'
@@ -10,16 +10,28 @@ export type IDebtStatus =
 export interface IDebt {
   _id: string;
 
-  creditorUserId: string;
-  debtorUserId: string;
+  creditorUserId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  debtorUserId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 
   title: string;
   description: string;
 
-  amount: number;
+  amount: {
+    $numberDecimal: string;
+  };
   currency: string;
   reason: string;
-  status: IDebtStatus;
+  status: TDebtStatus;
 
   dueDate: string;
   acceptedAt?: string;

@@ -1,4 +1,4 @@
-export type { IDebt, IDebtStatus } from './api/IDebt';
+export type { IDebt, TDebtStatus } from './api/IDebt';
 export type { IDebtEvidence } from './api/IDebtEvidence';
 export type { IDebtStatusHistory } from './api/IDebtStatusHistory';
 export type {

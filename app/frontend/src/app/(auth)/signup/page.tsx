@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // form validation
 import { useForm } from 'react-hook-form';
@@ -12,18 +14,48 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useAppDispatch } from '@/hooks/redux';
+import { loginWithCredentials } from '@/lib/auth/loginWithCredentials';
+import { postToApi } from '@/lib/api/client';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  fullName: z.string().min(1, 'Full name is required'),
-  phone: z.string().optional(),
+  // On mobile the UI only shows username/email/password, so allow empty fullName.
+  fullName: z.union([
+    z.string().min(1, 'Full name is required'),
+    z.literal(''),
+  ]),
+  phone: z.string().optional().or(z.literal('')),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
+function deriveFirstLast(fullName: string, email: string, username: string) {
+  const cleanedFull = fullName.trim();
+  if (cleanedFull) {
+    const parts = cleanedFull.split(/\s+/).filter(Boolean);
+    const firstName = parts[0] ?? 'User';
+    const lastName = parts.length >= 2 ? parts[parts.length - 1] : firstName;
+    return { firstName, lastName };
+  }
+
+  const emailLocal = (email.split('@')[0] ?? '').trim();
+  const tokens = emailLocal
+    ? emailLocal.split(/[._-]/).filter(Boolean)
+    : username.split(/[._-]/).filter(Boolean);
+
+  const firstName = tokens[0] ?? 'User';
+  const lastName = tokens[1] ?? 'User';
+  return { firstName, lastName };
+}
+
 export default function SignupPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -39,9 +71,46 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = (data: SignupFormValues) => {
-    // TODO: hook up to real API + Redux when backend is ready
-    console.log('signup data', data);
+  const onSubmit = async (data: SignupFormValues) => {
+    setApiError(null);
+    const { firstName, lastName } = deriveFirstLast(
+      data.fullName,
+      data.email,
+      data.username,
+    );
+
+    const payload: Record<string, unknown> = {
+      firstName,
+      lastName,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    };
+
+    if (data.phone && data.phone.trim()) {
+      payload.phone = data.phone.trim();
+    }
+
+    try {
+      await postToApi('/api/auth/registerUser', payload);
+
+      const { requires2FA } = await loginWithCredentials(dispatch, {
+        username: data.username,
+        password: data.password,
+      });
+
+      if (requires2FA) {
+        setApiError(
+          'Account created. Two-factor authentication is required — please sign in to continue.',
+        );
+        router.push('/signin');
+        return;
+      }
+
+      router.push('/');
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : 'Registration failed');
+    }
   };
 
   return (
@@ -65,7 +134,6 @@ export default function SignupPage() {
                 id='username-mobile'
                 type='text'
                 placeholder='Enter your username'
-                className='h-10 border-input text-sm'
                 {...register('username')}
               />
               {errors.username && (
@@ -83,7 +151,6 @@ export default function SignupPage() {
                 id='email-mobile'
                 type='email'
                 placeholder='Enter your email address'
-                className='h-10 border-input text-sm'
                 {...register('email')}
               />
               {errors.email && (
@@ -104,7 +171,6 @@ export default function SignupPage() {
                 id='password-mobile'
                 type='password'
                 placeholder='Enter your password'
-                className='h-10 border-input text-sm'
                 {...register('password')}
               />
               {errors.password && (
@@ -120,11 +186,14 @@ export default function SignupPage() {
             >
               Sign up
             </Button>
+            {apiError && (
+              <p className='text-xs text-destructive mt-3'>{apiError}</p>
+            )}
           </form>
 
           <p className='mt-4 text-sm text-center w-full'>
             Already have an account?{' '}
-            <Link href='/login' className='underline text-[#1a448d]'>
+            <Link href='/signin' className='underline text-primary'>
               Sign in
             </Link>
           </p>
@@ -140,14 +209,11 @@ export default function SignupPage() {
           <CardContent className='pt-0'>
             <form className='space-y-8' onSubmit={handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='fullName'>
-                  Full name
-                </Label>
+                <Label htmlFor='fullName'>Full name</Label>
                 <Input
                   id='fullName'
                   type='text'
                   placeholder='Enter your full name'
-                  className='h-10 border-input text-sm'
                   {...register('fullName')}
                 />
                 {errors.fullName && (
@@ -158,14 +224,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='username'>
-                  Username
-                </Label>
+                <Label htmlFor='username'>Username</Label>
                 <Input
                   id='username'
                   type='text'
                   placeholder='Enter your username'
-                  className='h-10 border-input text-sm'
                   {...register('username')}
                 />
                 {errors.username && (
@@ -176,14 +239,11 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='email'>
-                  Email address
-                </Label>
+                <Label htmlFor='email'>Email address</Label>
                 <Input
                   id='email'
                   type='email'
                   placeholder='Enter your email address'
-                  className='h-10 border-input text-sm'
                   {...register('email')}
                 />
                 {errors.email && (
@@ -194,27 +254,21 @@ export default function SignupPage() {
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='phone'>
-                  Telephone number
-                </Label>
+                <Label htmlFor='phone'>Telephone number</Label>
                 <Input
                   id='phone'
                   type='tel'
                   placeholder='Enter your telephone number'
-                  className='h-10 border-input text-sm'
                   {...register('phone')}
                 />
               </div>
 
               <div className='flex flex-col gap-1'>
-                <Label className='text-sm text-gray-700' htmlFor='password'>
-                  Password
-                </Label>
+                <Label htmlFor='password'>Password</Label>
                 <Input
                   id='password'
                   type='password'
                   placeholder='Enter your password'
-                  className='h-10 border-input text-sm'
                   {...register('password')}
                 />
                 {errors.password && (
@@ -230,6 +284,9 @@ export default function SignupPage() {
               >
                 Sign up
               </Button>
+              {apiError && (
+                <p className='text-xs text-destructive mt-3'>{apiError}</p>
+              )}
             </form>
           </CardContent>
         </Card>
