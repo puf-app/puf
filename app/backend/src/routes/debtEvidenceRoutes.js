@@ -106,6 +106,58 @@ router.patch('/updateDebtEvidence/:id', requireAuth, debtEvidenceController.upda
  */
 router.delete('/deleteDebtEvidence/:id', requireAuth, debtEvidenceController.deleteDebtEvidence);
 
+/**
+ * @swagger
+ * tags:
+ *   name: DebtEvidence
+ *   description: Debt evidence file management
+ */
+ 
+/**
+ * @swagger
+ * /api/debtEvidence/getDebtEvidences:
+ *   get:
+ *     summary: Get all debt evidence entries (admin gets all, user gets own)
+ *     tags: [DebtEvidence]
+ *     responses:
+ *       200:
+ *         description: List of debt evidence entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     evidences: { type: array, items: { type: object } }
+ *                 error: { type: string, example: "" }
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebtEvidences', requireAuth, debtEvidenceController.getDebtEvidences);
+ 
+/**
+ * @swagger
+ * /api/debtEvidence/getDebtEvidence/{id}:
+ *   get:
+ *     summary: Get a single debt evidence entry by ID
+ *     tags: [DebtEvidence]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *         description: Evidence ID
+ *     responses:
+ *       200:
+ *         description: Evidence entry found
+ *       403:
+ *         description: Forbidden - Not a party of this debt
+ *       404:
+ *         description: Evidence not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebtEvidence/:id', requireAuth, debtEvidenceController.getDebtEvidenceById);
 module.exports = router;

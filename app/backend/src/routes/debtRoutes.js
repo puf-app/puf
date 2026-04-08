@@ -136,7 +136,58 @@ router.patch('/completeDebt/:id', requireAuth, debtController.completeDebt);
  */
 router.delete('/deleteDebt/:id', requireAuth, debtController.deleteDebt);
 
+/**
+ * @swagger
+ * tags:
+ *   name: Debts
+ *   description: Debt management
+ */
+ 
+/**
+ * @swagger
+ * /api/debts/getDebts:
+ *   get:
+ *     summary: Get all debts (admin gets all, user gets own)
+ *     tags: [Debts]
+ *     responses:
+ *       200:
+ *         description: List of debts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     debts: { type: array, items: { type: object } }
+ *                 error: { type: string, example: "" }
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebts', requireAuth, debtController.getDebts);
+ 
+/**
+ * @swagger
+ * /api/debts/getDebt/{id}:
+ *   get:
+ *     summary: Get a single debt by ID
+ *     tags: [Debts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *         description: Debt ID
+ *     responses:
+ *       200:
+ *         description: Debt found
+ *       403:
+ *         description: Forbidden - Not a party of this debt
+ *       404:
+ *         description: Debt not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/getDebt/:id', requireAuth, debtController.getDebtById);
-
 module.exports = router;
